@@ -28,7 +28,8 @@
 # include <vector>
 # include <netinet/in.h>
 # include <netdb.h>
-#include <limits>
+# include <limits>
+# include <unistd.h>
 
 #include "User.hpp"
 #include "Channel.hpp"
