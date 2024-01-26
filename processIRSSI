@@ -1,0 +1,21 @@
+IRSSI
+ds terminal:
+irssi
+/connect chat.freenode.net // connect to server irc
+/nick  <NICKNAME> //enter a nickname for chatting
+/join #CHANNEL-NAME // create a unique channel //ex #CHNL1
+
+//opening irssi in another device:
+irssi
+/connect chat.freenode.net
+/nick  <NICKNAME>
+/join #CHANNEL-NAME //ex #CHNL1
+//Now chat!
+/cs register #CHANNEL-NAME  <password> //ex CHNL1 password
+/topic <TOPIC-NAME> //ex  secretchannel
+/invite <NAME-USER>  #CHANNEL-NAME // invit unser to join channel
+/join #CHANNEL-NAME <PASSWORD> // user2 join #CHNL1 password
+
+/EXIT // exit irssi
+
+
