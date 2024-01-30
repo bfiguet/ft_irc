@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/01/25 21:31:24 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/01/30 10:50:27 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,7 +254,7 @@ void	Server::parseCmd(std::string str, User &user){
 	std::getline(is, word, ' ');
 	
 	cmds.push_back(word);
-	std::cout<< "cmd=" << word << std::endl;
+	std::cout<< " ds parseCmd =" << word << std::endl;
 
 	std::string keyW[10] = {"NICK", "PASS", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE"};
 	int	(Server::*fun[10])(std::vector<std::string> cmds, User &user) = {
