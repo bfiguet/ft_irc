@@ -28,8 +28,6 @@ std::string	User::getHostname()const{	return _hostname; }
 
 std::string	User::getMsg()const{ return _msg; }
 
-char	User::getOperator() {return _operator; } //! Added to remove the compilation error
-
 void		User::setNickname(std::string str){ _nickname = str; }
 
 void		User::setUsername(std::string str){ _username = str; }

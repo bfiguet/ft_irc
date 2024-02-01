@@ -30,11 +30,10 @@
 # include <netdb.h>
 # include <limits>
 # include <unistd.h>
-
-#include "User.hpp"
-#include "Channel.hpp"
-#include "Server.hpp"
-
+# include <algorithm>
+# include "User.hpp"
+# include "Channel.hpp"
+# include "Server.hpp"
 #define LOCAL_HOST "127.0.0.1"
 #define BUFFERSIZE 1024
 #define MAX_EVENTS 10
@@ -43,7 +42,7 @@ extern bool g_run;
 
 # define RPL_WELCOME(nick, user, host) ("001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host + "\r\n")
 
-# define RPL_WHOISUSER(nick, user, host, realname) ( nick + " " + user + " " + host +" * :" + realname + "\r\n")
+// # define RPL_WHOISUSER(nick, user, host, realname) ( nick + " " + user + " " + host +" * :" + realname + "\r\n")
 
 # define PING(localhost) ("PING " + localhost + "\r\n")
 
@@ -64,17 +63,17 @@ extern bool g_run;
 
 //pour envoyer
 
-# define NOTICE(nick, user, host, chan, str) (":" + nick + "!" + user + "@" + host + " NOTICE " + chan + " :" + str + "\r\n")
+// # define NOTICE(nick, user, host, chan, str) (":" + nick + "!" + user + "@" + host + " NOTICE " + chan + " :" + str + "\r\n")
 
 # define PART(nick, user, host, chan) (":" + nick + "!" + user + "@" + host + " PART " + chan + "\r\n")
 
 # define PART_REASON(nick, user, host, chan, reason) (":" + nick + "!" + user + "@" + host + " PART " + chan + " :" + reason + "\r\n")
 //message envoye a tous les gens dans le channel quand la personne nick quitte le channel
 
-# define KILL(nick, target) (":" + nick + " KILL " + target + "\r\n")
-# define KILL_REASON(nick, target, reason) (":" + nick + " KILL " + target + " :" + reason + "\r\n")
+// # define KILL(nick, target) (":" + nick + " KILL " + target + "\r\n")
+// # define KILL_REASON(nick, target, reason) (":" + nick + " KILL " + target + " :" + reason + "\r\n")
 
-# define BANNED(nick, user, host, channel, target) (":" + nick + "!" + user + "@" + host + " MODE " + channel + " +b " + target + "\r\n")
+// # define BANNED(nick, user, host, channel, target) (":" + nick + "!" + user + "@" + host + " MODE " + channel + " +b " + target + "\r\n")
 
 
 # define KICK(nick, user, host, chan, kicked, reason) (":" + nick + "!" + user + "@" + host + " KICK " + chan + " " + kicked + " :" + reason + "\r\n")
@@ -114,7 +113,7 @@ extern bool g_run;
 
 # define ERR_NOPRIVILEGES "481 :Permission Denied- You're not an IRC operator\r\n"
 
-# define ERR_BANNEDFROMCHAN(nick, channel) ( "474 " + nick + " " + channel + " :Cannot join channel (+b)\r\n")
+// # define ERR_BANNEDFROMCHAN(nick, channel) ( "474 " + nick + " " + channel + " :Cannot join channel (+b)\r\n")
 
 # define ERR_CHANNELISFULL(nick, channel) ("471 " + nick + " " + channel + " :Cannot join channel (+l)\r\n")
 

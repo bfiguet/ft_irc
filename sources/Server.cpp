@@ -173,7 +173,7 @@ void	Server::newUser(){
 		std::cout << "Error on getting hostname new user" << std::endl;
 		exit(1);
 	}
-	_users.push_back(User(server, host));
+	_users.push_back(new User(server, host));
 	pollfd pollfd = {server, POLLIN, 0};
 	_pollfds.push_back(pollfd);
 }
@@ -185,7 +185,7 @@ void	Server::printMsg(int fd){
 	}
 	catch(const std::exception& e)
 	{
-		disconnectUser(fd);
+		disconnectUser(findUser(fd));
 		std::cerr << e.what() << '\n';
 		return;
 	}
@@ -204,7 +204,7 @@ void	Server::printMsg(int fd){
 std::string	Server::readMsg(int fd){
 	std::string	msg;
 	char		buffer[BUFFERSIZE];
-	std::vector<User>::iterator user = findUserI(fd);
+	User*		user = findUser(fd);
 	bzero(buffer, BUFFERSIZE);
 	msg = user->getMsg();
 
@@ -246,7 +246,7 @@ std::vector<std::string>	Server::splitCmd(std::string str)
 	return cmd;
 }
 
-void	Server::parseCmd(std::string str, User &user){
+void	Server::parseCmd(std::string str, User* user){
 	//std::cout<< "DS PARSECMD"<<std::endl;
 	std::vector<std::string>	cmds;
 	std::stringstream			is(str);
@@ -257,7 +257,7 @@ void	Server::parseCmd(std::string str, User &user){
 	std::cout<< "cmd=" << word << std::endl;
 
 	std::string keyW[10] = {"NICK", "PASS", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE"};
-	int	(Server::*fun[10])(std::vector<std::string> cmds, User &user) = {
+	int	(Server::*fun[10])(std::vector<std::string> cmds, User* user) = {
 		&Server::cmdNick,
 		&Server::cmdPw,
 		&Server::cmdUser,
@@ -281,130 +281,74 @@ void	Server::parseCmd(std::string str, User &user){
 	//std::cout << "Error "<< word << " doesn't exist" << std::endl;
 }
 
-void	Server::delUser(int fd){
-	std::vector<User>::iterator i = _users.begin();
-
-	while (i != _users.end())
-	{
-		if (i->getFd() == fd)
-		{
-			_users.erase(i);
-			return ;
-		}
-		i++;
-	}
+void	Server::delUser(User* user)
+{
+	deleteUserFromChannels(user);
+	disconnectUser(user);
+	_users.erase(std::find(_users.begin(), _users.end(), user));
 }
 
-void	Server::disconnectUser(int fd){
-	std::vector<pollfd>::iterator i = _pollfds.begin();
-	delUser(fd);
-	while (i != _pollfds.end())
-	{
-		if (i->fd == fd)
-		{
-			_pollfds.erase(i);
-			break;
-		}
-		i++;
-	}
-	close(fd);
+void	Server::disconnectUser(User* user)
+{
+	_users.erase(std::find(_users.begin(), _users.end(), user));	
+	_pollfds.erase(std::find(_pollfds.begin(), _pollfds.end(), user->getFd()));
+	close(user->getFd());
 	std::cout<< "Disconnection Successful" <<std::endl;
 }
 
-User		&Server::findUser(int fd){
-	//std::cout<< "DS findUser by fd" <<std::endl;
-	for (size_t i = 0; i < _users.size(); i++)
-	{
-		if (_users[i].getFd() == fd)
-			return (_users[i]);
-	}
-	std::cout << "Error on searching client" << std::endl;
-	exit(1);
+//std::cout<< "DS findUser by nickname" <<std::endl;
+User*	Server::findUser(std::string nickname)
+{
+	for (std::vector<User*>::iterator i = _users.begin(); i !=_users.end(); i++)
+		if ((*i)->getNickname() == nickname)
+			return (*i);
+	return (NULL);
 }
 
-User		&Server::findUser(std::string nickname){
-	//std::cout<< "DS findUser by nickname" <<std::endl;
-	for (size_t i = 0; i < _users.size(); i++)
+User*	Server::findUser(int fd){
+	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
 	{
-		if (_users[i].getNickname() == nickname)
-			return (_users[i]);
+		if ((*i)->getFd() == fd)
+			return(*i);
 	}
-	std::cout << "Error on searching client" << std::endl;
-	exit(1);
-}
-
-std::vector<User>::iterator	Server::findUserI(int fd){
-	std::vector<User>::iterator begin = _users.begin();
-	std::vector<User>::iterator end = _users.end();
-	while (begin != end)
-	{
-		if (begin->getFd() == fd)
-			return (begin);
-		begin++;
-	}
-	std::cout << "Error on searching client" << std::endl;
-	exit(1);
+	return (NULL);
 }
 
 //.at() ex: std::cout << ' ' << myvector.at(i);
 // at-> Returns a reference to the element at position n in the vector.
 
-void	Server::displayUser(){
-	size_t nb = _users.size();
-	std::cout << "DS DISPLAY" << std::endl;
-	std::cout <<"User " << nb << " is connected"<< std::endl;
-	for(size_t i = 1; i <= nb; i++)
-	{
-		std::cout << "user " << i << std::endl;
-		std::cout << " nickname: " << _users.at(i).getNickname() << std::endl;
-		std::cout << " user: " <<_users.at(i).getUsername() << std::endl;
-		std::cout << " realname: " <<_users.at(i).getRealname() << std::endl;
-	}
-	std::cout << std::endl;
+// void	Server::displayUsers(){
+// 	std::cout << "DS DISPLAY" << std::endl;
+// 	std::cout <<"Users " << _users.size() << " are connected"<< std::endl;
+// 	for(std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
+// 	{
+// 		std::cout << " user: " << (*i)->getUsername() << std::endl;
+// 		std::cout << " nickname: " << (*i)->getNickname() << std::endl;
+// 		std::cout << " realname: " <<(*i)->getRealname() << std::endl;
+// 	}
+// 	std::cout << std::endl;
+// }
+
+void	Server::deleteUserFromChannels(User* user)
+{
+	for (std::vector<Channel*>::iterator it=_channels.begin(); ;it++)
+    {
+		if ((*it)->isInChannel(user))
+			(*it)->delUser(user);
+        if(!(*it)->getUserCount() == 0)
+            _channels.erase(it);
+        if (it == _channels.end())
+            break;
+    }
 }
 
-std::vector<Channel>::iterator	Server::findChannelI(std::string name){
-	std::vector<Channel>::iterator begin = _channels.begin();
-	std::vector<Channel>::iterator end = _channels.end();
-	while (begin != end)
+Channel*	Server::findChannel(std::string channelName)
+{
+	for (std::vector<Channel *>::iterator i = _channels.begin(); i != _channels.end(); i++)
 	{
-		if (begin->getName() == name)
-			return (begin);
-		begin++;
+		if ((*i)->getName() == channelName)
+			return (*i);
 	}
-	std::cout << "Error on searching channel" << std::endl;
-	exit(1);
+	return (NULL);
 }
-
-Channel	&Server::findChannel(std::string name){
-	for (size_t i = 0; i < _channels.size(); i++)
-	{
-		if (_channels[i].getName() == name)
-			return (_channels[i]);
-	}
-	std::cout << "Error on searching channel whith name's" << std::endl;
-	exit(1);
-}
-
-void	Server::delChannel(User &user){
-	std::vector<Channel>::iterator it = _channels.begin();
-	for (size_t i = 0; i < _channels.size(); i++)
-		_channels[i].delUser(user);
-	while (it != _channels.end())
-	{
-		if (it->getUsers().empty())
-			it = _channels.erase(it);
-		else
-			it++;
-	}
-	std::cout << "Delete channel ok" << std::endl;
-}
-
-bool	Server::isChannel(std::string str){
-	for (size_t i = 0; i < _channels.size(); i++)
-	{
-		if (_channels[i].getName() == str)
-			return true;
-	}
-	return false;
-}
+e34 e34
