@@ -261,7 +261,6 @@ void	Server::parseCmd(std::string str, User* user){
 	
 	// cmds.push_back(word);
 	std::cout<< "cmd=" << word << std::endl;
-
 	std::string keyW[10] = {"NICK", "PASS", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE"};
 	int	(Server::*fun[10])(std::vector<std::string> arguments, User* user) = {
 		&Server::cmdNick,
