@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/01/25 18:53:02 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/02 12:09:04 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ private:
 	int							_port;
 	int							_sock;
 	std::vector<pollfd>			_pollfds;
-	std::vector<User>			_users;
+	std::vector<User *>			_users;
 	std::vector<std::string>	_cmd;
-	std::vector<Channel>		_channels;
+	std::vector<Channel *>		_channels;
 
 	int								cmdPw(std::vector<std::string> str, User &user);
 	int								cmdNick(std::vector<std::string> str, User &user);
@@ -44,19 +44,18 @@ public:
 	void							start();
 	int								newSock();
 	void							newUser();
-	void							delUser(int fd);
-	void							disconnectUser(int fd);
-	void							printMsg(int fd);
+	void							delUser(User*);
+	void							disconnectUser(User* user);
+	void							receiveMsg(int fd);
 	std::string						readMsg(int fd);
 	std::vector<std::string>		splitCmd(std::string str);
-	void							parseCmd(std::string str, User &user);
-	User							&findUser(int fd);
-	User							&findUser(std::string nickname);
+	void							parseCmd(std::string str, User* user);
+	User*							findUser(int fd);
+	User*							findUser(std::string nickname);
 	std::vector<User>::iterator		findUserI(int fd);
-	void							displayUser();
-	std::vector<Channel>::iterator	findChannelI(std::string name);
-	Channel							&findChannel(std::string name);
-	void							delChannel(User &user);
+	void							displayUser(User* user);
+	Channel*						findChannel(std::string str);
+	void							deleteUserFromChannels(User* user);
 	bool							isChannel(std::string str);
 
 };

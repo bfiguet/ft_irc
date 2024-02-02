@@ -26,8 +26,7 @@ private:
 	std::string				_realname;
 	std::string				_hostname;
 	std::string				_msg;
-	char					_operator;
-	std::vector<Channel>	_channels;
+	std::vector<Channel *>	_channels;
 
 public:
 	User(int fd, std::string host);
@@ -40,7 +39,6 @@ public:
 	std::string	getRealname()const;
 	std::string	getHostname()const;
 	std::string	getMsg()const;
-	char		getOperator();
 	
 	void		setNickname(std::string str);
 	void		setUsername(std::string str);
