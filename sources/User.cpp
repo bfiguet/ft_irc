@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/01/24 14:17:19 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/02 08:07:00 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,5 @@ void		User::sendMsg(std::string msg){
 	if (send(_sock, msg.c_str(), msg.length(), 0) < 0)
 	{
 		std::cout << "error send user's msg" << std::endl;
-		exit (1);
 	}
 }

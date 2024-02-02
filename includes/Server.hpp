@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/01/25 18:53:02 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/02 12:09:04 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,14 @@ public:
 	void							newUser();
 	void							delUser(User*);
 	void							disconnectUser(User* user);
-	void							printMsg(int fd);
+	void							receiveMsg(int fd);
 	std::string						readMsg(int fd);
 	std::vector<std::string>		splitCmd(std::string str);
 	void							parseCmd(std::string str, User* user);
 	User*							findUser(int fd);
 	User*							findUser(std::string nickname);
 	std::vector<User>::iterator		findUserI(int fd);
-	void							displayUser();
+	void							displayUser(User* user);
 	Channel*						findChannel(std::string str);
 	void							deleteUserFromChannels(User* user);
 	bool							isChannel(std::string str);

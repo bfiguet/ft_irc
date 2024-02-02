@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/01/22 16:12:01 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/02 09:45:55 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,20 @@
 
 extern bool g_run;
 
+#define SERVERNAME "ft_irc"
+#define SERVER "127.0.0.1" 
+#define VERSION "0.8"
+#define DATE "Mon Feb 31 25:02:33 2023"
+#define DEFAULT_NAME "pouet"
+#define TIME_LIMIT 60
+
 # define RPL_WELCOME(nick, user, host) ("001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host + "\r\n")
+
+# define RPL_YOURHOST(localhost) (":" + localhost + " 002 :Your host is " + SERVER + ", running version " + VERSION + "\r\n")
+
+#define RPL_CREATED(localhost) (":" + localhost + " 003 :This server was created " DATE "\r\n")
+
+#define RPL_MYINFO(localhost) (":" + localhost + " 004 :" SERVERNAME " " VERSION ", group La Team \r\n")
 
 // # define RPL_WHOISUSER(nick, user, host, realname) ( nick + " " + user + " " + host +" * :" + realname + "\r\n")
 

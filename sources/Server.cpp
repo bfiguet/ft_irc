@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/01/25 21:31:24 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/02 12:23:42 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 
 Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _port(port) {
 	_sock = newSock();
+	pollfd	fd = {_sock, POLLIN, 0};
+	_pollfds.push_back(fd);
 }
 
 Server::~Server() {
-	for (size_t i = 0; i < _pollfds.size(); i++)
-		close(_pollfds[i].fd);
+	for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
+		close((*i).fd);
 	std::cout << "ds DESTRUCTOR SERVER" <<std::endl;
 }
 
@@ -52,26 +54,19 @@ Peut retourner 0 si la connexion a été terminée. Retourne -1 en cas d'erreur.
 --------------------------------------------------------------*/
 
 void	Server::start(){
-	pollfd	fd = {_sock, POLLIN, 0};
-	_pollfds.push_back(fd);
-
 	std::cout << "Server IRC Start!" << std::endl;
 	while (g_run == true)
 	{
-		if (poll(_pollfds.begin().base(), _pollfds.size(), -1) < 0)
+		if (poll(_pollfds.begin().base(), _pollfds.size(), 0) < 0)
 			break;
-		for (size_t i = 0; i < _pollfds.size(); i++)
+		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 		{
-			if (_pollfds[i].revents == 0)
+			if ((*i).revents == 0)
 				continue;
-			if ((_pollfds[i].revents & POLLIN) == POLLIN)
+			if ((*i).fd == _sock && ((*i).revents) == POLLIN)
 			{
-				if (_pollfds[i].fd == _sock)
-				{
-					newUser();
-					//displayUser();
-					break;
-				}
+				newUser();
+				continue;
 			}
 			//else if ((_pollfds[i].revents & POLLOUT) == POLLOUT)
 			//{
@@ -98,9 +93,9 @@ void	Server::start(){
 			//		break;
 			//	}
 			//}
-			printMsg(_pollfds[i].fd);
+			receiveMsg((*i).fd);
 		}
-		printf("ds while\n");
+		std::cout << "ds while" << std::endl;
 	}
 	//for (size_t i = 0; i < _pollfds.size(); i++)
 	//	close(_pollfds[i].fd);
@@ -116,69 +111,74 @@ void	Server::start(){
 //int setsockopt(int sockfd, int level, int optname,  const void *optval, socklen_t optlen);
 
 int		Server::newSock(){
-	int			user;
+	int			serverSocket;
 	struct		sockaddr_in server_addr = {};
 	
 	//create socket
-	user = socket(AF_INET, SOCK_STREAM,0);
-	if (user < 0)
+	serverSocket = socket(AF_INET, SOCK_STREAM,0);
+	if (serverSocket < 0)
 	{
 		std::cout <<"Error establishing connection." << std::endl;
 		exit (1);
 	}
-	bzero((char *) &server_addr, sizeof(server_addr));
 	std::cout << "Server Socket connection created..." << std::endl;
+	bzero((char *) &server_addr, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_port = htons(_port);
 
 	//binds the socket to the address and port number specified in addr(custom data structure)
-	if (bind(user, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
+	if (bind(serverSocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 	{
 		std::cout << "Error binding socket." << std::endl;
 		exit (1);
 	}
-	std::cout << "Looking for user..." <<std::endl;
+	std::cout << "Looking for serverSocket..." <<std::endl;
 
 	//Listening socket
-	if (listen(user, 1000) < 0)
+	if (listen(serverSocket, 1000) < 0) //compare with others
 	{
 		std::cout << "Error listening socket." << std::endl;
-		exit (1);
+		exit (1); //Need to be changed
 	}
-	return user;
+	return serverSocket;
 }
 
 //int getnameinfo(const struct sockaddr *sa, socklen_t salen,
 //               char *host, size_t hostlen,
 //                char *serv, size_t servlen, int flags);
-
 // NI_NUMERICSERV If set, then the numeric form of the service address is returned.  
 //in c++ #define NI_MAXHOST  1025
 void	Server::newUser(){
-	int			server;
-	char		host[BUFFERSIZE];
+	int			userSocket;
+	char		hostBuffer[BUFFERSIZE];
 	struct		sockaddr_in server_addr = {};
 	socklen_t	size = sizeof(server_addr);
 
 	//accept user
-	server = accept(_sock, (sockaddr*)&server_addr, &size);
-	if (server < 0)
+	userSocket = accept(_sock, (sockaddr*)&server_addr, &size);
+	if (userSocket < 0)
 	{
 		std::cout << "Error on accepting new user" << std::endl;
-		exit(1);
+		exit(1); //need to be changed
 	}
-	if (getnameinfo((struct sockaddr *) &server_addr, sizeof(server_addr), host, NI_MAXHOST, NULL, 0, NI_NUMERICSERV) != 0)
+	if (getnameinfo((struct sockaddr *) &server_addr, sizeof(server_addr), hostBuffer, NI_MAXHOST, NULL, 0, NI_NUMERICSERV) != 0) //compare with others
 	{
 		std::cout << "Error on getting hostname new user" << std::endl;
 		exit(1);
 	}
-	_users.push_back(new User(server, host));
-	pollfd pollfd = {server, POLLIN, 0};
+	User* user = new User(userSocket, hostBuffer);
+	_users.push_back(user);
+	pollfd pollfd = {userSocket, POLLIN, 0};
 	_pollfds.push_back(pollfd);
+	user->sendMsg(RPL_WELCOME(user->getNickname(), user->getUsername(), user->getHostname()));
+	user->sendMsg(RPL_YOURHOST(user->getHostname()));
+	user->sendMsg(RPL_CREATED(user->getHostname()));
+	user->sendMsg(RPL_MYINFO(user->getHostname()));
+	displayUser(user);
 }
 
-void	Server::printMsg(int fd){
+void	Server::receiveMsg(int fd){
 	try
 	{
 		this->_cmd = splitCmd(readMsg(fd));
@@ -203,26 +203,32 @@ void	Server::printMsg(int fd){
 //recv receive a message from a socket
 std::string	Server::readMsg(int fd){
 	std::string	msg;
-	char		buffer[BUFFERSIZE];
+	char		buffer[512];
 	User*		user = findUser(fd);
 	bzero(buffer, BUFFERSIZE);
 	msg = user->getMsg();
+	int valread = 1;
 
-	while(!std::strstr(buffer, "\n"))
+	while(!std::strstr(buffer, "\r\n"))
 	{
-		int valread;
 		bzero(buffer, BUFFERSIZE);
 		valread = recv(fd, buffer, BUFFERSIZE, 0);
 		if (valread < 0)
 		{
 			std::cout << "Error No bytes are there to read" << std::endl;
-			exit(1);
+			exit(1);// need to be changed
 		}
-		//int i = atoi(buffer);
-		//std::cout << "->" << buffer << "<-FIN"<< " en nb= " << i<<std::endl;
-		user->addMsg(buffer);
+		if (valread == 0)
+		{
+			user->addMsg(buffer);
+			break;
+		}
+		if (valread > 512 || msg.size() > 512)
+		{
+			std::cout << "Error messege too long" << std::endl;
+			exit(1);// need to be changed disconnect user
+		}
 		msg += buffer;
-		
 	}
 	user->setMsg("");
 	return msg;
@@ -248,16 +254,16 @@ std::vector<std::string>	Server::splitCmd(std::string str)
 
 void	Server::parseCmd(std::string str, User* user){
 	//std::cout<< "DS PARSECMD"<<std::endl;
-	std::vector<std::string>	cmds;
+	std::vector<std::string>	arguments;
 	std::stringstream			is(str);
 	std::string					word;
 	std::getline(is, word, ' ');
 	
-	cmds.push_back(word);
+	// cmds.push_back(word);
 	std::cout<< "cmd=" << word << std::endl;
 
 	std::string keyW[10] = {"NICK", "PASS", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE"};
-	int	(Server::*fun[10])(std::vector<std::string> cmds, User* user) = {
+	int	(Server::*fun[10])(std::vector<std::string> arguments, User* user) = {
 		&Server::cmdNick,
 		&Server::cmdPw,
 		&Server::cmdUser,
@@ -274,8 +280,8 @@ void	Server::parseCmd(std::string str, User* user){
 		if (keyW[i] == word)
 		{
 			while (std::getline(is, word, ' '))
-				cmds.push_back(word);
-			(this->*fun[i])(cmds, user);
+				arguments.push_back(word);
+			(this->*fun[i])(arguments, user);
 		}
 	}
 	//std::cout << "Error "<< word << " doesn't exist" << std::endl;
@@ -317,17 +323,13 @@ User*	Server::findUser(int fd){
 //.at() ex: std::cout << ' ' << myvector.at(i);
 // at-> Returns a reference to the element at position n in the vector.
 
-// void	Server::displayUsers(){
-// 	std::cout << "DS DISPLAY" << std::endl;
-// 	std::cout <<"Users " << _users.size() << " are connected"<< std::endl;
-// 	for(std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
-// 	{
-// 		std::cout << " user: " << (*i)->getUsername() << std::endl;
-// 		std::cout << " nickname: " << (*i)->getNickname() << std::endl;
-// 		std::cout << " realname: " <<(*i)->getRealname() << std::endl;
-// 	}
-// 	std::cout << std::endl;
-// }
+void	Server::displayUser(User* user){
+	std::cout << "New user received" << std::endl;
+	std::cout <<"User " << user->getUsername() << " are connected"<< std::endl;
+	std::cout << " nickname: " << user->getNickname() << std::endl;
+	std::cout << " realname: " <<user->getRealname() << std::endl;
+	std::cout << std::endl;
+}
 
 void	Server::deleteUserFromChannels(User* user)
 {
@@ -345,10 +347,7 @@ void	Server::deleteUserFromChannels(User* user)
 Channel*	Server::findChannel(std::string channelName)
 {
 	for (std::vector<Channel *>::iterator i = _channels.begin(); i != _channels.end(); i++)
-	{
 		if ((*i)->getName() == channelName)
 			return (*i);
-	}
 	return (NULL);
 }
-e34 e34
