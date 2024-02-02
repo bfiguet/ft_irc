@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/02 12:09:04 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/02 13:04:10 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ public:
 	void							disconnectUser(User* user);
 	void							receiveMsg(int fd);
 	std::string						readMsg(int fd);
-	std::vector<std::string>		splitCmd(std::string str);
-	void							parseCmd(std::string str, User* user);
+	// std::vector<std::string>		splitCmd(std::string str);
+	void							executeCMD(std::string str, User* user);
 	User*							findUser(int fd);
 	User*							findUser(std::string nickname);
 	std::vector<User>::iterator		findUserI(int fd);

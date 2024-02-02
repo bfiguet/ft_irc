@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/02 12:23:42 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/02 14:19:22 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,20 +79,20 @@ void	Server::start(){
 			//	else
 			//		std::cout << "error, ......" << std::endl;
 			//}
-			//else if ((_pollfds[i].revents & POLLERR) == POLLERR)
-			//{
-			//	std::cout << "DS else if ((_pollfds[i].revents & POLLERR) == POLLERR)" << std::endl;
-			//	if (_pollfds[i].fd == _sock)
-			//	{
-			//		std::cout << "error, Listen socket error" << std::endl;
-			//		break;
-			//	}
-			//	else
-			//	{
-			//		delUser(_pollfds[i].fd);
-			//		break;
-			//	}
-			//}
+			else if (((*i).revents & POLLERR) == POLLERR)
+			{
+				std::cout << "DS else if (((*i).revents & POLLERR) == POLLERR)" << std::endl;
+				if ((*i).fd == _sock)
+				{
+					std::cout << "error, Listen socket error" << std::endl;
+					break;
+				}
+				else
+				{
+					delUser(findUser((*i).fd));
+					break;
+				}
+			}
 			receiveMsg((*i).fd);
 		}
 		std::cout << "ds while" << std::endl;
@@ -179,23 +179,26 @@ void	Server::newUser(){
 }
 
 void	Server::receiveMsg(int fd){
-	try
-	{
-		this->_cmd = splitCmd(readMsg(fd));
-	}
-	catch(const std::exception& e)
-	{
-		disconnectUser(findUser(fd));
-		std::cerr << e.what() << '\n';
-		return;
-	}
+	std::string msg = readMsg(fd);
+	if (msg.size() != 0)
+		executeCMD(msg, findUser(fd));
+
+	// try
+	// {
+	// 	this->_cmd = splitCmd(readMsg(fd));
+	// }
+	// catch(const std::exception& e)
+	// {
+	// 	disconnectUser(findUser(fd));
+	// 	std::cerr << e.what() << '\n';
+	// 	return;
+	// }
 	//std::cout << "DS printMsg AVANT parseCmd" << std::endl;
-	for (std::vector<std::string>::iterator it = this->_cmd.begin(); it != this->_cmd.end(); it++)
-	{
-		//std::cout << "Ds for avant parseCmd" << std::endl;
-		parseCmd(*it, findUser(fd));
-		//std::cout << "apres parseCmd ds boucle for" << std::endl;
-	}
+	// for (std::vector<std::string>::iterator it = this->_cmd.begin(); it != this->_cmd.end(); it++)
+	// {
+	// 	//std::cout << "Ds for avant parseCmd" << std::endl;
+	// 	//std::cout << "apres parseCmd ds boucle for" << std::endl;
+	// }
 	//std::cout << "apres boucle for" << std::endl;
 	//displayUser();
 }
@@ -208,20 +211,16 @@ std::string	Server::readMsg(int fd){
 	bzero(buffer, BUFFERSIZE);
 	msg = user->getMsg();
 	int valread = 1;
+	const char*	temp;
 
-	while(!std::strstr(buffer, "\r\n"))
+	while(valread != 0)
 	{
 		bzero(buffer, BUFFERSIZE);
 		valread = recv(fd, buffer, BUFFERSIZE, 0);
 		if (valread < 0)
 		{
-			std::cout << "Error No bytes are there to read" << std::endl;
+			std::cout << "Error read error" << std::endl;
 			exit(1);// need to be changed
-		}
-		if (valread == 0)
-		{
-			user->addMsg(buffer);
-			break;
 		}
 		if (valread > 512 || msg.size() > 512)
 		{
@@ -230,36 +229,44 @@ std::string	Server::readMsg(int fd){
 		}
 		msg += buffer;
 	}
-	user->setMsg("");
+	temp = strstr(msg.c_str(), "\r\n");
+    if (temp)
+    {
+		user->addMsg(msg.substr(temp - &msg[0] + 2, msg.size()));
+		msg = msg.substr(0, temp - &msg[0]);
+    }
+	else
+	{
+		user->addMsg(msg);
+		msg = "";
+	}
 	return msg;
 }
 
-std::vector<std::string>	Server::splitCmd(std::string str)
-{
-	std::vector<std::string>	cmd;
-	std::stringstream		is(str);
-	std::string				tmp;
-	int						i;
+// std::vector<std::string>	Server::splitCmd(std::string str)
+// {
+// 	std::vector<std::string>	cmd;
+// 	std::stringstream		is(str);
+// 	std::string				tmp;
+// 	int						i;
 
-	i = 0;
-	if (str == "\n")
-		return cmd;
-	while (std::getline(is, tmp))
-	{
-		cmd.push_back(tmp);
-		std::cout << cmd.at(i++)<<std::endl;
-	}
-	return cmd;
-}
+// 	i = 0;
+// 	if (str == "\n")
+// 		return cmd;
+// 	while (std::getline(is, tmp))
+// 	{
+// 		cmd.push_back(tmp);
+// 		std::cout << cmd.at(i++)<<std::endl;
+// 	}
+// 	return cmd;
+// }
 
-void	Server::parseCmd(std::string str, User* user){
+void	Server::executeCMD(std::string str, User* user){
 	//std::cout<< "DS PARSECMD"<<std::endl;
 	std::vector<std::string>	arguments;
 	std::stringstream			is(str);
 	std::string					word;
 	std::getline(is, word, ' ');
-	
-	// cmds.push_back(word);
 	std::cout<< "cmd=" << word << std::endl;
 	std::string keyW[10] = {"NICK", "PASS", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE"};
 	int	(Server::*fun[10])(std::vector<std::string> arguments, User* user) = {
