@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/01/25 18:52:15 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/02 18:34:07 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Channel::~Channel(){}
 std::string	Channel::getName()const
 {return _name;}
 
-std::string	Channel::getName()const
+std::string	Channel::getPw()const
 {return _pw;}
 
 std::vector<User *>	Channel::getUsers() const

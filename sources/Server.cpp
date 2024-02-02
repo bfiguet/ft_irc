@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/02 14:19:22 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/02 19:40:03 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,42 +16,14 @@ Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _po
 	_sock = newSock();
 	pollfd	fd = {_sock, POLLIN, 0};
 	_pollfds.push_back(fd);
+	std::string _cmd[10] = {"NICK", "PASS", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE"};
 }
 
 Server::~Server() {
 	for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 		close((*i).fd);
-	std::cout << "ds DESTRUCTOR SERVER" <<std::endl;
+	std::cout << "END DESTRUCTOR SERVER" <<std::endl;
 }
-
-/*int poll(struct pollfd *fds, nfds_t nfds, int délai);
-
-struct pollfd {
-    int   fd;         => Descripteur de fichier 
-    short events;     => Événements attendus    
-    short revents;    => Événements détectés    
-
---------------------------------------------------------------
-
-htons():
-The htons() function converts the unsigned short integer hostshort
-from host byte order to network byte order.
-
---------------------------------------------------------------
-
-recv():
-int recv(int socket, void* buffer, size_t len, int flags);
-
-Réceptionne des données sur le socket en paramètre. 
-
-- socket est le socket duquel réceptionner les données. 
-- buffer est un tampon où stocker les données reçues. 
-- len est le nombre d'octets maximal à réceptionner. Typiquement, il s'agira de la place disponible dans le tampon. 
-- flags est un masque d'options. Généralement 0.
-Retourne le nombre d'octets reçus et stockés dans buffer. 
-Peut retourner 0 si la connexion a été terminée. Retourne -1 en cas d'erreur.
-
---------------------------------------------------------------*/
 
 void	Server::start(){
 	std::cout << "Server IRC Start!" << std::endl;
@@ -79,9 +51,8 @@ void	Server::start(){
 			//	else
 			//		std::cout << "error, ......" << std::endl;
 			//}
-			else if (((*i).revents & POLLERR) == POLLERR)
+			else if ((*i).revents == POLLERR)
 			{
-				std::cout << "DS else if (((*i).revents & POLLERR) == POLLERR)" << std::endl;
 				if ((*i).fd == _sock)
 				{
 					std::cout << "error, Listen socket error" << std::endl;
@@ -95,20 +66,9 @@ void	Server::start(){
 			}
 			receiveMsg((*i).fd);
 		}
-		std::cout << "ds while" << std::endl;
+		//std::cout << "ds while" << std::endl;
 	}
-	//for (size_t i = 0; i < _pollfds.size(); i++)
-	//	close(_pollfds[i].fd);
 }
-
-//int socket(int domain, int type, int protocol);
-//AF_INET For communicating between processes on different hosts with IPV4
-//SOCK_STREAM: TCP(reliable, connection-oriented)
-
-//struct sockaddr_in, struct in_addr:
-//Structures for handling internet addresses
-
-//int setsockopt(int sockfd, int level, int optname,  const void *optval, socklen_t optlen);
 
 int		Server::newSock(){
 	int			serverSocket;
@@ -144,11 +104,6 @@ int		Server::newSock(){
 	return serverSocket;
 }
 
-//int getnameinfo(const struct sockaddr *sa, socklen_t salen,
-//               char *host, size_t hostlen,
-//                char *serv, size_t servlen, int flags);
-// NI_NUMERICSERV If set, then the numeric form of the service address is returned.  
-//in c++ #define NI_MAXHOST  1025
 void	Server::newUser(){
 	int			userSocket;
 	char		hostBuffer[BUFFERSIZE];
@@ -181,7 +136,7 @@ void	Server::newUser(){
 void	Server::receiveMsg(int fd){
 	std::string msg = readMsg(fd);
 	if (msg.size() != 0)
-		executeCMD(msg, findUser(fd));
+		executeCmd(msg, findUser(fd));
 
 	// try
 	// {
@@ -224,7 +179,7 @@ std::string	Server::readMsg(int fd){
 		}
 		if (valread > 512 || msg.size() > 512)
 		{
-			std::cout << "Error messege too long" << std::endl;
+			std::cout << "Error message too long" << std::endl;
 			exit(1);// need to be changed disconnect user
 		}
 		msg += buffer;
@@ -243,35 +198,16 @@ std::string	Server::readMsg(int fd){
 	return msg;
 }
 
-// std::vector<std::string>	Server::splitCmd(std::string str)
-// {
-// 	std::vector<std::string>	cmd;
-// 	std::stringstream		is(str);
-// 	std::string				tmp;
-// 	int						i;
-
-// 	i = 0;
-// 	if (str == "\n")
-// 		return cmd;
-// 	while (std::getline(is, tmp))
-// 	{
-// 		cmd.push_back(tmp);
-// 		std::cout << cmd.at(i++)<<std::endl;
-// 	}
-// 	return cmd;
-// }
-
-void	Server::executeCMD(std::string str, User* user){
-	//std::cout<< "DS PARSECMD"<<std::endl;
+void	Server::executeCmd(std::string str, User* user){
+	//std::cout<< "executCmd"<<std::endl;
 	std::vector<std::string>	arguments;
 	std::stringstream			is(str);
 	std::string					word;
 	std::getline(is, word, ' ');
-	std::cout<< "cmd=" << word << std::endl;
-	std::string keyW[10] = {"NICK", "PASS", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE"};
+
 	int	(Server::*fun[10])(std::vector<std::string> arguments, User* user) = {
 		&Server::cmdNick,
-		&Server::cmdPw,
+		&Server::cmdPass,
 		&Server::cmdUser,
 		&Server::cmdJoin,
 		&Server::cmdKill,
@@ -283,14 +219,13 @@ void	Server::executeCMD(std::string str, User* user){
 	};
 	for (int i = 0; i < 10; i++)
 	{
-		if (keyW[i] == word)
+		if (_cmd[i] == word)
 		{
 			while (std::getline(is, word, ' '))
 				arguments.push_back(word);
 			(this->*fun[i])(arguments, user);
 		}
 	}
-	//std::cout << "Error "<< word << " doesn't exist" << std::endl;
 }
 
 void	Server::delUser(User* user)
@@ -301,10 +236,22 @@ void	Server::delUser(User* user)
 }
 
 void	Server::disconnectUser(User* user)
-{
-	_users.erase(std::find(_users.begin(), _users.end(), user));	
-	_pollfds.erase(std::find(_pollfds.begin(), _pollfds.end(), user->getFd()));
+{	
+	std::vector<pollfd>::iterator i = _pollfds.begin();
+	delUser(user);
+	while (i != _pollfds.end())
+	{
+		if (i->fd == user->getFd())
+		{
+			_pollfds.erase(i);
+			break;
+		}
+		i++;
+	}
 	close(user->getFd());
+	//_users.erase(std::find(_users.begin(), _users.end(), user));	
+	//_pollfds.erase(std::find(_pollfds.begin(), _pollfds.end(), user->getFd()));
+	//close(user->getFd());
 	std::cout<< "Disconnection Successful" <<std::endl;
 }
 
@@ -326,9 +273,6 @@ User*	Server::findUser(int fd){
 	return (NULL);
 }
 
-//.at() ex: std::cout << ' ' << myvector.at(i);
-// at-> Returns a reference to the element at position n in the vector.
-
 void	Server::displayUser(User* user){
 	std::cout << "New user received" << std::endl;
 	std::cout <<"User " << user->getUsername() << " are connected"<< std::endl;
@@ -343,7 +287,7 @@ void	Server::deleteUserFromChannels(User* user)
     {
 		if ((*it)->isInChannel(user))
 			(*it)->delUser(user);
-        if(!(*it)->getUserCount() == 0)
+        if((*it)->getUserCount() == 0)
             _channels.erase(it);
         if (it == _channels.end())
             break;
@@ -356,4 +300,13 @@ Channel*	Server::findChannel(std::string channelName)
 		if ((*i)->getName() == channelName)
 			return (*i);
 	return (NULL);
+}
+
+bool	Server::isChannel(std::string str){
+	for (size_t i = 0; i < _channels.size(); i++)
+	{
+		if (_channels[i]->getName() == str)
+			return true;
+	}
+	return false;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/02 09:45:55 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/02 19:04:33 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,11 @@ extern bool g_run;
 
 # define ERR_NOSUCHNICK(invitenick) ("401 " + invitenick + " :No such nick/channel\r\n")
 
+# define ERR_NOSUCHSERVER ("402 ircserv :No such server\r\n")
+
 # define ERR_NOSUCHCHANNEL(channel) ("403 " + channel + " :No such channel\r\n")
+
+# define ERR_NOORIGIN(nick) ("409 " + nick + " :No origin specified\r\n")
 
 # define RPL_YOUREOPER(nick) ("381 " + nick + " :You are now an IRC operator\r\n")
 /*CHANNELS*/

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:51:01 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/02 10:50:07 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/02 18:30:29 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,13 @@ void	ft_signal(int sig)
 {
 	(void)sig;
 	g_run = false;
-	signal(sig, SIG_DFL); // permet de fermer le programme en rappuyant sur ctrl+c
-	//ne permet pas de close proprement les fds ds server.start()
-	std::cout << "\b\b"; // Supprime le ctrl+c du terminal
-	//std::cout << "Press ctrl+c once again to close the server" << std::endl;
+	std::cout << "\b\b"; 
 }
 
 bool	verifPort(std::string av, int &port)
 {
 	port = std::atoi(av.c_str());
-	if (av.empty() || !av.find_first_not_of("0123456789") || port < 1 || port > 65535)
+	if (av.empty() || !isdigit(port) || port < 1 || port > 65535)
 	{
 		std::cout << "error: " << std::endl << "port must be a number between 1 and 65535" << std::endl;
 		return true;
