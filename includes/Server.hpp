@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 12:17:58 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/06 12:48:01 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ private:
 public:
 	Server(int port, const std::string &pw);
 	~Server();
-	void							start();
+	int								start();
 	int								newSock();
 	int								newUser();
 	void							delUser(User*);

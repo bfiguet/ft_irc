@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 11:22:38 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/06 14:00:38 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,15 @@ class User
 private:
 	int						_sock;
 	std::string				_nickname;
-	std::string				_username;
-	std::string				_realname;
+	std::string				_fullname;
 	std::string				_hostname;
 	std::string				_msg;
 	std::string				_msgsToSend;
 	std::vector<Channel *>	_channels;
+	time_t					_timeOut;
 
 public:
-	User(int fd, std::string host);
+	User(int fd);
 	~User();
 	void		sendMsg(std::string msg);
 

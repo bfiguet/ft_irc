@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:51:01 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/02 18:30:29 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/06 12:48:34 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ int main(int ac, char **av)
 	try
 	{
 		Server server(port, av[2]);
-		server.start();
+		if (server.start())
+			return (1);
 	}
 	catch(const std::exception& e)
 	{

@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 12:32:02 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/06 15:46:32 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _port(port) {
 	_sock = newSock();
+	if (_sock < 0)
+		throw(new std::exception);
 	pollfd	fd = {_sock, POLLIN, 0};
 	_pollfds.push_back(fd);
 	std::string _cmd[10] = {"NICK", "PASS", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE"};
@@ -25,15 +27,45 @@ Server::~Server() {
 			close((*i)->getFd());
 			delete(*i);
 		}
-	std::cout << "END DESTRUCTOR SERVER" <<std::endl;
+	std::cout << "END SERVER" <<std::endl;
+}
+
+int		Server::newSock(){
+	int			serverSocket;
+	struct		sockaddr_in server_addr = {};
+	
+	//create socket
+	serverSocket = socket(AF_INET, SOCK_STREAM,0);
+	if (serverSocket < 0)
+	{
+		std::cout <<"Error: server socket error " << strerror(errno) << std::endl;
+		return (-1);
+	}
+	std::cout << "Server Socket connection created..." << std::endl;
+	bzero((char *) &server_addr, sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = INADDR_ANY;
+	server_addr.sin_port = htons(_port);
+
+	//binds the socket to the address and port number specified in addr(custom data structure)
+	if (bind(serverSocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
+	{
+		std::cout << "Error: binding socket " << strerror(errno) << std::endl;
+		return (-1);
+	}
+	//Listening socket
+	if (listen(serverSocket, 1000) < 0) //compare with others
+	{
+		std::cout << "Error: listening socket " << strerror(errno) << std::endl;
+		return (-1); //Need to be changed
+	}
+	return serverSocket;
 }
 
 int	Server::newUser(){
 	int			userSocket;
-	char		hostBuffer[BUFFERSIZE];
 	struct		sockaddr_in server_addr = {};
 	socklen_t	size = sizeof(server_addr);
-
 	//accept user
 	userSocket = accept(_sock, (sockaddr*)&server_addr, &size);
 	if (userSocket < 0)
@@ -41,33 +73,24 @@ int	Server::newUser(){
 		std::cerr << "Error: failed to accept new connection" << strerror(errno) << std::endl;
 		return(1);
 	}
-	if (int infoCode = getnameinfo((struct sockaddr *) &server_addr, sizeof(server_addr), hostBuffer, NI_MAXHOST, NULL, 0, NI_NUMERICSERV) != 0) //compare with others
-	{
-		close(userSocket);
-		std::cerr << "Error: " << gai_strerror(infoCode) << std::endl;
-		return(1);
-	}
-	pollfd pollfd = {userSocket, POLLIN, 0};
+	pollfd pollfd = {userSocket, POLLIN | POLLOUT, 0};
 	_pollfds.push_back(pollfd);
-	User* user = new User(userSocket, hostBuffer);
+	User* user = new User(userSocket);
 	_users.push_back(user);
-	user->sendMsg(RPL_WELCOME(user->getNickname(), user->getUsername(), user->getHostname()));
-	user->sendMsg(RPL_YOURHOST(user->getHostname()));
-	user->sendMsg(RPL_CREATED(user->getHostname()));
-	user->sendMsg(RPL_MYINFO(user->getHostname()));
-	displayUser(user);
+	// user->sendMsg(RPL_WELCOME(user->getNickname(), user->getUsername(), user->getHostname()));
+	// user->sendMsg(RPL_YOURHOST(user->getHostname()));
+	// user->sendMsg(RPL_CREATED(user->getHostname()));
+	// user->sendMsg(RPL_MYINFO(user->getHostname()));
+	// displayUser(user);
 	return (0);
 }
 
 //recv receive a message from a socket
 int	Server::receiveMsg(int fd){
-	std::string	msg;
 	char		buffer[1024];
 	User*		user = findUser(fd);
 	bzero(buffer, BUFFERSIZE);
-	msg = user->getMsg();
 	int valread = 1;
-	const char*	temp;
 
 	bzero(buffer, BUFFERSIZE);
 	valread = recv(fd, buffer, BUFFERSIZE, 0);
@@ -80,7 +103,7 @@ int	Server::receiveMsg(int fd){
 		delUser(user);
 		return(0);
 	}
-	msg += buffer;
+	user->addMsg(buffer);
 	return (0);
 }
 
@@ -109,7 +132,7 @@ int Server::pollerrHandler(int fd)
 	return (0);
 }
 
-void	Server::start(){
+int	Server::start(){
 	int	events;
 	std::cout << "Server IRC Start!" << std::endl;
 	while (g_run == true)
@@ -124,6 +147,7 @@ void	Server::start(){
 				continue;
 		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 		{
+			//call cmds \r\n
 			if ((*i).revents == 0)
 				continue;
 			if (((*i).revents) == POLLIN)
@@ -131,43 +155,10 @@ void	Server::start(){
 			else if ((*i).revents == POLLOUT)
 				polloutHandler((*i).fd);
 			else if ((*i).revents == POLLERR)
-				pollerrHandler((*i).fd);
+				if (pollerrHandler((*i).fd))
+					return (1);
 		}
 	}
-}
-
-int		Server::newSock(){
-	int			serverSocket;
-	struct		sockaddr_in server_addr = {};
-	
-	//create socket
-	serverSocket = socket(AF_INET, SOCK_STREAM,0);
-	if (serverSocket < 0)
-	{
-		std::cout <<"Error establishing connection." << std::endl;
-		exit (1);
-	}
-	std::cout << "Server Socket connection created..." << std::endl;
-	bzero((char *) &server_addr, sizeof(server_addr));
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = INADDR_ANY;
-	server_addr.sin_port = htons(_port);
-
-	//binds the socket to the address and port number specified in addr(custom data structure)
-	if (bind(serverSocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
-	{
-		std::cout << "Error binding socket." << std::endl;
-		exit (1);
-	}
-	std::cout << "Looking for serverSocket..." <<std::endl;
-
-	//Listening socket
-	if (listen(serverSocket, 1000) < 0) //compare with others
-	{
-		std::cout << "Error listening socket." << std::endl;
-		exit (1); //Need to be changed
-	}
-	return serverSocket;
 }
 
 void	Server::executeCmd(std::string str, User* user){
