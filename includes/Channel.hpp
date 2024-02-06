@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:12:34 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/01/22 16:13:31 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/06 13:07:33 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ public:
 	std::string					getPw() const;
 	std::vector<User *>			getUsers() const;
 	unsigned long				getUserCount() const;
+	std::string					getTopic() const;
 
 	bool						isOperator(const User* user) const;
 	bool						isInvited(const User* user) const;

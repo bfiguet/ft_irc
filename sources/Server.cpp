@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 15:46:32 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/06 16:45:27 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,15 @@ Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _po
 		throw(new std::exception);
 	pollfd	fd = {_sock, POLLIN, 0};
 	_pollfds.push_back(fd);
-	std::string _cmd[10] = {"NICK", "PASS", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE"};
+	std::string _cmd[11] = {"PASS", "NICK", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT"};
 }
 
 Server::~Server() {
 	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
-		{
-			close((*i)->getFd());
-			delete(*i);
-		}
+	{
+		close((*i)->getFd());
+		delete(*i);
+	}
 	std::cout << "END SERVER" <<std::endl;
 }
 
@@ -97,9 +97,9 @@ int	Server::receiveMsg(int fd){
 	if (valread < 0 || valread == 0)
 	{
 		if (valread == 0)
-			std::cout << "User " << user->getNickname() << " has disconnected with EOF" << std::endl;
+			std::cout << "User " << user->getNick() << " has disconnected with EOF" << std::endl;
 		else
-			std::cout << "Error recv: " << strerror(errno) << "disconnecting user " << user->getNickname() << std::endl;
+			std::cout << "Error recv: " << strerror(errno) << "disconnecting user " << user->getNick() << std::endl;
 		delUser(user);
 		return(0);
 	}
@@ -141,7 +141,7 @@ int	Server::start(){
 		if ( events < 0)
 		{
 			std::cerr << "Error: poll error: " << strerror(errno) << std::endl;
-			return;
+			return 1;
 		}
 		if (events == 0)
 				continue;
@@ -156,9 +156,10 @@ int	Server::start(){
 				polloutHandler((*i).fd);
 			else if ((*i).revents == POLLERR)
 				if (pollerrHandler((*i).fd))
-					return (1);
+					return 1;
 		}
 	}
+	return 0;
 }
 
 void	Server::executeCmd(std::string str, User* user){
@@ -168,7 +169,7 @@ void	Server::executeCmd(std::string str, User* user){
 	std::string					word;
 	std::getline(is, word, ' ');
 
-	int	(Server::*fun[10])(std::vector<std::string> arguments, User* user) = {
+	int	(Server::*fun[11])(std::vector<std::string> arguments, User* user) = {
 		&Server::cmdNick,
 		&Server::cmdPass,
 		&Server::cmdUser,
@@ -178,7 +179,8 @@ void	Server::executeCmd(std::string str, User* user){
 		&Server::cmdKick,
 		&Server::cmdPart,
 		&Server::cmdPing,
-		&Server::cmdMode
+		&Server::cmdMode,
+		&Server::cmdQuit
 	};
 	for (int i = 0; i < 10; i++)
 	{
@@ -201,19 +203,18 @@ void	Server::delUser(User* user)
 void	Server::disconnectUser(User* user)
 {	
 	close(user->getFd());
-	for (std::vector<pollfd>::iterator it = _pollfds.begin(); it != _pollfds.end(); i++)
+	for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 	{
-		if ((*i)->fd == user->getFd())
+		if (i->fd == user->getFd())
 			_pollfds.erase(i);
 	}
 	delUser(user);
 }
 
-//std::cout<< "DS findUser by nickname" <<std::endl;
 User*	Server::findUser(std::string nickname)
 {
 	for (std::vector<User*>::iterator i = _users.begin(); i !=_users.end(); i++)
-		if ((*i)->getNickname() == nickname)
+		if ((*i)->getNick() == nickname)
 			return (*i);
 	return (NULL);
 }
@@ -229,8 +230,8 @@ User*	Server::findUser(int fd){
 
 void	Server::displayUser(User* user){
 	std::cout << "New user received" << std::endl;
-	std::cout <<"User " << user->getUsername() << " are connected"<< std::endl;
-	std::cout << " nickname: " << user->getNickname() << std::endl;
+	std::cout <<"User " << user->getUser() << " are connected"<< std::endl;
+	std::cout << " nickname: " << user->getNick() << std::endl;
 	std::cout << " realname: " <<user->getRealname() << std::endl;
 	std::cout << std::endl;
 }

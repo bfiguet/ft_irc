@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 12:48:01 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/06 16:18:57 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ private:
 	int								cmdKick(std::vector<std::string> str, User *user);
 	int								cmdTopic(std::vector<std::string> str, User *user);
 	int								cmdKill(std::vector<std::string> str, User *user);
+	int								cmdQuit(std::vector<std::string> str, User *user);
 	int								pollinHandler(int fd);
 	int								polloutHandler(int fd);
 	int								pollerrHandler(int fd);
@@ -55,7 +56,6 @@ public:
 	void							executeCmd(std::string str, User* user);
 	User*							findUser(int fd);
 	User*							findUser(std::string nickname);
-	std::vector<User>::iterator		findUserI(int fd);
 	void							displayUser(User* user);
 	Channel*						findChannel(std::string str);
 	void							deleteUserFromChannels(User* user);

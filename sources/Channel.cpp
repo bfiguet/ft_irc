@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/02 18:34:07 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/06 13:08:09 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ std::string	Channel::getPw()const
 
 std::vector<User *>	Channel::getUsers() const
 {return _users;}
+
+std::string	Channel::getTopic() const{ return _topic;}
 
 bool	Channel::isOperator(const User* user) const
 { return (std::find(_operators.begin(), _operators.end(), user) != _operators.end());}
