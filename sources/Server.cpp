@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 17:11:56 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/06 19:11:17 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,11 @@ int	Server::newUser(){
 	_pollfds.push_back(pollfd);
 	User* user = new User(userSocket);
 	_users.push_back(user);
-	// user->sendMsg(RPL_WELCOME(user->getNickname(), user->getUsername(), user->getHostname()));
-	// user->sendMsg(RPL_YOURHOST(user->getHostname()));
-	// user->sendMsg(RPL_CREATED(user->getHostname()));
-	// user->sendMsg(RPL_MYINFO(user->getHostname()));
-	// displayUser(user);
+	 user->sendMsg(RPL_WELCOME(user->getNick(), user->getUser(), _host));
+	 user->sendMsg(RPL_YOURHOST(_host));
+	 user->sendMsg(RPL_CREATED(_host));
+	 user->sendMsg(RPL_MYINFO(_host));
+	 displayUser(user);
 	return (0);
 }
 
