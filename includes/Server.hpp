@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/02 19:05:51 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/06 12:17:58 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,19 @@ private:
 	int								cmdKick(std::vector<std::string> str, User *user);
 	int								cmdTopic(std::vector<std::string> str, User *user);
 	int								cmdKill(std::vector<std::string> str, User *user);
-	
+	int								pollinHandler(int fd);
+	int								polloutHandler(int fd);
+	int								pollerrHandler(int fd);
+
 public:
 	Server(int port, const std::string &pw);
 	~Server();
 	void							start();
 	int								newSock();
-	void							newUser();
+	int								newUser();
 	void							delUser(User*);
 	void							disconnectUser(User* user);
-	void							receiveMsg(int fd);
-	std::string						readMsg(int fd);
+	int								receiveMsg(int fd);
 	void							executeCmd(std::string str, User* user);
 	User*							findUser(int fd);
 	User*							findUser(std::string nickname);

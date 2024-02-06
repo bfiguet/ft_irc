@@ -6,17 +6,17 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/02 08:07:00 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/06 11:23:36 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
-
 User::User(int fd, std::string host): _sock(fd), _hostname(host) { _msg = ""; }
 
 User::~User() {}
 
 int	User::getFd()const{	return _sock; }
+
 
 std::string	User::getNickname()const{ return _nickname; }
 
@@ -27,6 +27,8 @@ std::string	User::getRealname()const{	return _realname; }
 std::string	User::getHostname()const{	return _hostname; }
 
 std::string	User::getMsg()const{ return _msg; }
+
+std::string	User::getMsgsToSend() const{return _msgsToSend;};
 
 void		User::setNickname(std::string str){ _nickname = str; }
 

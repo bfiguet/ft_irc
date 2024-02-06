@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/02 19:40:03 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/06 12:32:02 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,53 +20,119 @@ Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _po
 }
 
 Server::~Server() {
-	for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
-		close((*i).fd);
+	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
+		{
+			close((*i)->getFd());
+			delete(*i);
+		}
 	std::cout << "END DESTRUCTOR SERVER" <<std::endl;
 }
 
+int	Server::newUser(){
+	int			userSocket;
+	char		hostBuffer[BUFFERSIZE];
+	struct		sockaddr_in server_addr = {};
+	socklen_t	size = sizeof(server_addr);
+
+	//accept user
+	userSocket = accept(_sock, (sockaddr*)&server_addr, &size);
+	if (userSocket < 0)
+	{
+		std::cerr << "Error: failed to accept new connection" << strerror(errno) << std::endl;
+		return(1);
+	}
+	if (int infoCode = getnameinfo((struct sockaddr *) &server_addr, sizeof(server_addr), hostBuffer, NI_MAXHOST, NULL, 0, NI_NUMERICSERV) != 0) //compare with others
+	{
+		close(userSocket);
+		std::cerr << "Error: " << gai_strerror(infoCode) << std::endl;
+		return(1);
+	}
+	pollfd pollfd = {userSocket, POLLIN, 0};
+	_pollfds.push_back(pollfd);
+	User* user = new User(userSocket, hostBuffer);
+	_users.push_back(user);
+	user->sendMsg(RPL_WELCOME(user->getNickname(), user->getUsername(), user->getHostname()));
+	user->sendMsg(RPL_YOURHOST(user->getHostname()));
+	user->sendMsg(RPL_CREATED(user->getHostname()));
+	user->sendMsg(RPL_MYINFO(user->getHostname()));
+	displayUser(user);
+	return (0);
+}
+
+//recv receive a message from a socket
+int	Server::receiveMsg(int fd){
+	std::string	msg;
+	char		buffer[1024];
+	User*		user = findUser(fd);
+	bzero(buffer, BUFFERSIZE);
+	msg = user->getMsg();
+	int valread = 1;
+	const char*	temp;
+
+	bzero(buffer, BUFFERSIZE);
+	valread = recv(fd, buffer, BUFFERSIZE, 0);
+	if (valread < 0 || valread == 0)
+	{
+		if (valread == 0)
+			std::cout << "User " << user->getNickname() << " has disconnected with EOF" << std::endl;
+		else
+			std::cout << "Error recv: " << strerror(errno) << "disconnecting user " << user->getNickname() << std::endl;
+		delUser(user);
+		return(0);
+	}
+	msg += buffer;
+	return (0);
+}
+
+int	Server::pollinHandler(int fd)
+{
+	if (fd == _sock)
+		return(newUser());
+	return(receiveMsg(fd));
+}
+
+int Server::polloutHandler(int fd)
+{
+	User* user = findUser(fd);
+	user->sendMsg(user->getMsgsToSend());
+	return (0);
+}
+
+int Server::pollerrHandler(int fd)
+{
+	if (fd == _sock)
+	{
+		std::cout << "Error: server socket " << strerror(errno) << std::endl;
+		return(1);
+	}
+	delUser(findUser(fd));
+	return (0);
+}
+
 void	Server::start(){
+	int	events;
 	std::cout << "Server IRC Start!" << std::endl;
 	while (g_run == true)
 	{
-		if (poll(_pollfds.begin().base(), _pollfds.size(), 0) < 0)
-			break;
+		events = poll(_pollfds.begin().base(), _pollfds.size(), 0);
+		if ( events < 0)
+		{
+			std::cerr << "Error: poll error: " << strerror(errno) << std::endl;
+			return;
+		}
+		if (events == 0)
+				continue;
 		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 		{
 			if ((*i).revents == 0)
 				continue;
-			if ((*i).fd == _sock && ((*i).revents) == POLLIN)
-			{
-				newUser();
-				continue;
-			}
-			//else if ((_pollfds[i].revents & POLLOUT) == POLLOUT)
-			//{
-			//	std::cout << "DS else if ((_pollfds[i].revents & POLLOUT) == POLLOUT)" << std::endl;
-			//	if (_pollfds[i].fd != _sock)
-			//	{
-			//		std::cout << "error, no found connexion to user" << std::endl;
-			//		break;
-			//	}
-			//	else
-			//		std::cout << "error, ......" << std::endl;
-			//}
+			if (((*i).revents) == POLLIN)
+				pollinHandler((*i).fd);
+			else if ((*i).revents == POLLOUT)
+				polloutHandler((*i).fd);
 			else if ((*i).revents == POLLERR)
-			{
-				if ((*i).fd == _sock)
-				{
-					std::cout << "error, Listen socket error" << std::endl;
-					break;
-				}
-				else
-				{
-					delUser(findUser((*i).fd));
-					break;
-				}
-			}
-			receiveMsg((*i).fd);
+				pollerrHandler((*i).fd);
 		}
-		//std::cout << "ds while" << std::endl;
 	}
 }
 
@@ -102,100 +168,6 @@ int		Server::newSock(){
 		exit (1); //Need to be changed
 	}
 	return serverSocket;
-}
-
-void	Server::newUser(){
-	int			userSocket;
-	char		hostBuffer[BUFFERSIZE];
-	struct		sockaddr_in server_addr = {};
-	socklen_t	size = sizeof(server_addr);
-
-	//accept user
-	userSocket = accept(_sock, (sockaddr*)&server_addr, &size);
-	if (userSocket < 0)
-	{
-		std::cout << "Error on accepting new user" << std::endl;
-		exit(1); //need to be changed
-	}
-	if (getnameinfo((struct sockaddr *) &server_addr, sizeof(server_addr), hostBuffer, NI_MAXHOST, NULL, 0, NI_NUMERICSERV) != 0) //compare with others
-	{
-		std::cout << "Error on getting hostname new user" << std::endl;
-		exit(1);
-	}
-	User* user = new User(userSocket, hostBuffer);
-	_users.push_back(user);
-	pollfd pollfd = {userSocket, POLLIN, 0};
-	_pollfds.push_back(pollfd);
-	user->sendMsg(RPL_WELCOME(user->getNickname(), user->getUsername(), user->getHostname()));
-	user->sendMsg(RPL_YOURHOST(user->getHostname()));
-	user->sendMsg(RPL_CREATED(user->getHostname()));
-	user->sendMsg(RPL_MYINFO(user->getHostname()));
-	displayUser(user);
-}
-
-void	Server::receiveMsg(int fd){
-	std::string msg = readMsg(fd);
-	if (msg.size() != 0)
-		executeCmd(msg, findUser(fd));
-
-	// try
-	// {
-	// 	this->_cmd = splitCmd(readMsg(fd));
-	// }
-	// catch(const std::exception& e)
-	// {
-	// 	disconnectUser(findUser(fd));
-	// 	std::cerr << e.what() << '\n';
-	// 	return;
-	// }
-	//std::cout << "DS printMsg AVANT parseCmd" << std::endl;
-	// for (std::vector<std::string>::iterator it = this->_cmd.begin(); it != this->_cmd.end(); it++)
-	// {
-	// 	//std::cout << "Ds for avant parseCmd" << std::endl;
-	// 	//std::cout << "apres parseCmd ds boucle for" << std::endl;
-	// }
-	//std::cout << "apres boucle for" << std::endl;
-	//displayUser();
-}
-
-//recv receive a message from a socket
-std::string	Server::readMsg(int fd){
-	std::string	msg;
-	char		buffer[512];
-	User*		user = findUser(fd);
-	bzero(buffer, BUFFERSIZE);
-	msg = user->getMsg();
-	int valread = 1;
-	const char*	temp;
-
-	while(valread != 0)
-	{
-		bzero(buffer, BUFFERSIZE);
-		valread = recv(fd, buffer, BUFFERSIZE, 0);
-		if (valread < 0)
-		{
-			std::cout << "Error read error" << std::endl;
-			exit(1);// need to be changed
-		}
-		if (valread > 512 || msg.size() > 512)
-		{
-			std::cout << "Error message too long" << std::endl;
-			exit(1);// need to be changed disconnect user
-		}
-		msg += buffer;
-	}
-	temp = strstr(msg.c_str(), "\r\n");
-    if (temp)
-    {
-		user->addMsg(msg.substr(temp - &msg[0] + 2, msg.size()));
-		msg = msg.substr(0, temp - &msg[0]);
-    }
-	else
-	{
-		user->addMsg(msg);
-		msg = "";
-	}
-	return msg;
 }
 
 void	Server::executeCmd(std::string str, User* user){
@@ -237,22 +209,13 @@ void	Server::delUser(User* user)
 
 void	Server::disconnectUser(User* user)
 {	
-	std::vector<pollfd>::iterator i = _pollfds.begin();
-	delUser(user);
-	while (i != _pollfds.end())
-	{
-		if (i->fd == user->getFd())
-		{
-			_pollfds.erase(i);
-			break;
-		}
-		i++;
-	}
 	close(user->getFd());
-	//_users.erase(std::find(_users.begin(), _users.end(), user));	
-	//_pollfds.erase(std::find(_pollfds.begin(), _pollfds.end(), user->getFd()));
-	//close(user->getFd());
-	std::cout<< "Disconnection Successful" <<std::endl;
+	for (std::vector<pollfd>::iterator it = _pollfds.begin(); it != _pollfds.end(); i++)
+	{
+		if ((*i)->fd == user->getFd())
+			_pollfds.erase(i);
+	}
+	delUser(user);
 }
 
 //std::cout<< "DS findUser by nickname" <<std::endl;
