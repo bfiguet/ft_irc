@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 16:18:57 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/06 17:12:34 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,6 @@ private:
 	std::vector<std::string>	_cmd;
 	std::vector<Channel *>		_channels;
 
-	int								cmdPass(std::vector<std::string> str, User *user);
-	int								cmdUser(std::vector<std::string> str, User *user);
-	int								cmdNick(std::vector<std::string> str, User *user);
-	int								cmdPing(std::vector<std::string> str, User *user);
-	int								cmdJoin(std::vector<std::string> str, User *user);
-	int								cmdPart(std::vector<std::string> str, User *user);
-	int								cmdMode(std::vector<std::string> str, User *user);
-	int								cmdKick(std::vector<std::string> str, User *user);
-	int								cmdTopic(std::vector<std::string> str, User *user);
-	int								cmdKill(std::vector<std::string> str, User *user);
-	int								cmdQuit(std::vector<std::string> str, User *user);
 	int								pollinHandler(int fd);
 	int								polloutHandler(int fd);
 	int								pollerrHandler(int fd);
@@ -47,6 +36,11 @@ private:
 public:
 	Server(int port, const std::string &pw);
 	~Server();
+	
+	std::vector<User *>				getUsers() const;
+	std::string						getHost()const;
+	std::string						getPw()const;
+
 	int								start();
 	int								newSock();
 	int								newUser();
@@ -62,5 +56,17 @@ public:
 	bool							isChannel(std::string str);
 
 };
+
+	int								cmdPass(Server *server, std::vector<std::string> str, User *user);
+	int								cmdUser(Server *server, std::vector<std::string> str, User *user);
+	int								cmdNick(Server *server, std::vector<std::string> str, User *user);
+	int								cmdPing(Server *server, std::vector<std::string> str, User *user);
+	int								cmdJoin(Server *server, std::vector<std::string> str, User *user);
+	int								cmdPart(Server *server, std::vector<std::string> str, User *user);
+	int								cmdMode(Server *server, std::vector<std::string> str, User *user);
+	int								cmdKick(Server *server, std::vector<std::string> str, User *user);
+	int								cmdTopic(Server *server, std::vector<std::string> str, User *user);
+	int								cmdKill(Server *server, std::vector<std::string> str, User *user);
+	int								cmdQuit(Server *server, std::vector<std::string> str, User *user);
 
 #endif

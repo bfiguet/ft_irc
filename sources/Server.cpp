@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 16:45:27 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/06 17:11:56 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,18 +169,18 @@ void	Server::executeCmd(std::string str, User* user){
 	std::string					word;
 	std::getline(is, word, ' ');
 
-	int	(Server::*fun[11])(std::vector<std::string> arguments, User* user) = {
-		&Server::cmdNick,
-		&Server::cmdPass,
-		&Server::cmdUser,
-		&Server::cmdJoin,
-		&Server::cmdKill,
-		&Server::cmdTopic,
-		&Server::cmdKick,
-		&Server::cmdPart,
-		&Server::cmdPing,
-		&Server::cmdMode,
-		&Server::cmdQuit
+	int	(*fun[11])(Server* server, std::vector<std::string> arguments, User* user) = {
+		&cmdNick,
+		&cmdPass,
+		&cmdUser,
+		&cmdJoin,
+		&cmdKill,
+		&cmdTopic,
+		&cmdKick,
+		&cmdPart,
+		&cmdPing,
+		&cmdMode,
+		&cmdQuit
 	};
 	for (int i = 0; i < 10; i++)
 	{
@@ -188,7 +188,7 @@ void	Server::executeCmd(std::string str, User* user){
 		{
 			while (std::getline(is, word, ' '))
 				arguments.push_back(word);
-			(this->*fun[i])(arguments, user);
+			(*fun[i])(this, arguments, user);
 		}
 	}
 }
@@ -265,3 +265,9 @@ bool	Server::isChannel(std::string str){
 	}
 	return false;
 }
+
+std::vector<User *>	Server::getUsers() const {return _users;}
+
+std::string	Server::getPw()const {return _pw;}
+
+std::string	Server::getHost()const { return _host;}
