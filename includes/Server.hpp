@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/07 10:33:06 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/07 14:33:09 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ private:
 	std::string 				_pw;
 	int							_port;
 	int							_sock;
-	std::vector<pollfd>			_pollfds;
+	std::vector<pollfd*>		_pollfds;
 	std::vector<User *>			_users;
 	std::vector<std::string>	_cmd;
 	std::vector<Channel *>		_channels;

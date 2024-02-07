@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/07 14:28:58 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/07 15:03:30 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,10 @@ Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _po
 	_sock = newSock();
 	if (_sock < 0)
 		throw(new std::exception);
-	pollfd	fd = {_sock, POLLIN, 0};
+	pollfd*	fd = new pollfd;
+	fd->fd = _sock;
+	fd->events = POLLIN;
+	fd->revents = 0;
 	_pollfds.push_back(fd);
 	std::string _cmd[11] = {"PASS", "NICK", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT"};
 }
@@ -74,17 +77,12 @@ int	Server::newUser(){
 		return(1);
 	}
 	pollfd* temppollfd = new pollfd;
-	(*temppollfd).fd = userSocket;
-	(*temppollfd).events = POLLIN | POLLOUT;
-	(*temppollfd).revents = 0;
-	_pollfds.push_back(*temppollfd);
+	temppollfd->fd = userSocket;
+	temppollfd->events = POLLIN | POLLOUT;
+	temppollfd->revents = 0;
+	_pollfds.push_back(temppollfd);
 	User* user = new User(userSocket);
 	_users.push_back(user);
-	 user->sendMsg(RPL_WELCOME(user->getNick(), user->getUser(), _host));
-	 user->sendMsg(RPL_YOURHOST(_host));
-	 user->sendMsg(RPL_CREATED(_host));
-	 user->sendMsg(RPL_MYINFO(_host));
-	 displayUser(user);
 	return (0);
 }
 
@@ -140,7 +138,7 @@ int	Server::start(){
 	std::cout << "Server IRC Start!" << std::endl;
 	while (g_run == true)
 	{
-		events = poll(_pollfds.begin().base(), _pollfds.size(), 0);
+		events = poll(*(_pollfds.begin()).base(), _pollfds.size(), 0);
 		if ( events < 0)
 		{
 			std::cerr << "Error: poll error: " << strerror(errno) << std::endl;
@@ -148,19 +146,19 @@ int	Server::start(){
 		}
 		if (events == 0)
 				continue;
-		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
+		for (std::vector<pollfd*>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 		{
-			if ((*i).revents == 0)
-				continue;
-			if (((*i).revents) == POLLIN)
-				pollinHandler((*i).fd);
-			else if ((*i).revents == POLLOUT)
-				polloutHandler((*i).fd);
-			else if ((*i).revents == POLLERR)
-				if (pollerrHandler((*i).fd))
-					return 1;
 			if (i != _pollfds.begin())
-				callCmds(findUser((*i).fd));
+				callCmds(findUser((*(*i)).fd));
+			if ((*(*i)).revents == 0)
+				continue;
+			if (((*(*i)).revents) == POLLIN)
+				pollinHandler((*(*i)).fd);
+			else if ((*(*i)).revents == POLLOUT)
+				polloutHandler((*(*i)).fd);
+			else if ((*(*i)).revents == POLLERR)
+				if (pollerrHandler((*(*i)).fd))
+					return 1;
 		}
 	}
 	return 0;
@@ -173,6 +171,19 @@ void	Server::callCmds(User* user)
 		executeCmd(cmd, user);
 	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
 		callCmds(user);
+	if (!user->getNick().empty() && !user->getRealname().empty() && !user->getHost().empty())
+	{
+		if (user->getPass() == _pw)
+		{
+			user->addMsgToSend(RPL_WELCOME(user->getNick(), user->getUser(), _host));
+			user->addMsgToSend(RPL_YOURHOST(_host));
+			user->addMsgToSend(RPL_CREATED(_host));
+			user->addMsgToSend(RPL_MYINFO(_host));
+			displayUser(user);
+		}
+		else
+			delUser(user);
+	}
 }
 
 void	Server::executeCmd(std::string str, User* user){
@@ -208,9 +219,9 @@ void	Server::delUser(User* user)
 void	Server::disconnectUser(User* user)
 {	
 	close(user->getFd());
-	for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
+	for (std::vector<pollfd*>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 	{
-		if (i->fd == user->getFd())
+		if ((*i)->fd == user->getFd())
 			_pollfds.erase(i);
 	}
 	delUser(user);

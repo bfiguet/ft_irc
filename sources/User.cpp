@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/07 14:08:45 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/07 15:03:02 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,25 @@ std::string	User::getUser() const{ return _user; }
 
 std::string	User::getRealname()const{	return _realname; }
 
+std::string	User::getHost()const {return _hostname;};
+
+std::string	User::getPass()const {return _pass;};
+
 std::string	User::getMsg()const{ return _msg; }
 
 std::string	User::getMsgsToSend() const{return _msgsToSend;};
+
+
 
 void		User::setNick(std::string str){ _nick = str; }
 
 void		User::setUser(std::string str){ _user = str; }
 
 void		User::setRealname(std::string str){ _realname = str; }
+
+void		User::setHost(std::string str){_hostname = str;};
+
+void		User::setPass(std::string str){_pass = str;};
 
 void		User::setMsg(std::string str){ _msg = str; }
 
