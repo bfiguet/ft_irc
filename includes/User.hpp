@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 16:46:05 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/07 14:09:13 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ public:
 	User(int fd);
 	~User();
 	void		sendMsg(std::string msg);
+	
 
 	int			getFd() const;
 	std::string	getNick()const;
@@ -46,6 +47,9 @@ public:
 	void		setRealname(std::string str);
 	void		setMsg(std::string str);
 	void		addMsg(std::string str);
+	void		addMsgToSend(std::string str);
+
+	std::string	extractCmd(std::string cmds);
 	
 };
 

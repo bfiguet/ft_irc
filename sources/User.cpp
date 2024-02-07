@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 16:23:45 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/07 14:08:45 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,24 @@ void		User::setMsg(std::string str){ _msg = str; }
 
 void		User::addMsg(std::string str){ _msg += str; }
 
+void		User::addMsgToSend(std::string str){ _msgsToSend += str; }
+
 void		User::sendMsg(std::string msg){
 	std::cout << "---> " << msg << "\r\n" << std::endl;
-	if (send(_sock, msg.c_str(), msg.length(), 0) < 0)
+	if (send(_sock, _msgsToSend.c_str(), _msgsToSend.length(), 0) < 0)
 	{
 		std::cout << "error send user's msg" << std::endl;
 	}
+}
+
+std::string	User::extractCmd(std::string cmds)
+{
+    std::string cmd;
+	char const* cmdEnd = std::strstr(cmds.c_str(), "\r\n");
+	if (cmdEnd == NULL)
+		return ("");
+	cmd = cmds.substr(0, cmdEnd - cmds.c_str());
+	cmds = cmds.substr(cmdEnd - cmds.c_str(), cmds.size() - cmd.size() + 2);
+	std::cout << "|" << cmd << "|" << cmds << "|" << std::endl;
+	return (0);
 }

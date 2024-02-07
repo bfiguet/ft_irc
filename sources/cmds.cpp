@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmds.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 17:11:44 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/07 14:09:58 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 	//std::cout << "--cmdNick--" << std::endl;
 	if (str.size() < 2)
 	{
-		user->sendMsg(ERR_NONICKNAMEGIVEN);
+		user->addMsgToSend(ERR_NONICKNAMEGIVEN);
 		return 1;
 	}
 	std::vector<User*>	listUser = server->getUsers();
@@ -43,13 +43,13 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 	{
 		if (listUser[i]->getNick() == str[1] && listUser[i]->getFd() != user->getFd())
 		{
-			user->sendMsg(ERR_NICKNAMEINUSE(user->getNick()));
+			user->addMsgToSend(ERR_NICKNAMEINUSE(user->getNick()));
 			return 1;
 		}
 	}
 	if (checkNick(str[1]) == false)
 	{
-		user->sendMsg(ERR_ERRONEUSNICKNAME(user->getNick()));
+		user->addMsgToSend(ERR_ERRONEUSNICKNAME(user->getNick()));
 			return 1;
 	}
 	user->setNick(str[1]);
@@ -61,14 +61,14 @@ int	cmdPass(Server *server, std::vector<std::string> str, User *user){
 	//std::cout << "--cmdPw--" << std::endl;
 	if (str.size() < 2)
 	{
-		user->sendMsg(ERR_NEEDMOREPARAMS(str[0]));
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
 	if (str[1].size() - 1 == '\r')
 	{
 		if (str[1].substr(0, (str.size() - 1)) != server->getPw())
 		{
-			user->sendMsg(ERR_PASSWDMISMATCH);
+			user->addMsgToSend(ERR_PASSWDMISMATCH);
 			return 1;
 		}
 	}
@@ -83,12 +83,12 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 
 	if (user->getUser() == str.at(1))
 	{
-		user->sendMsg(ERR_ALREADYREGISTERED);
+		user->addMsgToSend(ERR_ALREADYREGISTERED);
 		return 1;
 	}
 	else if (str.size() < 4)
 	{
-		user->sendMsg(ERR_NEEDMOREPARAMS(str[0]));
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
 	else if (str.size() >= 4)
@@ -114,15 +114,15 @@ int	cmdPing(Server *server, std::vector<std::string> str, User *user){
 	(void)server;
 	if (str.size() < 2)
 	{
-		user->sendMsg(ERR_NEEDMOREPARAMS(str[0]));
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
 	if (str[1].size() <= 0)
 	{
-		user->sendMsg(ERR_NOORIGIN(user->getNick()));
+		user->addMsgToSend(ERR_NOORIGIN(user->getNick()));
 		return 1;
 	}
-	user->sendMsg("Pong " + user->getNick() + " :" + str[1]);
+	user->addMsgToSend("Pong " + user->getNick() + " :" + str[1]);
 	return 0;
 }
 
@@ -141,19 +141,19 @@ int	cmdPart(Server *server, std::vector<std::string> str, User *user){
 	//std::cout << "--cmdPart--" << std::endl;
 	if (str.size() < 2)
 	{
-		user->sendMsg(ERR_NEEDMOREPARAMS(str[0]));
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
 	for (size_t	i = 1; i < str.size(); i++)
 	{
-		if (server->isChannel(str[i]) == false)
+		if (server->findChannel(str[i]) == NULL)
 		{
-			user->sendMsg(ERR_NOSUCHCHANNEL(str[i]));
+			user->addMsgToSend(ERR_NOSUCHCHANNEL(str[i]));
 			return 1;
 		}
 		if (server->findChannel(str[i])->isInChannel(user) == false)
 		{
-			user->sendMsg(ERR_NOTONCHANNEL(str[i]));
+			user->addMsgToSend(ERR_NOTONCHANNEL(str[i]));
 			return 1;
 		}
 		//send msg all channel's user
@@ -176,24 +176,24 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdKick--" << std::endl;
 	if (str.size() < 3)
 	{
-		user->sendMsg(ERR_NEEDMOREPARAMS(str[0]));
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
 	Channel *cha = server->findChannel(str[1]);
 	User	*userToDel = server->findUser(str[2]);
 	if (server->findUser(str[2]) != userToDel)
 	{
-		user->sendMsg(ERR_NOSUCHNICK(userToDel->getNick()));
+		user->addMsgToSend(ERR_NOSUCHNICK(userToDel->getNick()));
 		return 1;
 	}
 	else if (cha->isInChannel(userToDel) == false)
 	{
-		user->sendMsg(ERR_USERNOTINCHANNEL(userToDel->getNick(), str[1]));
+		user->addMsgToSend(ERR_USERNOTINCHANNEL(userToDel->getNick(), str[1]));
 		return 1;
 	}
 	else if (cha->isInvited(user) == true)
 	{
-		user->sendMsg(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
+		user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
 		return 1;
 	}
 	cha->delUser(userToDel);
@@ -205,22 +205,22 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 	//std::cout << "--cmdTopic--" << std::endl;
 	if (str.size() < 2)
 	{
-		user->sendMsg(ERR_NEEDMOREPARAMS(str[0]));
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
 	//check if the channel exist
 	Channel	*cha = server->findChannel(str[1]);
 	if (cha == NULL)
 	{
-		user->sendMsg(ERR_NOSUCHCHANNEL(str[1]));
+		user->addMsgToSend(ERR_NOSUCHCHANNEL(str[1]));
 		return 1;
 	}
 	if (str.size() == 2)
 	{
 		if (cha->getTopic() == "")
-			user->sendMsg(RPL_NOTOPIC(user->getNick(), user->getUser(), server->getHost(), str[1]));
+			user->addMsgToSend(RPL_NOTOPIC(user->getNick(), user->getUser(), server->getHost(), str[1]));
 		else
-			user->sendMsg(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), str[1], cha->getTopic()));
+			user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), str[1], cha->getTopic()));
 	}
 	else
 	{
@@ -228,7 +228,7 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 		{
 			if (cha->isInvited(user))
 			{
-				user->sendMsg(ERR_CHANOPRIVSNEEDED(str[1], user->getNick()));
+				user->addMsgToSend(ERR_CHANOPRIVSNEEDED(str[1], user->getNick()));
 				return 1;
 			}
 		}
@@ -237,12 +237,12 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 	std::vector<User*>	listUser = cha->getUsers();
 	for (int i = 0; listUser[i]; i++)
 	{
-		listUser[i]->sendMsg(TOPIC(user->getNick(), user->getUser(), server->getHost(), str[1], str[2]));
+		listUser[i]->addMsgToSend(TOPIC(user->getNick(), user->getUser(), server->getHost(), str[1], str[2]));
 		return 1;
 	}
 	return 0;
 }
-//user->sendMsgToClient(RPL_TOPICWHOTIME((*i)->getNick(),str[1], user->getNick(), str[2], ??));
+//user->addMsgToSendToClient(RPL_TOPICWHOTIME((*i)->getNick(),str[1], user->getNick(), str[2], ??));
 
 //The KILL command is used to close the connection between a given client and the server they are connected to.
 //KILL is a privileged command and is available only to IRC Operators. 
@@ -250,12 +250,12 @@ int	cmdKill(Server *server, std::vector<std::string> str, User *user){
 	//std::cout << "--cmdKill--" << std::endl;
 	if (str.size() < 2)
 	{
-		user->sendMsg(ERR_NEEDMOREPARAMS(str[0]));
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
 	if (server->findUser(user->getFd()) == NULL)
 	{
-		user->sendMsg(ERR_NOPRIVILEGES);
+		user->addMsgToSend(ERR_NOPRIVILEGES);
 		return 1;
 	}
 	else
@@ -264,7 +264,7 @@ int	cmdKill(Server *server, std::vector<std::string> str, User *user){
 		server->delUser(user);
 		return 0;
 	}
-	user->sendMsg(ERR_NOSUCHSERVER);
+	user->addMsgToSend(ERR_NOSUCHSERVER);
 	return 1;
 }
 

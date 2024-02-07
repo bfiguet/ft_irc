@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 17:12:34 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/07 10:33:06 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,7 @@ public:
 	void							displayUser(User* user);
 	Channel*						findChannel(std::string str);
 	void							deleteUserFromChannels(User* user);
-	bool							isChannel(std::string str);
-
+	void							callCmds(User* user);
 };
 
 	int								cmdPass(Server *server, std::vector<std::string> str, User *user);

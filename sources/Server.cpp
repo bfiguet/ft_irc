@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 19:11:17 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/07 14:28:58 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,11 @@ int	Server::newUser(){
 		std::cerr << "Error: failed to accept new connection" << strerror(errno) << std::endl;
 		return(1);
 	}
-	pollfd pollfd = {userSocket, POLLIN | POLLOUT, 0};
-	_pollfds.push_back(pollfd);
+	pollfd* temppollfd = new pollfd;
+	(*temppollfd).fd = userSocket;
+	(*temppollfd).events = POLLIN | POLLOUT;
+	(*temppollfd).revents = 0;
+	_pollfds.push_back(*temppollfd);
 	User* user = new User(userSocket);
 	_users.push_back(user);
 	 user->sendMsg(RPL_WELCOME(user->getNick(), user->getUser(), _host));
@@ -147,7 +150,6 @@ int	Server::start(){
 				continue;
 		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 		{
-			//call cmds \r\n
 			if ((*i).revents == 0)
 				continue;
 			if (((*i).revents) == POLLIN)
@@ -157,9 +159,20 @@ int	Server::start(){
 			else if ((*i).revents == POLLERR)
 				if (pollerrHandler((*i).fd))
 					return 1;
+			if (i != _pollfds.begin())
+				callCmds(findUser((*i).fd));
 		}
 	}
 	return 0;
+}
+
+void	Server::callCmds(User* user)
+{
+	std::string cmd = user->extractCmd(user->getMsg());
+	if (!cmd.empty())
+		executeCmd(cmd, user);
+	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
+		callCmds(user);
 }
 
 void	Server::executeCmd(std::string str, User* user){
@@ -167,20 +180,12 @@ void	Server::executeCmd(std::string str, User* user){
 	std::vector<std::string>	arguments;
 	std::stringstream			is(str);
 	std::string					word;
+	
 	std::getline(is, word, ' ');
-
 	int	(*fun[11])(Server* server, std::vector<std::string> arguments, User* user) = {
-		&cmdNick,
-		&cmdPass,
-		&cmdUser,
-		&cmdJoin,
-		&cmdKill,
-		&cmdTopic,
-		&cmdKick,
-		&cmdPart,
-		&cmdPing,
-		&cmdMode,
-		&cmdQuit
+		&cmdNick, &cmdPass, &cmdUser, &cmdJoin,
+		&cmdKill, &cmdTopic, &cmdKick, &cmdPart,
+		&cmdPing, &cmdMode, &cmdQuit
 	};
 	for (int i = 0; i < 10; i++)
 	{
@@ -249,21 +254,13 @@ void	Server::deleteUserFromChannels(User* user)
     }
 }
 
+	// std::vector<Channel*>::iterator chan = std::find(_channels.begin(), _channels.end(), channelName); DOESN'T WORK!!!
 Channel*	Server::findChannel(std::string channelName)
 {
-	for (std::vector<Channel *>::iterator i = _channels.begin(); i != _channels.end(); i++)
-		if ((*i)->getName() == channelName)
-			return (*i);
+	for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)
+		if ((*it)->getName() == channelName)
+			return (*it);
 	return (NULL);
-}
-
-bool	Server::isChannel(std::string str){
-	for (size_t i = 0; i < _channels.size(); i++)
-	{
-		if (_channels[i]->getName() == str)
-			return true;
-	}
-	return false;
 }
 
 std::vector<User *>	Server::getUsers() const {return _users;}
