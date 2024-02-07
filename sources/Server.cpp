@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/07 15:52:44 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/07 17:26:30 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _po
 	fd.events = POLLIN;
 	fd.revents = 0;
 	_pollfds.push_back(fd);
-	std::string _cmd[11] = {"PASS", "NICK", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT"};
+	std::string _cmd[11] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT"};
 }
 
 Server::~Server() {
@@ -182,7 +182,7 @@ void	Server::callCmds(User* user)
 		executeCmd(cmd, user);
 	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
 		callCmds(user);
-	if (!user->getNick().empty() && !user->getRealname().empty() && !user->getHost().empty())
+	if (!user->getNick().empty() && !user->getRealname().empty())
 	{
 		if (user->getPass() == _pw)
 		{
@@ -205,7 +205,7 @@ void	Server::executeCmd(std::string str, User* user){
 	
 	std::getline(is, word, ' ');
 	int	(*fun[11])(Server* server, std::vector<std::string> arguments, User* user) = {
-		&cmdNick, &cmdPass, &cmdUser, &cmdJoin,
+		&cmdNick, &cmdPass, &cmdUser, &cmdInvite,
 		&cmdKill, &cmdTopic, &cmdKick, &cmdPart,
 		&cmdPing, &cmdMode, &cmdQuit
 	};

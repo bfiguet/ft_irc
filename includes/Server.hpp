@@ -60,7 +60,7 @@ public:
 	int								cmdUser(Server *server, std::vector<std::string> str, User *user);
 	int								cmdNick(Server *server, std::vector<std::string> str, User *user);
 	int								cmdPing(Server *server, std::vector<std::string> str, User *user);
-	int								cmdJoin(Server *server, std::vector<std::string> str, User *user);
+	int								cmdInvite(Server *server, std::vector<std::string> str, User *user);
 	int								cmdPart(Server *server, std::vector<std::string> str, User *user);
 	int								cmdMode(Server *server, std::vector<std::string> str, User *user);
 	int								cmdKick(Server *server, std::vector<std::string> str, User *user);

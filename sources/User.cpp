@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/07 15:03:02 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/07 17:12:01 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ std::string	User::getUser() const{ return _user; }
 
 std::string	User::getRealname()const{	return _realname; }
 
-std::string	User::getHost()const {return _hostname;};
+//std::string	User::getHost()const {return _host;};
 
 std::string	User::getPass()const {return _pass;};
 
@@ -40,7 +40,7 @@ void		User::setUser(std::string str){ _user = str; }
 
 void		User::setRealname(std::string str){ _realname = str; }
 
-void		User::setHost(std::string str){_hostname = str;};
+//void		User::setHost(std::string str){_host = str;};
 
 void		User::setPass(std::string str){_pass = str;};
 
