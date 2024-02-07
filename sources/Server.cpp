@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/07 15:03:30 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/07 15:52:44 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@ Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _po
 	_sock = newSock();
 	if (_sock < 0)
 		throw(new std::exception);
-	pollfd*	fd = new pollfd;
-	fd->fd = _sock;
-	fd->events = POLLIN;
-	fd->revents = 0;
+	pollfd	fd;
+	fd.fd = _sock;
+	fd.events = POLLIN;
+	fd.revents = 0;
 	_pollfds.push_back(fd);
 	std::string _cmd[11] = {"PASS", "NICK", "USER", "JOIN", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT"};
 }
@@ -76,13 +76,14 @@ int	Server::newUser(){
 		std::cerr << "Error: failed to accept new connection" << strerror(errno) << std::endl;
 		return(1);
 	}
-	pollfd* temppollfd = new pollfd;
-	temppollfd->fd = userSocket;
-	temppollfd->events = POLLIN | POLLOUT;
-	temppollfd->revents = 0;
+	pollfd temppollfd;
+	temppollfd.fd = userSocket;
+	temppollfd.events = POLLIN | POLLOUT;
+	temppollfd.revents = 0;
 	_pollfds.push_back(temppollfd);
 	User* user = new User(userSocket);
 	_users.push_back(user);
+	std::cout << "New user on fd " << user->getFd() << std::endl;
 	return (0);
 }
 
@@ -104,6 +105,7 @@ int	Server::receiveMsg(int fd){
 		delUser(user);
 		return(0);
 	}
+	std::cout << "debug: message recieved " << buffer << std::endl;
 	user->addMsg(buffer);
 	return (0);
 }
@@ -138,7 +140,8 @@ int	Server::start(){
 	std::cout << "Server IRC Start!" << std::endl;
 	while (g_run == true)
 	{
-		events = poll(*(_pollfds.begin()).base(), _pollfds.size(), 0);
+		events = poll((_pollfds.begin()).base(), _pollfds.size(), 0);
+		std::cout << "debug events " << events << std::endl;
 		if ( events < 0)
 		{
 			std::cerr << "Error: poll error: " << strerror(errno) << std::endl;
@@ -146,19 +149,27 @@ int	Server::start(){
 		}
 		if (events == 0)
 				continue;
-		for (std::vector<pollfd*>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
+		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 		{
-			if (i != _pollfds.begin())
-				callCmds(findUser((*(*i)).fd));
-			if ((*(*i)).revents == 0)
+			std::cout << "debug poll events on fd " << (*i).fd << std::endl;
+			if (((*i)).revents == 0)
 				continue;
-			if (((*(*i)).revents) == POLLIN)
-				pollinHandler((*(*i)).fd);
-			else if ((*(*i)).revents == POLLOUT)
-				polloutHandler((*(*i)).fd);
-			else if ((*(*i)).revents == POLLERR)
-				if (pollerrHandler((*(*i)).fd))
+			if ((((*i)).revents) == POLLIN)
+			{
+				pollinHandler(((*i)).fd);
+				break;
+			}
+			else if (((*i)).revents == POLLOUT)
+				polloutHandler(((*i)).fd);
+			else if (((*i)).revents == POLLERR)
+				if (pollerrHandler(((*i)).fd))
 					return 1;
+		}
+		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
+		{
+			std::cout << "debug cmds on fd " << (*i).fd << std::endl;
+			if (i != _pollfds.begin())
+				callCmds(findUser(((*i)).fd));
 		}
 	}
 	return 0;
@@ -219,9 +230,9 @@ void	Server::delUser(User* user)
 void	Server::disconnectUser(User* user)
 {	
 	close(user->getFd());
-	for (std::vector<pollfd*>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
+	for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 	{
-		if ((*i)->fd == user->getFd())
+		if ((i)->fd == user->getFd())
 			_pollfds.erase(i);
 	}
 	delUser(user);
