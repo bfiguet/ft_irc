@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmds.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/07 14:09:58 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/07 17:26:18 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,13 +126,45 @@ int	cmdPing(Server *server, std::vector<std::string> str, User *user){
 	return 0;
 }
 
-//The JOIN command indicates that the client wants to join the given channel(s)
-// each channel using the given key for it.
-int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
-	std::cout << "--cmdJoin--" << std::endl;
-	(void)server;
-	(void)user;
-	(void)str;
+//The INVITE command is used to invite a user to a channel. 
+//The parameter <nickname> is the nickname of the person to be invited to the target channel <channel>.
+int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
+	//std::cout << "--cmdInvite--" << std::endl;
+	Channel	*cha = server->findChannel(str[2]);
+	User	*userNew = server->findUser(str[1]);
+	if (str.size() < 3)
+	{
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+		return 1;
+	}
+	if (cha == NULL)
+	{
+		user->addMsgToSend(ERR_NOSUCHCHANNEL(cha->getName()));
+		return 1;
+	}
+	if (cha->isInChannel(user) == false)
+	{
+		user->addMsgToSend(ERR_NOTONCHANNEL(cha->getName()));
+		return 1;
+	}
+	if (cha->isInvited(user) == true)
+	{
+		user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
+		return 1;
+	}
+	if (server->findUser(userNew->getNick()) == NULL)
+	{
+		user->addMsgToSend(ERR_NOSUCHNICK(userNew->getNick()));
+		return 1;
+	}
+	if (cha->isInChannel(userNew) == true)
+	{
+		user->addMsgToSend(ERR_USERONCHANNEL(user->getNick(), userNew->getNick(), cha->getName()));
+		return 1;
+	}
+	cha->addUser(userNew);
+	user->addMsgToSend(RPL_INVITING(user->getNick(), user->getUser(), server->getHost(), userNew->getNick(), cha->getName()));
+	userNew->addMsgToSend(INVITE(user->getNick(), user->getUser(), server->getHost(), userNew->getNick(), cha->getName()));
 	return 0;
 }
 
@@ -156,7 +188,6 @@ int	cmdPart(Server *server, std::vector<std::string> str, User *user){
 			user->addMsgToSend(ERR_NOTONCHANNEL(str[i]));
 			return 1;
 		}
-		//send msg all channel's user
 		server->findChannel(str[i])->delUser(user);
 	}
 	return 0;
@@ -212,15 +243,15 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 	Channel	*cha = server->findChannel(str[1]);
 	if (cha == NULL)
 	{
-		user->addMsgToSend(ERR_NOSUCHCHANNEL(str[1]));
+		user->addMsgToSend(ERR_NOSUCHCHANNEL(cha->getName()));
 		return 1;
 	}
 	if (str.size() == 2)
 	{
 		if (cha->getTopic() == "")
-			user->addMsgToSend(RPL_NOTOPIC(user->getNick(), user->getUser(), server->getHost(), str[1]));
+			user->addMsgToSend(RPL_NOTOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName()));
 		else
-			user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), str[1], cha->getTopic()));
+			user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), cha->getTopic()));
 	}
 	else
 	{
@@ -228,7 +259,7 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 		{
 			if (cha->isInvited(user))
 			{
-				user->addMsgToSend(ERR_CHANOPRIVSNEEDED(str[1], user->getNick()));
+				user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
 				return 1;
 			}
 		}
@@ -237,7 +268,7 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 	std::vector<User*>	listUser = cha->getUsers();
 	for (int i = 0; listUser[i]; i++)
 	{
-		listUser[i]->addMsgToSend(TOPIC(user->getNick(), user->getUser(), server->getHost(), str[1], str[2]));
+		listUser[i]->addMsgToSend(TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), str[2]));
 		return 1;
 	}
 	return 0;
