@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/07 15:52:44 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/08 15:27:14 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ int	Server::receiveMsg(int fd){
 	bzero(buffer, BUFFERSIZE);
 	int valread = 1;
 
+	// std::cout << "debug: Receiving message" << buffer << std::endl;
 	bzero(buffer, BUFFERSIZE);
 	valread = recv(fd, buffer, BUFFERSIZE, 0);
 	if (valread < 0 || valread == 0)
@@ -105,13 +106,14 @@ int	Server::receiveMsg(int fd){
 		delUser(user);
 		return(0);
 	}
-	std::cout << "debug: message recieved " << buffer << std::endl;
+	// std::cout << "debug: message received " << buffer << std::endl;
 	user->addMsg(buffer);
 	return (0);
 }
 
 int	Server::pollinHandler(int fd)
 {
+	// std::cout << "debug: pollin event" << std::endl;
 	if (fd == _sock)
 		return(newUser());
 	return(receiveMsg(fd));
@@ -119,6 +121,7 @@ int	Server::pollinHandler(int fd)
 
 int Server::polloutHandler(int fd)
 {
+	// std::cout << "debug: pollout event" << std::endl;
 	User* user = findUser(fd);
 	user->sendMsg(user->getMsgsToSend());
 	return (0);
@@ -126,6 +129,7 @@ int Server::polloutHandler(int fd)
 
 int Server::pollerrHandler(int fd)
 {
+	// std::cout << "debug: pollerr event" << std::endl;
 	if (fd == _sock)
 	{
 		std::cout << "Error: server socket " << strerror(errno) << std::endl;
@@ -141,7 +145,6 @@ int	Server::start(){
 	while (g_run == true)
 	{
 		events = poll((_pollfds.begin()).base(), _pollfds.size(), 0);
-		std::cout << "debug events " << events << std::endl;
 		if ( events < 0)
 		{
 			std::cerr << "Error: poll error: " << strerror(errno) << std::endl;
@@ -151,23 +154,22 @@ int	Server::start(){
 				continue;
 		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 		{
-			std::cout << "debug poll events on fd " << (*i).fd << std::endl;
-			if (((*i)).revents == 0)
+			if ((*i).revents == 0)
 				continue;
-			if ((((*i)).revents) == POLLIN)
+			else if ((*i).revents & POLLERR)
+				if (pollerrHandler((*i).fd))
+					return 1;
+			if ((*i).revents & POLLIN)
 			{
 				pollinHandler(((*i)).fd);
 				break;
 			}
-			else if (((*i)).revents == POLLOUT)
+			else if ((*i).revents & POLLOUT)
 				polloutHandler(((*i)).fd);
-			else if (((*i)).revents == POLLERR)
-				if (pollerrHandler(((*i)).fd))
-					return 1;
 		}
 		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 		{
-			std::cout << "debug cmds on fd " << (*i).fd << std::endl;
+			// std::cout << "debug cmds on fd " << (*i).fd << std::endl;
 			if (i != _pollfds.begin())
 				callCmds(findUser(((*i)).fd));
 		}
@@ -177,11 +179,18 @@ int	Server::start(){
 
 void	Server::callCmds(User* user)
 {
+	// std::cout << "debug: executing cmd on user " << user->getFd() << std::endl;
 	std::string cmd = user->extractCmd(user->getMsg());
+	// std::cout << "debug: executing cmd -> " << cmd << std::endl;
 	if (!cmd.empty())
 		executeCmd(cmd, user);
+	// std::cout << "debug: execution done" << std::endl;
 	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
+	{
+		// std::cout << "debug: recalling callCmds:" << user->getMsg() << std::endl;
 		callCmds(user);
+	}
+	// std::cout << "debug: checking registeration" << std::endl;
 	if (!user->getNick().empty() && !user->getRealname().empty() && !user->getHost().empty())
 	{
 		if (user->getPass() == _pw)
@@ -198,26 +207,55 @@ void	Server::callCmds(User* user)
 }
 
 void	Server::executeCmd(std::string str, User* user){
-	//std::cout<< "executCmd"<<std::endl;
 	std::vector<std::string>	arguments;
-	std::stringstream			is(str);
+	// std::stringstream			is(str);
 	std::string					word;
-	
-	std::getline(is, word, ' ');
+	char const*                 index;
+
+	std::cout << "debug: executeCmd " << str << " for user " << user->getFd() << std::endl;
+	displayUser(user);
+	word = str.substr(0, str.find(' '));
+	// std::cout << "debug: cmd word obtained " << word << std::endl;
 	int	(*fun[11])(Server* server, std::vector<std::string> arguments, User* user) = {
 		&cmdNick, &cmdPass, &cmdUser, &cmdJoin,
 		&cmdKill, &cmdTopic, &cmdKick, &cmdPart,
 		&cmdPing, &cmdMode, &cmdQuit
 	};
-	for (int i = 0; i < 10; i++)
+	// std::cout << "debug: function pointer array done" << std::endl;
+	// for (int i = 0; i < 10; i++)
+	// for (std::vector<std::string>::iterator i = _cmd.begin(); i != _cmd.end(); i++)
+	for (std::size_t i = 0; i < _cmd.size(); ++i)
 	{
-		if (_cmd[i] == word)
+		// std::cout << "debug: searching for command" << std::endl;
+		if ( word.compare(_cmd[i]) == 0)
 		{
-			while (std::getline(is, word, ' '))
+			// std::cout << "debug: command found" << std::endl;
+			// while (!str.empty())
+			// {
+			// 	word = str.substr(0, str.find(' '));
+			// 	str = str.substr(str.find(' ') + 1, -1);
+			// 	arguments.push_back(word);
+			// }
+			while (!str.empty())
+			{
+				index = std::strstr(str.c_str(), " ");
+				if (index == NULL)
+				{
+					word = str;
+					str.clear();
+				}
+				else
+				{
+					word = str.substr(0, index - str.c_str());
+					str = str.substr(index - str.c_str() + 1, str.size() - word.size() + 1);
+				}
 				arguments.push_back(word);
+			}
+			// std::cout << "debug: calling function for cmd " << word << std::endl;
 			(*fun[i])(this, arguments, user);
 		}
 	}
+	// std::cout << "debug: command " << word << " not found" << std::endl;
 }
 
 void	Server::delUser(User* user)

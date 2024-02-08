@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/07 15:03:02 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/08 15:32:45 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,10 @@ void		User::addMsg(std::string str){ _msg += str; }
 void		User::addMsgToSend(std::string str){ _msgsToSend += str; }
 
 void		User::sendMsg(std::string msg){
-	std::cout << "---> " << msg << "\r\n" << std::endl;
-	if (send(_sock, _msgsToSend.c_str(), _msgsToSend.length(), 0) < 0)
+	// std::cout << "---> " << msg << std::endl;
+	if (send(_sock, msg.c_str(), msg.length(), 0) < 0)
 	{
-		std::cout << "error send user's msg" << std::endl;
+		std::cout << "Error: send to user " << strerror(errno) << std::endl;
 	}
 }
 
@@ -65,7 +65,7 @@ std::string	User::extractCmd(std::string cmds)
 	if (cmdEnd == NULL)
 		return ("");
 	cmd = cmds.substr(0, cmdEnd - cmds.c_str());
-	cmds = cmds.substr(cmdEnd - cmds.c_str(), cmds.size() - cmd.size() + 2);
-	std::cout << "|" << cmd << "|" << cmds << "|" << std::endl;
-	return (0);
+	setMsg(cmds.substr(cmdEnd - cmds.c_str() + 2, cmds.size() - cmd.size()));
+	std::cout << "debug: command extraction: |cmd|buffer|" << std::endl << "|" << cmd << "|" << cmds << "|" << std::endl;
+	return (cmd);
 }
