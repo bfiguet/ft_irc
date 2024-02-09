@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmds.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 12:05:06 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 11:46:37 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ int	cmdPass(Server *server, std::vector<std::string> str, User *user){
 		return 1;
 	}
 	user->setPass(str[1]);
+	std::cout << "cmdPw DONE user->getPass()= " << user->getPass() << std::endl;
 	return 0;
 }
 
@@ -97,9 +98,11 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 		user->setHost(str[3]);
 		//std::cout << "--user->getHost()-- " << user->getHost() << std::endl;
 		if (str.at(4)[0] == ':')
-		{
 			tmp = str.at(4).substr(1);
+		if (str.size() == 4)
+		{
 			user->setRealname(tmp);
+			return 0;
 		}
 		//std::cout << "--user->getRealname()-- " << user->getRealname() << std::endl;
 		 tmp += " ";
