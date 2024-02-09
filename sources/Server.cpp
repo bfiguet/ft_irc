@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 14:57:59 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 15:17:12 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 
 Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _port(port) {
 	_sock = newSock();
-	std::cout << "test2" << std::endl;
-	if (_sock > 0)
+	if (_sock < 0)
 		throw(Server::BadServInit());
 	pollfd	fd;
 	fd.fd = _sock;
@@ -62,7 +61,7 @@ int		Server::newSock(){
 	if (listen(serverSocket, 1000) < 0) //compare with others
 	{
 		std::cout << "Error: listening socket " << strerror(errno) << std::endl;
-		return (-1); //Need to be changed
+		return (-1);
 	}
 	return serverSocket;
 }
