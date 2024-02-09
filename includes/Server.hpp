@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 15:16:15 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/09 15:47:59 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 #define SERVER_HPP
 
 #include "Irc.hpp"
-
-typedef int(*fun)(std::vector<std::string> arguments, User *user);
 
 class Server
 {
@@ -63,6 +61,7 @@ public:
     };
 };
 
+	typedef int						(*fun)(Server* server, std::vector<std::string> str, User *user);
 	int								cmdPass(Server *server, std::vector<std::string> str, User *user);
 	int								cmdUser(Server *server, std::vector<std::string> str, User *user);
 	int								cmdNick(Server *server, std::vector<std::string> str, User *user);

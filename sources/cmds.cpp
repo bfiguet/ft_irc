@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 15:18:21 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/09 15:49:24 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,8 @@ int	cmdPing(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NOORIGIN(user->getNick()));
 		return 1;
 	}
-	user->addMsgToSend(PONG(str[1]));
+	user->addMsgToSend("Pong " + user->getNick() + " :" + str[1]);
+	//user->addMsgToSend(PONG(str[1]));
 	return 0;
 }
 
