@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/08 15:41:55 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 11:54:50 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ private:
 	std::string				_msg;
 	std::string				_msgsToSend;
 	std::vector<Channel *>	_channels;
+	bool					_isRegistered;
 	//time_t					_timeOut;
 
 public:
@@ -45,7 +46,9 @@ public:
 	std::string	getPass()const;
 	std::string	getMsg()const;
 	std::string	getMsgsToSend() const;
+	bool		isRegisterd() const;
 
+	void		setIsRegisterd(bool val);
 	void		setNick(std::string str);
 	void		setUser(std::string str);
 	void		setRealname(std::string str);
@@ -55,7 +58,7 @@ public:
 	void		addMsg(std::string str);
 	void		addMsgToSend(std::string str);
 
-	std::string	extractCmd(std::string cmds);
+	std::string	extractCmd();
 	
 };
 

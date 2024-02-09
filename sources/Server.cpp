@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 11:16:18 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 11:55:43 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ int	Server::newUser(){
 	temppollfd.revents = 0;
 	_pollfds.push_back(temppollfd);
 	User* user = new User(userSocket);
+	user->setIsRegisterd(false);
 	_users.push_back(user);
 	std::cout << "New user on fd " << user->getFd() << std::endl;
 	return (0);
@@ -183,9 +184,9 @@ int	Server::start(){
 void	Server::callCmds(User* user)
 {
 	// std::cout << "debug: executing cmd on user " << user->getFd() << std::endl;
-	std::string cmd = user->extractCmd(user->getMsg());
+	std::string cmd = user->extractCmd();
 	// std::cout << "debug: executing cmd ->" << cmd << "|" << cmd.size() << std::endl;
-	if ((std::strstr(user->getMsg().c_str(), "\r\n") != NULL))
+	if (!cmd.empty())
 		executeCmd(cmd, user);
 	// std::cout << "debug: execution done" << std::endl;
 	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
@@ -194,10 +195,11 @@ void	Server::callCmds(User* user)
 		callCmds(user);
 	}
 	// std::cout << "debug: checking registeration" << std::endl;
-	if (!user->getNick().empty() && !user->getRealname().empty() && !user->getHost().empty())
+	if (!user->isRegisterd() && !user->getNick().empty() && !user->getRealname().empty() && !user->getHost().empty())
 	{
 		if (user->getPass() == _pw)
 		{
+			user->setIsRegisterd(true);
 			user->addMsgToSend(RPL_WELCOME(user->getNick(), user->getUser(), _host));
 			user->addMsgToSend(RPL_YOURHOST(_host));
 			user->addMsgToSend(RPL_CREATED(_host));

@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 11:03:41 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 12:00:49 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,14 +64,12 @@ int	cmdPass(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
-	if (str[1].size() - 1 == '\r')
+	if (str[1] != server->getPw())
 	{
-		if (str[1].substr(0, (str.size() - 1)) != server->getPw())
-		{
-			user->addMsgToSend(ERR_PASSWDMISMATCH);
-			return 1;
-		}
+		user->addMsgToSend(ERR_PASSWDMISMATCH);
+		return 1;
 	}
+	user->setPass(str[1]);
 	return 0;
 }
 
@@ -99,11 +97,9 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 		user->setHost(str[3]);
 		std::cout << "--setting real name--" << std::endl;
 		if (str.at(4)[0] == ':')
-			tmp = str.at(4).substr(1);
-		if (str.size() == 4)
 		{
+			tmp = str.at(4).substr(1);
 			user->setRealname(tmp);
-			return 0;
 		}
 		std::cout << "--USER done--" << std::endl;
 		// tmp += " ";
