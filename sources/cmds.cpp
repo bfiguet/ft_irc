@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmds.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 13:26:00 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 15:18:21 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,9 +199,33 @@ int	cmdPart(Server *server, std::vector<std::string> str, User *user){
 int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdMode--" << std::endl;
 	(void)server;
-	(void)user;
-	(void)str;
-	//////////
+	if (str.size() < 2)
+	{
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+		return 1;
+	}
+	if (str[1][0] != '#')
+	{
+		if (str.size() < 3)
+		{
+			user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+			return 1;
+		}
+		//CLIENT DOESN'T HAVE RIGHT PRIV TO DO THAT
+		//if (user->isRegisterd() == false) // channel
+		//{
+		//	user->addMsgToSend(ERR_NOPRIVILEGES);//good msg??
+		//	return 1;
+		//}
+		//NOT FINISH
+		if (user->isRegisterd() == false)
+			user->setIsRegisterd(0);
+	}
+	//SET MODE FOR A CHANEL / SET MODE FOR A CLIENT IN THE CHANEL
+	//else
+	//{
+		
+	//}
 	return 0;
 }
 
@@ -310,3 +334,127 @@ int	cmdQuit(Server *server, std::vector<std::string> str, User *user){
 	server->delUser(user);
 	return 0;
 }
+
+int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
+{
+	Channel	*cha = server->findChannel(str[1]);
+	if (str.size() < 2)
+	{
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+		return 1;
+	}
+	if (cha == NULL)
+	{
+		server->addChannel(str[1]);
+		cha = server->findChannel(str[1]); 
+		//set mode
+	}
+	if (cha->isInChannel(user) == false)
+	{
+		cha->addUser(user);
+	}
+	std::vector<User *> listUser = cha->getUsers();
+	for (int i = 0; listUser[i]; i++)
+	{
+		listUser[i]->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
+	}
+	return 0;
+}
+
+int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user)
+{
+	std::string	msg;
+	std::vector<std::string>::iterator cpy;
+	User* dest = server->findUser(str[1]);
+	Channel	*cha = server->findChannel(str[1]);
+	if (str.size() < 3)
+	{
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+		return 1;
+	}
+	for (std::vector<std::string>::iterator it = str.begin() + 2; it != str.end(); ++it)
+	{
+		msg += *it;
+		cpy = it;
+		if (++cpy != str.end())
+			msg += " ";
+	}
+	if (str[1][0] != '#')
+	{
+		if (dest)
+			dest->addMsgToSend(PRIVMSG(user->getNick(), user->getUser(), user->getHost(), dest->getUser(), msg));
+		else
+		{
+			user->addMsgToSend(ERR_NOSUCHNICK(dest->getNick()));
+			return 1;
+		}
+	}
+	else
+	{
+		if (cha)
+		{
+			if (cha->isInChannel(user) == false)
+			{
+				user->addMsgToSend(ERR_CANNOTSENDTOCHAN(user->getNick(), cha->getName()));
+				return 1;
+			}
+			std::vector<User *> listUser = cha->getUsers();
+			for (int i = 0; listUser[i]; i++)
+			{
+				if (listUser[i]->getNick() == user->getNick())
+					continue;
+				listUser[i]->addMsgToSend(RPL_PRIVMSG_CHANEL(user->getNick(), user->getUser(), str[0], cha->getName(), str[2]));
+			}
+		}
+		else
+		{
+			user->addMsgToSend(ERR_NOSUCHCHANNEL(str[1]));
+			return 1;
+		}
+	}
+	return 0;
+}
+
+//int	cmdMsg(Server *server, std::vector<std::string> str, User *user)
+//{
+//	std::string	msg;
+//	std::vector<std::string>::iterator cpy;
+//	User* dest = server->findUser(str[1]);
+//	Channel	*cha = server->findChannel(str[1]);
+//	if (str.size() < 3)
+//	{
+//		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+//		return 1;
+//	}
+//	for (std::vector<std::string>::iterator it = str.begin() + 2; it != str.end(); ++it)
+//	{
+//		msg += *it;
+//		cpy = it;
+//		if (++cpy != str.end())
+//			msg += " ";
+//	}
+//	if (str[1][0] != '#')
+//	{
+//		if (cha)
+//		{
+//			if (cha->isInChannel(user) == false)
+//			{
+//				user->addMsgToSend(ERR_CANNOTSENDTOCHAN(user->getNick(), cha->getName()));
+//				return 1;
+//			}
+//			std::vector<User *> listUser = cha->getUsers();
+//			for (int i = 0; listUser[i]; i++)
+//			{
+//				if (listUser[i]->getNick() == user->getNick())
+//					continue;
+//				listUser[i]->addMsgToSend(RPL_PRIVMSG_CHANEL(user->getNick(), user->getUser(), str[0], cha->getName(), str[2]));
+//			}
+//		}
+//		else
+//		{
+//			user->addMsgToSend(ERR_NOSUCHCHANNEL(str[1]));
+//			return 1;
+//		}
+//	}
+//	return 0;
+//}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 13:19:06 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 15:19:51 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,5 +163,5 @@ extern bool g_run;
 # define ERR_USERSDONTMATCH(nick) ("502 " + nick + " :Cannot change change mode for other users\r\n")
 # define RPL_UMODEIS(nick, mode, char) (" 221 " + nick + " " + mode + char + "\r\n")
 # define ERR_USERONCHANNEL(nick, invitenick, chan) ("443 " + nick + " " + invitenick + " " + chan + ":is already on channel\r\n")
-
+# define RPL_PRIVMSG_CHANEL(nickname, username, cmd, chanel, msg) (nickname + " " + username + " " + cmd + " " + chanel + " " + msg + "\r\n")
 #endif

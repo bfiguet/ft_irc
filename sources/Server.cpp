@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 14:57:59 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 15:17:06 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,12 +228,12 @@ void	Server::executeCmd(std::string str, User* user){
 	// std::cout << "debug: executeCmd " << str << " for user " << user->getFd() << std::endl;
 	word = str.substr(0, str.find(' '));
 	// std::cout << "debug: cmd word obtained " << word << std::endl;
-	int	(*fun[11])(Server* server, std::vector<std::string> arguments, User* user) = {
+	int	(*fun[13])(Server* server, std::vector<std::string> arguments, User* user) = {
 		&cmdPass, &cmdNick, &cmdUser, &cmdInvite,
 		&cmdKill, &cmdTopic, &cmdKick, &cmdPart,
-		&cmdPing, &cmdMode, &cmdQuit
+		&cmdPing, &cmdMode, &cmdQuit, &cmdJoin, &cmdPrivmsg
 	};
-	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT"};
+	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "JOIN", "PRIVMSG"};
 	std::vector<std::string> _cmd(commands, commands + 11);
 	// std::cout << "debug: function pointer array done" << _cmd.size() << std::endl;
 	// std::cout << "debug: _cmd " << _cmd[0] << std::endl;

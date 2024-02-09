@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 14:35:03 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 15:16:15 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ public:
 	Channel*						findChannel(std::string str);
 	void							deleteUserFromChannels(User* user);
 	void							callCmds(User* user);
+	void							addChannel(std::string name);
 
 	class BadServInit: public std::exception
     {
@@ -73,5 +74,7 @@ public:
 	int								cmdTopic(Server *server, std::vector<std::string> str, User *user);
 	int								cmdKill(Server *server, std::vector<std::string> str, User *user);
 	int								cmdQuit(Server *server, std::vector<std::string> str, User *user);
+	int								cmdJoin(Server *server, std::vector<std::string> str, User *user);
+	int								cmdPrivmsg(Server *server, std::vector<std::string> str, User *user);
 
 #endif
