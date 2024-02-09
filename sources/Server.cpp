@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 15:17:06 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/09 15:25:19 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 
 Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _port(port) {
 	_sock = newSock();
-	std::cout << "test2" << std::endl;
-	if (_sock > 0)
+	if (_sock < 0)
 		throw(Server::BadServInit());
 	pollfd	fd;
 	fd.fd = _sock;
@@ -62,7 +61,7 @@ int		Server::newSock(){
 	if (listen(serverSocket, 1000) < 0) //compare with others
 	{
 		std::cout << "Error: listening socket " << strerror(errno) << std::endl;
-		return (-1); //Need to be changed
+		return (-1);
 	}
 	return serverSocket;
 }
@@ -228,12 +227,12 @@ void	Server::executeCmd(std::string str, User* user){
 	// std::cout << "debug: executeCmd " << str << " for user " << user->getFd() << std::endl;
 	word = str.substr(0, str.find(' '));
 	// std::cout << "debug: cmd word obtained " << word << std::endl;
-	int	(*fun[13])(Server* server, std::vector<std::string> arguments, User* user) = {
+	int	(*fun[11])(Server* server, std::vector<std::string> arguments, User* user) = {
 		&cmdPass, &cmdNick, &cmdUser, &cmdInvite,
 		&cmdKill, &cmdTopic, &cmdKick, &cmdPart,
-		&cmdPing, &cmdMode, &cmdQuit, &cmdJoin, &cmdPrivmsg
+		&cmdPing, &cmdMode, &cmdQuit
 	};
-	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "JOIN", "PRIVMSG"};
+	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT"};
 	std::vector<std::string> _cmd(commands, commands + 11);
 	// std::cout << "debug: function pointer array done" << _cmd.size() << std::endl;
 	// std::cout << "debug: _cmd " << _cmd[0] << std::endl;
@@ -352,4 +351,10 @@ std::string	Server::getHost()const { return _host;}
 const char* Server::BadServInit::what() const throw()
 {
     return ("Failed to initilize server");
+}
+
+void	Server::addChannel(std::string name)
+{
+	Channel* cha = new Channel(name);
+	_channels.push_back(cha);
 }
