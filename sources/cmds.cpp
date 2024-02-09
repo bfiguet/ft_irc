@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmds.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/07 17:26:18 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/09 11:03:41 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ bool	checkNick(std::string str){
 
 //The NICK command is used to give the client a nickname or change the previous one.
 int	cmdNick(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdNick--" << std::endl;
+	std::cout << "--cmdNick--" << std::endl;
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NONICKNAMEGIVEN);
@@ -77,7 +77,7 @@ int	cmdPass(Server *server, std::vector<std::string> str, User *user){
 
 //The USER command is used at the beginning of a connection to specify the username and realname of a new user.
 int	cmdUser(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdUser--" << std::endl;
+	std::cout << "--cmdUser--" << std::endl;
 	(void)server;
 	std::string	tmp;
 
@@ -93,7 +93,11 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 	}
 	else if (str.size() >= 4)
 	{
-		user->setUser(str.at(1));
+		std::cout << "--setting user--" << std::endl;
+		user->setUser(str[1]);
+		std::cout << "--setting host--" << std::endl;
+		user->setHost(str[3]);
+		std::cout << "--setting real name--" << std::endl;
 		if (str.at(4)[0] == ':')
 			tmp = str.at(4).substr(1);
 		if (str.size() == 4)
@@ -101,9 +105,10 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 			user->setRealname(tmp);
 			return 0;
 		}
-		tmp += " ";
-		tmp += str.at(5);
-		user->setRealname(tmp);
+		std::cout << "--USER done--" << std::endl;
+		// tmp += " ";
+		// tmp += str.at(5);
+		// user->setRealname(tmp);
 	}
 	return 0;
 }

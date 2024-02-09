@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/08 15:44:46 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 11:16:18 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _po
 	fd.events = POLLIN;
 	fd.revents = 0;
 	_pollfds.push_back(fd);
-	std::string _cmd[11] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT"};
 }
 
 Server::~Server() {
@@ -123,7 +122,11 @@ int Server::polloutHandler(int fd)
 {
 	// std::cout << "debug: pollout event" << std::endl;
 	User* user = findUser(fd);
-	user->sendMsg(user->getMsgsToSend());
+	if (!user->getMsg().empty())
+	{
+		user->sendMsg(user->getMsgsToSend());
+		user->setMsg("");
+	}
 	return (0);
 }
 
@@ -181,13 +184,13 @@ void	Server::callCmds(User* user)
 {
 	// std::cout << "debug: executing cmd on user " << user->getFd() << std::endl;
 	std::string cmd = user->extractCmd(user->getMsg());
-	// std::cout << "debug: executing cmd -> " << cmd << std::endl;
-	if (!cmd.empty())
+	// std::cout << "debug: executing cmd ->" << cmd << "|" << cmd.size() << std::endl;
+	if ((std::strstr(user->getMsg().c_str(), "\r\n") != NULL))
 		executeCmd(cmd, user);
 	// std::cout << "debug: execution done" << std::endl;
 	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
 	{
-		// std::cout << "debug: recalling callCmds:" << user->getMsg() << std::endl;
+		std::cout << "debug: recalling callCmds:" << user->getMsg() << std::endl;
 		callCmds(user);
 	}
 	// std::cout << "debug: checking registeration" << std::endl;
@@ -213,23 +216,26 @@ void	Server::executeCmd(std::string str, User* user){
 	char const*                 index;
 
 	std::cout << "debug: executeCmd " << str << " for user " << user->getFd() << std::endl;
-	displayUser(user);
 	word = str.substr(0, str.find(' '));
-	// std::cout << "debug: cmd word obtained " << word << std::endl;
+	std::cout << "debug: cmd word obtained " << word << std::endl;
 	int	(*fun[11])(Server* server, std::vector<std::string> arguments, User* user) = {
-		&cmdNick, &cmdPass, &cmdUser, &cmdInvite,
+		&cmdPass, &cmdNick, &cmdUser, &cmdInvite,
 		&cmdKill, &cmdTopic, &cmdKick, &cmdPart,
 		&cmdPing, &cmdMode, &cmdQuit
 	};
-	// std::cout << "debug: function pointer array done" << std::endl;
+	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT"};
+	std::vector<std::string> _cmd(commands, commands + 11);
+	// std::cout << "debug: function pointer array done" << _cmd.size() << std::endl;
+	// std::cout << "debug: _cmd " << _cmd[0] << std::endl;
 	// for (int i = 0; i < 10; i++)
-	// for (std::vector<std::string>::iterator i = _cmd.begin(); i != _cmd.end(); i++)
-	for (std::size_t i = 0; i < _cmd.size(); ++i)
+	int	ind = 0;
+	for (std::vector<std::string>::iterator i = _cmd.begin(); i != _cmd.end(); i++)
+	// for (std::size_t i = 0; i < _cmd.size(); ++i)
 	{
 		// std::cout << "debug: searching for command" << std::endl;
-		if ( word.compare(_cmd[i]) == 0)
+		if ( word.compare(*i) == 0)
 		{
-			// std::cout << "debug: command found" << std::endl;
+			std::cout << "debug: command found" << std::endl;
 			// while (!str.empty())
 			// {
 			// 	word = str.substr(0, str.find(' '));
@@ -251,10 +257,12 @@ void	Server::executeCmd(std::string str, User* user){
 				}
 				arguments.push_back(word);
 			}
-			// std::cout << "debug: calling function for cmd " << word << std::endl;
-			(*fun[i])(this, arguments, user);
+			std::cout << "debug: calling function for cmd " << word << std::endl;
+			(*fun[ind])(this, arguments, user);
 		}
+		ind++;
 	}
+	displayUser(user);
 	// std::cout << "debug: command " << word << " not found" << std::endl;
 }
 
@@ -298,6 +306,8 @@ void	Server::displayUser(User* user){
 	std::cout <<"User " << user->getUser() << " are connected"<< std::endl;
 	std::cout << " nickname: " << user->getNick() << std::endl;
 	std::cout << " realname: " <<user->getRealname() << std::endl;
+	std::cout << " server: " <<user->getHost() << std::endl;
+	std::cout << " pass: " <<user->getPass() << std::endl;
 	std::cout << std::endl;
 }
 

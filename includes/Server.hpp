@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/07 15:39:59 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 10:41:29 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ private:
 	int							_sock;
 	std::vector<pollfd>			_pollfds;
 	std::vector<User *>			_users;
-	std::vector<std::string>	_cmd;
+	// std::vector<std::string>	_cmd;
 	std::vector<Channel *>		_channels;
 
 	int								pollinHandler(int fd);
