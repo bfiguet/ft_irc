@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 12:20:24 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 13:15:52 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _po
 }
 
 Server::~Server() {
+	close(_sock);
 	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
 	{
 		close((*i)->getFd());
@@ -113,7 +114,7 @@ int	Server::receiveMsg(int fd){
 
 int	Server::pollinHandler(int fd)
 {
-	std::cout << "debug: pollin event " << fd << std::endl;
+	// std::cout << "debug: pollin event " << fd << std::endl;
 	if (fd == _sock)
 		return(newUser());
 	return(receiveMsg(fd));
@@ -121,12 +122,12 @@ int	Server::pollinHandler(int fd)
 
 int Server::polloutHandler(int fd)
 {
-	std::cout << "debug: pollout event " << fd << std::endl;
+	// std::cout << "debug: pollout event " << fd << std::endl;
 	User* user = findUser(fd);
-	std::cout << "User is " << user->getFd() << " " << user->getNick() << std::endl;
+	// std::cout << "User is " << user->getFd() << " " << user->getNick() << std::endl;
 	if (!user->getMsgsToSend().empty())
 	{
-		std::cout << "messages to send:" << user->getMsgsToSend() << std::endl;
+		std::cout << user->getNick() << " messages to send:" << user->getMsgsToSend() << std::endl;
 		user->sendMsg(user->getMsgsToSend());
 		user->setMsgsToSend("");
 	}
@@ -135,7 +136,7 @@ int Server::polloutHandler(int fd)
 
 int Server::pollerrHandler(int fd)
 {
-	std::cout << "debug: pollerr event " << fd << std::endl;
+	// std::cout << "debug: pollerr event " << fd << std::endl;
 	if (fd == _sock)
 	{
 		std::cout << "Error: server socket " << strerror(errno) << std::endl;
@@ -192,15 +193,15 @@ void	Server::callCmds(User* user)
 	if (cmd.empty())
 		return;
 	executeCmd(cmd, user);
-	std::cout << "debug: execution done" << std::endl;
+	// std::cout << "debug: execution done" << std::endl;
 	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
 	{
-		std::cout << "debug: recalling callCmds:" << user->getMsg() << std::endl;
+		// std::cout << "debug: recalling callCmds:" << user->getMsg() << std::endl;
 		callCmds(user);
 	}
 	if (!user->isRegisterd() && !user->getNick().empty() && !user->getRealname().empty() && !user->getHost().empty())
 	{
-		std::cout << "debug: checking registeration" << std::endl;
+		// std::cout << "debug: checking registeration" << std::endl;
 		if (user->getPass() == _pw)
 		{
 			user->setIsRegisterd(true);
@@ -209,7 +210,7 @@ void	Server::callCmds(User* user)
 			user->addMsgToSend(RPL_CREATED(_host));
 			user->addMsgToSend(RPL_MYINFO(_host));
 			displayUser(user);
-			std::cout << "debug: registeration done" << std::endl;
+			// std::cout << "debug: registeration done" << std::endl;
 		}
 		else
 			delUser(user);
@@ -222,9 +223,9 @@ void	Server::executeCmd(std::string str, User* user){
 	std::string					word;
 	char const*                 index;
 
-	std::cout << "debug: executeCmd " << str << " for user " << user->getFd() << std::endl;
+	// std::cout << "debug: executeCmd " << str << " for user " << user->getFd() << std::endl;
 	word = str.substr(0, str.find(' '));
-	std::cout << "debug: cmd word obtained " << word << std::endl;
+	// std::cout << "debug: cmd word obtained " << word << std::endl;
 	int	(*fun[11])(Server* server, std::vector<std::string> arguments, User* user) = {
 		&cmdPass, &cmdNick, &cmdUser, &cmdInvite,
 		&cmdKill, &cmdTopic, &cmdKick, &cmdPart,
@@ -242,7 +243,7 @@ void	Server::executeCmd(std::string str, User* user){
 		// std::cout << "debug: searching for command" << std::endl;
 		if ( word.compare(*i) == 0)
 		{
-			std::cout << "debug: command found" << std::endl;
+			// std::cout << "debug: command found" << std::endl;
 			// while (!str.empty())
 			// {
 			// 	word = str.substr(0, str.find(' '));
@@ -264,7 +265,7 @@ void	Server::executeCmd(std::string str, User* user){
 				}
 				arguments.push_back(word);
 			}
-			std::cout << "debug: calling function for cmd " << word << std::endl;
+			// std::cout << "debug: calling function for cmd " << word << std::endl;
 			(*fun[ind])(this, arguments, user);
 		}
 		ind++;

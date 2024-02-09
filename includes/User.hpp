@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 12:20:51 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 12:31:00 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,6 @@ private:
 public:
 	User(int fd);
 	~User();
-	void		sendMsg(std::string msg);
-	
 
 	int			getFd() const;
 	std::string	getNick()const;
@@ -46,20 +44,22 @@ public:
 	std::string	getPass()const;
 	std::string	getMsg()const;
 	std::string	getMsgsToSend() const;
+
 	bool		isRegisterd() const;
 
-	void		setIsRegisterd(bool val);
 	void		setNick(std::string str);
 	void		setUser(std::string str);
 	void		setRealname(std::string str);
 	void		setHost(std::string str);
 	void		setPass(std::string str);
-	void		setMsg(std::string str);
+	void		setIsRegisterd(bool val);
 	void		addMsg(std::string str);
+	void		setMsg(std::string str);
 	void		addMsgToSend(std::string str);
 	void		setMsgsToSend(std::string str);
-
+	void		sendMsg(std::string msg);
 	std::string	extractCmd();
+
 	
 };
 

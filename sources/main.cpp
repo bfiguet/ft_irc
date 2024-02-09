@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:51:01 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 19:04:04 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/09 12:42:29 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ void	ft_signal(int sig)
 bool	verifPort(std::string av, int &port)
 {
 	port = std::atoi(av.c_str());
-	if (av.empty() || isdigit(port) || port < 1 || port > 65535)
+	std::cout << "port " <<  port << std::endl;
+	if (av.empty() || port < 1 || port > 65535)
 	{
 		std::cout << "error: " << std::endl << "port must be a number between 1 and 65535" << std::endl;
 		return true;

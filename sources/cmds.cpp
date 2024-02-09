@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmds.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 12:41:07 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/09 13:26:00 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_ERRONEUSNICKNAME(user->getNick()));
 			return 1;
 	}
+	user->addMsgToSend(NICK_INFORM(user->getNick(), user->getUser(), user->getHost(), str[1]));
 	user->setNick(str[1]);
 	//std::cout << "cmdNick DONE -- user->getNick()= " << user->getNick() << std::endl;
 	return 0;
@@ -124,7 +125,7 @@ int	cmdPing(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NOORIGIN(user->getNick()));
 		return 1;
 	}
-	user->addMsgToSend("Pong " + user->getNick() + " :" + str[1]);
+	user->addMsgToSend(PONG(str[1]));
 	return 0;
 }
 

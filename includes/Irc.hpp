@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 13:30:18 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/09 13:19:06 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ extern bool g_run;
 # define NICK(old_nick, nick) (":" + old_nick + " NICK " + nick + "\r\n")
 # define USER(old_user, user) (":" + old_user + " USER " + user + "\r\n")
 
-# define NICK_INFORM(old_nick, user, host, nick) (":" + old_nick + "!" + user + "@" + host + " NICK " + nick + "\r\n")
+# define NICK_INFORM(old_nick, user, host, nick) (":" + old_nick + "!~" + user + "@" + user + " NICK :" + nick + "\r\n")
 
 # define JOIN(nick, user, host, chan) (":" + nick + "!" + user + "@" + host  + " JOIN " + chan + "\r\n")
 //message pour tous les gens sur le channel ":<nick persone qui a join>!<user>@<host> JOIN <channel>"

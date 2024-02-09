@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 12:21:19 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 12:30:38 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ std::string	User::getMsg()const{ return _msg; }
 
 std::string	User::getMsgsToSend() const{return _msgsToSend;};
 
-
+bool		User::isRegisterd() const {return _isRegistered;}
 
 void		User::setNick(std::string str){ _nick = str; }
 
@@ -40,9 +40,11 @@ void		User::setUser(std::string str){ _user = str; }
 
 void		User::setRealname(std::string str){ _realname = str; }
 
-void		User::setHost(std::string str){_host = str;};
+void		User::setHost(std::string str){_host = str;}
 
-void		User::setPass(std::string str){_pass = str;};
+void		User::setPass(std::string str){_pass = str;}
+
+void		User::setIsRegisterd(bool val){_isRegistered = val;}
 
 void		User::setMsg(std::string str){ _msg = str; }
 
@@ -50,16 +52,11 @@ void		User::addMsg(std::string str){ _msg += str; }
 
 void		User::addMsgToSend(std::string str){ _msgsToSend += str; }
 
-void		User::setIsRegisterd(bool val){_isRegistered = val;}
-
-bool		User::isRegisterd() const {return _isRegistered;}
+void		User::setMsgsToSend(std::string str){_msgsToSend = str;}
 
 void		User::sendMsg(std::string msg){
-	// std::cout << "---> " << msg << std::endl;
 	if (send(_sock, msg.c_str(), msg.length(), 0) < 0)
-	{
 		std::cout << "Error: send to user " << strerror(errno) << std::endl;
-	}
 }
 
 std::string	User::extractCmd()
@@ -70,11 +67,7 @@ std::string	User::extractCmd()
 		return ("");
 	cmd = _msg.substr(0, cmdEnd - _msg.c_str());
 	_msg = _msg.substr(cmd.size() + 2, _msg.size() - cmd.size() + 2);
-	std::cout << "debug: command extraction: |cmd|buffer|" << std::endl << "|" << cmd << "|" << _msg << "|" << std::endl;
+	// std::cout << "debug: command extraction: |cmd|buffer|" << std::endl << "|" << cmd << "|" << _msg << "|" << std::endl;
 	return (cmd);
 }
 
-void		User::setMsgsToSend(std::string str)
-{
-	_msgsToSend = str;
-}
