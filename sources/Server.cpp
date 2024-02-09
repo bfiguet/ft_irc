@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 11:55:43 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 12:20:24 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ int	Server::receiveMsg(int fd){
 
 int	Server::pollinHandler(int fd)
 {
-	// std::cout << "debug: pollin event" << std::endl;
+	std::cout << "debug: pollin event " << fd << std::endl;
 	if (fd == _sock)
 		return(newUser());
 	return(receiveMsg(fd));
@@ -121,19 +121,21 @@ int	Server::pollinHandler(int fd)
 
 int Server::polloutHandler(int fd)
 {
-	// std::cout << "debug: pollout event" << std::endl;
+	std::cout << "debug: pollout event " << fd << std::endl;
 	User* user = findUser(fd);
-	if (!user->getMsg().empty())
+	std::cout << "User is " << user->getFd() << " " << user->getNick() << std::endl;
+	if (!user->getMsgsToSend().empty())
 	{
+		std::cout << "messages to send:" << user->getMsgsToSend() << std::endl;
 		user->sendMsg(user->getMsgsToSend());
-		user->setMsg("");
+		user->setMsgsToSend("");
 	}
 	return (0);
 }
 
 int Server::pollerrHandler(int fd)
 {
-	// std::cout << "debug: pollerr event" << std::endl;
+	std::cout << "debug: pollerr event " << fd << std::endl;
 	if (fd == _sock)
 	{
 		std::cout << "Error: server socket " << strerror(errno) << std::endl;
@@ -149,6 +151,7 @@ int	Server::start(){
 	while (g_run == true)
 	{
 		events = poll((_pollfds.begin()).base(), _pollfds.size(), 0);
+		// std::cout << "debug: events " << events << std::endl;
 		if ( events < 0)
 		{
 			std::cerr << "Error: poll error: " << strerror(errno) << std::endl;
@@ -186,17 +189,18 @@ void	Server::callCmds(User* user)
 	// std::cout << "debug: executing cmd on user " << user->getFd() << std::endl;
 	std::string cmd = user->extractCmd();
 	// std::cout << "debug: executing cmd ->" << cmd << "|" << cmd.size() << std::endl;
-	if (!cmd.empty())
-		executeCmd(cmd, user);
-	// std::cout << "debug: execution done" << std::endl;
+	if (cmd.empty())
+		return;
+	executeCmd(cmd, user);
+	std::cout << "debug: execution done" << std::endl;
 	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
 	{
 		std::cout << "debug: recalling callCmds:" << user->getMsg() << std::endl;
 		callCmds(user);
 	}
-	// std::cout << "debug: checking registeration" << std::endl;
 	if (!user->isRegisterd() && !user->getNick().empty() && !user->getRealname().empty() && !user->getHost().empty())
 	{
+		std::cout << "debug: checking registeration" << std::endl;
 		if (user->getPass() == _pw)
 		{
 			user->setIsRegisterd(true);
@@ -205,6 +209,7 @@ void	Server::callCmds(User* user)
 			user->addMsgToSend(RPL_CREATED(_host));
 			user->addMsgToSend(RPL_MYINFO(_host));
 			displayUser(user);
+			std::cout << "debug: registeration done" << std::endl;
 		}
 		else
 			delUser(user);

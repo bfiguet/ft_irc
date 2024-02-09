@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 11:54:50 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 12:20:51 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ public:
 	void		setMsg(std::string str);
 	void		addMsg(std::string str);
 	void		addMsgToSend(std::string str);
+	void		setMsgsToSend(std::string str);
 
 	std::string	extractCmd();
 	

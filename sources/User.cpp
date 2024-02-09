@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 11:55:07 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 12:21:19 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,4 +72,9 @@ std::string	User::extractCmd()
 	_msg = _msg.substr(cmd.size() + 2, _msg.size() - cmd.size() + 2);
 	std::cout << "debug: command extraction: |cmd|buffer|" << std::endl << "|" << cmd << "|" << _msg << "|" << std::endl;
 	return (cmd);
+}
+
+void		User::setMsgsToSend(std::string str)
+{
+	_msgsToSend = str;
 }
