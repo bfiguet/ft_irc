@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmds.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 12:05:06 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 12:41:07 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ bool	checkNick(std::string str){
 
 //The NICK command is used to give the client a nickname or change the previous one.
 int	cmdNick(Server *server, std::vector<std::string> str, User *user){
-	std::cout << "--cmdNick--" << std::endl;
+	//std::cout << "--cmdNick--" << std::endl;
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NONICKNAMEGIVEN);
@@ -53,13 +53,13 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 			return 1;
 	}
 	user->setNick(str[1]);
-	std::cout << "cmdNick DONE -- user->getNick()= " << user->getNick() << std::endl;
+	//std::cout << "cmdNick DONE -- user->getNick()= " << user->getNick() << std::endl;
 	return 0;
 }
 
 //The PASS command is used to set a ‘connection password’.
 int	cmdPass(Server *server, std::vector<std::string> str, User *user){
-	std::cout << "--cmdPw--" << std::endl;
+//	std::cout << "--cmdPw--" << std::endl;
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -76,7 +76,7 @@ int	cmdPass(Server *server, std::vector<std::string> str, User *user){
 
 //The USER command is used at the beginning of a connection to specify the username and realname of a new user.
 int	cmdUser(Server *server, std::vector<std::string> str, User *user){
-	std::cout << "--cmdUser--" << std::endl;
+	//std::cout << "--cmdUser--" << std::endl;
 	(void)server;
 	std::string	tmp;
 
@@ -106,7 +106,7 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 		 tmp += str.at(5);
 		 user->setRealname(tmp);
 	}
-	std::cout << "cmdUser DONE user= " << user->getUser() << " host=" << user->getHost() << " realName=" << user->getRealname() << std::endl;
+	//std::cout << "cmdUser DONE user= " << user->getUser() << " host=" << user->getHost() << " realName=" << user->getRealname() << std::endl;
 	return 0;
 }
 
@@ -200,6 +200,7 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 	(void)server;
 	(void)user;
 	(void)str;
+	//////////
 	return 0;
 }
 
