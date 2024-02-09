@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 13:15:52 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 14:57:59 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 
 Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _port(port) {
 	_sock = newSock();
-	if (_sock < 0)
-		throw(new std::exception);
+	std::cout << "test2" << std::endl;
+	if (_sock > 0)
+		throw(Server::BadServInit());
 	pollfd	fd;
 	fd.fd = _sock;
 	fd.events = POLLIN;
@@ -54,6 +55,7 @@ int		Server::newSock(){
 	if (bind(serverSocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 	{
 		std::cout << "Error: binding socket " << strerror(errno) << std::endl;
+		std::cout << "test" << std::endl;
 		return (-1);
 	}
 	//Listening socket
@@ -346,3 +348,8 @@ std::vector<User *>	Server::getUsers() const {return _users;}
 std::string	Server::getPw()const {return _pw;}
 
 std::string	Server::getHost()const { return _host;}
+
+const char* Server::BadServInit::what() const throw()
+{
+    return ("Failed to initilize server");
+}

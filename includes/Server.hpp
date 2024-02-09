@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 10:41:29 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 14:35:03 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,12 @@ public:
 	Channel*						findChannel(std::string str);
 	void							deleteUserFromChannels(User* user);
 	void							callCmds(User* user);
+
+	class BadServInit: public std::exception
+    {
+        public:
+        virtual const char* what() const throw();
+    };
 };
 
 	int								cmdPass(Server *server, std::vector<std::string> str, User *user);

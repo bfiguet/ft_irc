@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:51:01 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 12:42:29 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 14:58:11 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,17 @@ int main(int ac, char **av)
 		return 1;
 	try
 	{
+		std::cout << "start" << std::endl;
 		Server server(port, av[2]);
+		std::cout << "init done" << std::endl;
 		if (server.start())
 			return (1);
 	}
-	catch(const std::exception& e)
+	catch(std::exception& e)
 	{
+		std::cout << "exception cought" << std::endl;
 		std::cerr << e.what() << '\n';
+		return (1);
 	}
 	return 0;
 }
