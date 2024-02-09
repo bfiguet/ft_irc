@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmds.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 11:03:41 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/09 11:46:37 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,25 +53,25 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 			return 1;
 	}
 	user->setNick(str[1]);
+	std::cout << "cmdNick DONE -- user->getNick()= " << user->getNick() << std::endl;
 	return 0;
 }
 
 //The PASS command is used to set a ‘connection password’.
 int	cmdPass(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdPw--" << std::endl;
+	std::cout << "--cmdPw--" << std::endl;
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
-	if (str[1].size() - 1 == '\r')
+	if (str[1] != server->getPw())
 	{
-		if (str[1].substr(0, (str.size() - 1)) != server->getPw())
-		{
-			user->addMsgToSend(ERR_PASSWDMISMATCH);
-			return 1;
-		}
+		user->addMsgToSend(ERR_PASSWDMISMATCH);
+		return 1;
 	}
+	user->setPass(str[1]);
+	std::cout << "cmdPw DONE user->getPass()= " << user->getPass() << std::endl;
 	return 0;
 }
 
@@ -93,11 +93,10 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 	}
 	else if (str.size() >= 4)
 	{
-		std::cout << "--setting user--" << std::endl;
 		user->setUser(str[1]);
-		std::cout << "--setting host--" << std::endl;
+		//std::cout << "--user->getUser()-- " << user->getUser() << std::endl;
 		user->setHost(str[3]);
-		std::cout << "--setting real name--" << std::endl;
+		//std::cout << "--user->getHost()-- " << user->getHost() << std::endl;
 		if (str.at(4)[0] == ':')
 			tmp = str.at(4).substr(1);
 		if (str.size() == 4)
@@ -105,11 +104,12 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 			user->setRealname(tmp);
 			return 0;
 		}
-		std::cout << "--USER done--" << std::endl;
-		// tmp += " ";
-		// tmp += str.at(5);
-		// user->setRealname(tmp);
+		//std::cout << "--user->getRealname()-- " << user->getRealname() << std::endl;
+		 tmp += " ";
+		 tmp += str.at(5);
+		 user->setRealname(tmp);
 	}
+	std::cout << "cmdUser DONE user= " << user->getUser() << " host=" << user->getHost() << " realName=" << user->getRealname() << std::endl;
 	return 0;
 }
 
