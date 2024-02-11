@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 15:44:56 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/11 15:36:37 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,14 +224,13 @@ void	Server::executeCmd(std::string str, User* user){
 	std::string					word;
 	char const*                 index;
 
-	// std::cout << "debug: executeCmd " << str << " for user " << user->getFd() << std::endl;
 	word = str.substr(0, str.find(' '));
 	// std::cout << "debug: cmd word obtained " << word << std::endl;
-	int	(*fun[13])(Server* server, std::vector<std::string> arguments, User* user) = {
+	int	(*fun[])(Server* server, std::vector<std::string> arguments, User* user) = {
 		&cmdPass, &cmdNick, &cmdUser, &cmdInvite, &cmdKill, &cmdTopic, &cmdKick, &cmdPart,
-		&cmdPing, &cmdMode, &cmdQuit, &cmdJoin, &cmdPrivmsg
+		&cmdPing, &cmdMode, &cmdQuit, &cmdJoin, &cmdPrivmsg, &cmdPrivmsg
 	};
-	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "JOIN", "PRIVMSG"};
+	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "JOIN", "PRIVMSG", "MSG"};
 	std::vector<std::string> _cmd(commands, commands + 11);
 	// std::cout << "debug: function pointer array done" << _cmd.size() << std::endl;
 	// std::cout << "debug: _cmd " << _cmd[0] << std::endl;
@@ -265,7 +264,8 @@ void	Server::executeCmd(std::string str, User* user){
 				}
 				arguments.push_back(word);
 			}
-			// std::cout << "debug: calling function for cmd " << word << std::endl;
+			std::cout << "\nCommand= " << arguments[0] << std::endl;
+			std::cout << "Params= " << str << std::endl;
 			(*fun[ind])(this, arguments, user);
 		}
 		ind++;

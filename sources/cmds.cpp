@@ -6,16 +6,20 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 15:49:24 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/11 23:12:16 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+//coder OPER ?? // Command: OPER <name> <password>
+// The OPER command is used by a normal user to obtain IRC operator privileges.
+
 #include "Irc.hpp"
 
+//alphanimeric {} [] \ | ok
+// no space 
+// no : and no num at first
 bool	checkNick(std::string str){
-	//alphanimeric {} [] \ | ok
-	// no space 
-	// no : and no num at first
+	
 	int	i = 0;
 	if (str[i] == ':' || str[i] == '#' || isdigit(str[i]))
 		return false;
@@ -30,9 +34,9 @@ bool	checkNick(std::string str){
 	return true;
 }
 
-//The NICK command is used to give the client a nickname or change the previous one.
+//Command: NICK <nickname>
 int	cmdNick(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdNick--" << std::endl;
+	
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NONICKNAMEGIVEN);
@@ -52,15 +56,19 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_ERRONEUSNICKNAME(user->getNick()));
 			return 1;
 	}
-	user->addMsgToSend(NICK_INFORM(user->getNick(), user->getUser(), user->getHost(), str[1]));
+	if (user->getNick() == "")
+	{
+		user->sendMsg(NICK(str[1]));
+	}
+	else
+		user->addMsgToSend(NICK_CHANGE(user->getNick(), str[1]));
 	user->setNick(str[1]);
-	//std::cout << "cmdNick DONE -- user->getNick()= " << user->getNick() << std::endl;
 	return 0;
 }
 
-//The PASS command is used to set a ‘connection password’.
+//Command: PASS <password>
 int	cmdPass(Server *server, std::vector<std::string> str, User *user){
-//	std::cout << "--cmdPw--" << std::endl;
+	
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -72,12 +80,12 @@ int	cmdPass(Server *server, std::vector<std::string> str, User *user){
 		return 1;
 	}
 	user->setPass(str[1]);
+	std::cout << "Password is good" << std::endl;
 	return 0;
 }
 
-//The USER command is used at the beginning of a connection to specify the username and realname of a new user.
+//Command: USER <username> 0 * <realname>
 int	cmdUser(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdUser--" << std::endl;
 	(void)server;
 	std::string	tmp;
 
@@ -94,48 +102,44 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 	else if (str.size() >= 4)
 	{
 		user->setUser(str[1]);
-		//std::cout << "--user->getUser()-- " << user->getUser() << std::endl;
 		user->setHost(str[3]);
-		//std::cout << "--user->getHost()-- " << user->getHost() << std::endl;
 		if (str.at(4)[0] == ':')
 		{
 			tmp = str.at(4).substr(1);
 			user->setRealname(tmp);
 		}
-		//std::cout << "--user->getRealname()-- " << user->getRealname() << std::endl;
 		 tmp += " ";
 		 tmp += str.at(5);
 		 user->setRealname(tmp);
 	}
-	//std::cout << "cmdUser DONE user= " << user->getUser() << " host=" << user->getHost() << " realName=" << user->getRealname() << std::endl;
 	return 0;
 }
 
 //The PING command is sent by either clients or servers to check the other side of the connection 
 // is still connected and/or to check for connection latency, at the application layer.
+//Command: PING <token>
 int	cmdPing(Server *server, std::vector<std::string> str, User *user){
 	(void)server;
-	if (str.size() < 2)
-	{
-		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
-		return 1;
-	}
-	if (str[1].size() <= 0)
+
+	if (str[1].size() == 0)
 	{
 		user->addMsgToSend(ERR_NOORIGIN(user->getNick()));
 		return 1;
 	}
-	user->addMsgToSend("Pong " + user->getNick() + " :" + str[1]);
-	//user->addMsgToSend(PONG(str[1]));
+	user->addMsgToSend(PONG(user->getHost(), str[1]));
 	return 0;
 }
 
+//Command: PONG [<server>] <token>
+
 //The INVITE command is used to invite a user to a channel. 
 //The parameter <nickname> is the nickname of the person to be invited to the target channel <channel>.
+// Command: INVITE <nickname> <channel>
 int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdInvite--" << std::endl;
+	std::cout << "--cmdInvite--" << std::endl;
 	Channel	*cha = server->findChannel(str[2]);
 	User	*userNew = server->findUser(str[1]);
+
 	if (str.size() < 3)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -167,14 +171,17 @@ int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
 		return 1;
 	}
 	cha->addUser(userNew);
+	cha->inviteUser(userNew);
 	user->addMsgToSend(RPL_INVITING(user->getNick(), user->getUser(), server->getHost(), userNew->getNick(), cha->getName()));
 	userNew->addMsgToSend(INVITE(user->getNick(), user->getUser(), server->getHost(), userNew->getNick(), cha->getName()));
 	return 0;
 }
 
-//The PART command removes the client from the given channel(s). 
+//Command: PART <channel> <reason>
 int	cmdPart(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdPart--" << std::endl;
+	std::cout << "--cmdPart--" << std::endl;
+	std::string	reason = "";
+
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -192,14 +199,20 @@ int	cmdPart(Server *server, std::vector<std::string> str, User *user){
 			user->addMsgToSend(ERR_NOTONCHANNEL(str[i]));
 			return 1;
 		}
+		if (str[2].size() > 0)
+			reason = str[2];
+		user->addMsgToSend(PART(user->getNick(), user->getUser(), user->getHost(), str[1], reason));
 		server->findChannel(str[i])->delUser(user);
 	}
 	return 0;
 }
 
+//Command: MODE <target> [<modestring> [<mode arguments>...]]
 int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdMode--" << std::endl;
+	std::cout << "str[1]=" << str[1]<< "str[2]=" << str[2] << std::endl;
 	(void)server;
+
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -218,22 +231,32 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 		//	user->addMsgToSend(ERR_NOPRIVILEGES);//good msg??
 		//	return 1;
 		//}
+
 		//NOT FINISH
-		if (user->isRegisterd() == false)
-			user->setIsRegisterd(0);
+
+		//if (user->isRegisterd() == false)
+		//	user->setIsRegisterd(0);
 	}
 	//SET MODE FOR A CHANEL / SET MODE FOR A CLIENT IN THE CHANEL
-	//else
-	//{
-		
-	//}
+	else
+	{
+		//Channel *cha = server->findChannel(str[1]);
+		// +i : invite only, un utilisateur doit être invité avant de pouvoir rejoindre le channel.
+		// +t : topic protection, seuls les ChannelOperator peuvent changer le topic.
+		// +k : key protect, place un mot de passe sur le channel. Les utilisateurs doivent indiquer ce mot de passe avec /JOIN #CHANNEL PASSWORD
+		// +o : donne le status opérateur à un utilisateur (ChannelOperator)
+		// +l : limite le nombre maximal d'utilisateurs dans un channel
+	}
 	return 0;
 }
 
 //The KICK command can be used to request the forced removal of a user from a channel.
 //It causes the <user> to be removed from the <channel> by force.
+//Command: KICK <channel> <user> <comment>
 int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdKick--" << std::endl;
+	std::string	reason = "";
+
 	if (str.size() < 3)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -246,6 +269,16 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NOSUCHNICK(userToDel->getNick()));
 		return 1;
 	}
+	else if (cha == NULL)
+	{
+		user->addMsgToSend(ERR_NOSUCHCHANNEL(str[1]));
+		return 1;
+	}
+	else if (cha->isInChannel(user) == false)
+	{
+		user->addMsgToSend(ERR_NOTONCHANNEL(str[1]));
+		return 1;
+	}
 	else if (cha->isInChannel(userToDel) == false)
 	{
 		user->addMsgToSend(ERR_USERNOTINCHANNEL(userToDel->getNick(), str[1]));
@@ -256,13 +289,20 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
 		return 1;
 	}
+	std::vector<User*>	listUser = cha->getUsers();
+	if (str[3].size() > 0)
+		reason = str[3];
+	for (int i = 0; listUser[i]; i++)
+		listUser[i]->addMsgToSend(KICK(user->getNick(), user->getUser(), user->getHost(), cha->getName(), userToDel->getNick(), reason));
 	cha->delUser(userToDel);
 	return 0;
 }
 
-//The TOPIC command is used to change or view the topic of the given channel. 
+//The TOPIC command is used to change or view the topic of the given channel.
+//Command: TOPIC <channel> [<topic>]
 int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdTopic--" << std::endl;
+	std::cout << "--cmdTopic--" << std::endl;
+
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -296,18 +336,18 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 	cha->setTopic(str[2]);
 	std::vector<User*>	listUser = cha->getUsers();
 	for (int i = 0; listUser[i]; i++)
-	{
 		listUser[i]->addMsgToSend(TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), str[2]));
-		return 1;
-	}
 	return 0;
 }
 //user->addMsgToSendToClient(RPL_TOPICWHOTIME((*i)->getNick(),str[1], user->getNick(), str[2], ??));
 
 //The KILL command is used to close the connection between a given client and the server they are connected to.
-//KILL is a privileged command and is available only to IRC Operators. 
+//KILL is a privileged command and is available only to IRC Operators.
+//Command: KILL <nickname> <comment>
 int	cmdKill(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdKill--" << std::endl;
+	std::cout << "--cmdKill--" << std::endl;
+	std::string	reason = "";
+
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -318,27 +358,33 @@ int	cmdKill(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NOPRIVILEGES);
 		return 1;
 	}
-	else
+	else if (server->findUser(str[1]) != NULL)
 	{
-		server->deleteUserFromChannels(user);
-		server->delUser(user);
+		if (str[2].size() > 0)
+			reason = str[2];
+		server->delUser(server->findUser(str[1]));
+		user->addMsgToSend(KILL(user->getNick(), user->getUser(), user->getHost(), str[1], reason));
 		return 0;
 	}
 	user->addMsgToSend(ERR_NOSUCHSERVER);
 	return 1;
 }
 
-//The QUIT command is used to terminate a client’s connection to the server. 
+//The QUIT command is used to terminate a client’s connection to the server.
+//Command: QUIT
 int	cmdQuit(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdQuit--" << std::endl;
+	std::cout << "--cmdQuit--" << std::endl;
 	(void) str;
+
 	server->delUser(user);
 	return 0;
 }
 
-int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
-{
+//Command: JOIN <channel> <key>
+int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
+	std::cout << "--cmdJoin--" << std::endl;
 	Channel	*cha = server->findChannel(str[1]);
+
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -346,28 +392,38 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 	}
 	if (cha == NULL)
 	{
+		if (cha->isValidName(str[1]) == false)
+		{
+			user->addMsgToSend(ERR_BADCHANMASK(str[1]));
+			return 1;
+		}
+		std::cout << "--creation of the channel--" << std::endl;
 		server->addChannel(str[1]);
-		cha = server->findChannel(str[1]); 
+		cha = server->findChannel(str[1]);
+
 		//set mode
 	}
 	if (cha->isInChannel(user) == false)
 	{
+		std::cout << "--add user in this channel--" << std::endl;
 		cha->addUser(user);
 	}
 	std::vector<User *> listUser = cha->getUsers();
 	for (int i = 0; listUser[i]; i++)
-	{
 		listUser[i]->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
-	}
 	return 0;
 }
 
-int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user)
-{
+//Command: PRIVMSG <target> <text to be sent>
+int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
+	std::cout << "--cmdPrivmsg--" << std::endl;
+	std::cout << "nick/channel= " << str[1] << std::endl;
+	std::cout << "msg= " << str[2] << std::endl;
 	std::string	msg;
 	std::vector<std::string>::iterator cpy;
 	User* dest = server->findUser(str[1]);
 	Channel	*cha = server->findChannel(str[1]);
+
 	if (str.size() < 3)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -380,17 +436,17 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user)
 		if (++cpy != str.end())
 			msg += " ";
 	}
-	if (str[1][0] != '#')
+	if (str[1][0] != '#' && str[1][0] != '&') //tagret == user
 	{
 		if (dest)
-			dest->addMsgToSend(PRIVMSG(user->getNick(), user->getUser(), user->getHost(), dest->getUser(), msg));
+			dest->sendMsg(PRIVMSG(user->getNick(), user->getUser(), user->getHost(), dest->getUser(), msg));
 		else
 		{
 			user->addMsgToSend(ERR_NOSUCHNICK(dest->getNick()));
 			return 1;
 		}
 	}
-	else
+	else // target == channel
 	{
 		if (cha)
 		{
@@ -415,47 +471,3 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user)
 	}
 	return 0;
 }
-
-//int	cmdMsg(Server *server, std::vector<std::string> str, User *user)
-//{
-//	std::string	msg;
-//	std::vector<std::string>::iterator cpy;
-//	User* dest = server->findUser(str[1]);
-//	Channel	*cha = server->findChannel(str[1]);
-//	if (str.size() < 3)
-//	{
-//		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
-//		return 1;
-//	}
-//	for (std::vector<std::string>::iterator it = str.begin() + 2; it != str.end(); ++it)
-//	{
-//		msg += *it;
-//		cpy = it;
-//		if (++cpy != str.end())
-//			msg += " ";
-//	}
-//	if (str[1][0] != '#')
-//	{
-//		if (cha)
-//		{
-//			if (cha->isInChannel(user) == false)
-//			{
-//				user->addMsgToSend(ERR_CANNOTSENDTOCHAN(user->getNick(), cha->getName()));
-//				return 1;
-//			}
-//			std::vector<User *> listUser = cha->getUsers();
-//			for (int i = 0; listUser[i]; i++)
-//			{
-//				if (listUser[i]->getNick() == user->getNick())
-//					continue;
-//				listUser[i]->addMsgToSend(RPL_PRIVMSG_CHANEL(user->getNick(), user->getUser(), str[0], cha->getName(), str[2]));
-//			}
-//		}
-//		else
-//		{
-//			user->addMsgToSend(ERR_NOSUCHCHANNEL(str[1]));
-//			return 1;
-//		}
-//	}
-//	return 0;
-//}

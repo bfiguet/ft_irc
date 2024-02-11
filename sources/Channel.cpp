@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 13:08:09 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/11 16:13:36 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,18 @@ bool	Channel::isTopicChange()const
 bool	Channel::isInChannel(const User* user)
 {
 	return (std::find(_users.begin(), _users.end(), user) != _users.end());
+}
+
+//Channels names beginning with a '&', '#', '+' or '!'
+// length up to 50 char whithout the first char
+bool	Channel::isValidName(std::string name){
+	if (name.length() > 51 || name.length() , 1)
+		return false;
+	//if ((name.find(',') != std::string::npos) || (name.find('	') != std::string::npos) || name.find(' ') != std::string::npos)
+	//	return false;
+	if (name[0] != '#' && name[0] != '&' && name[0] != '!' && name[0] != '+')
+		return false;
+	return true;
 }
 
 void	Channel::setTopic(std::string topic)

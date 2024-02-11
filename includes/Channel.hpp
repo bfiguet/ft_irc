@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:12:34 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/06 13:07:33 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/11 16:05:29 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ public:
 	bool						isInvitOnly()const;
 	bool						isTopicChange()const;
 	bool						isInChannel(const User* user);
+	bool						isValidName(std::string name);
 
 	void						setTopic(std::string str);
 	void						setPw(std::string str);
