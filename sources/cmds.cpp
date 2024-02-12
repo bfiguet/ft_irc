@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/12 17:46:31 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/12 19:51:01 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,6 @@ int	cmdPart(Server *server, std::vector<std::string> str, User *user){
 
 //Command: MODE <channel> [<modestring> [<mode arguments>...]]
 //modesting (+ || -) && a-zA-Z
-//arg ???
 int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdMode--" << std::endl;
 	std::cout << "str[1]=" << str[1]<< "str[2]=" << str[2] << std::endl;
@@ -275,38 +274,87 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 					comment = "is now locked.";
 				}
 			}
-			// +o : donne le status opérateur à un utilisateur (ChannelOperator)
-			else if (str[2][1] == 'o' || str[2][1] == 'O')
-			{
-				
-			}
 			// +l : limite le nombre maximal d'utilisateurs dans un channel
 			else if (str[2][1] == 'l' || str[2][1] == 'L')
 			{
-
+				int nb = 0;
+				if (str[3] == "")
+				{
+					user->addMsgToSend(ERR_NEEDMOREPARAMS(str[3]));
+					return 1;
+				}
+				nb = atoi(str[3].c_str());
+				if (nb < 1 && cha->getUserCount() >= nb)
+				{
+					//msg?
+					return 1;
+				}
+				cha->setLimit(nb);
+				comment = "is now limited to " + str[3] + " users.";
+			}
+			else
+			{
+				user->addMsgToSend(ERR_UNKNOWNMODE(str[2]));
+				return 1;
+			}
+		}
+		// +o : donne le status opérateur à un utilisateur (ChannelOperator)
+		else if (str[2][1] == 'o' || str[2][1] == 'O')
+		{
+			User *userOp = server->findUser(str[3]);
+			if (str[3] == "")
+			{
+				user->addMsgToSend(ERR_NEEDMOREPARAMS(str[3]));
+				return 1;
+			}
+			else if (userOp == NULL)
+			{
+				user->addMsgToSend(ERR_NOSUCHNICK(str[3]));
+				return 1;
+			}
+			else if (cha->isInChannel(userOp) == false)
+			{
+				user->addMsgToSend(ERR_NOTONCHANNEL(cha->getName()));
+				return 1;
+			}
+			if (str[2][0] == '+')
+			{
+				cha->setOperator(userOp);
+				comment = "is now channel operator.";
+			}
+			else if (str[2][0] == '-')
+			{
+				cha->delOperator(userOp);
+				comment = "is no longer operator.";
 			}
 		}
 		else if (str[2][0] == '-')
 		{
 			if (str[2][1] == 'i' || str[2][1] == 'I')
 			{
-
+				cha->setInvitOnly(false);
+				comment = "is no longer invite-only.";
 			}
 			else if (str[2][1] == 't' || str[2][1] == 'T')
 			{
-
+				cha->setTopicChange(true);
+				comment = "topic is no longer protected.";
 			}
 			else if (str[2][1] == 'k' || str[2][1] == 'K')
 			{
-
-			}
-			else if (str[2][1] == 'o' || str[2][1] == 'O')
-			{
-
+				cha->setKeyProtect(false);
+				cha->setPw("");
+				comment = "is no longer locked.";
 			}
 			else if (str[2][1] == 'l' || str[2][1] == 'L')
 			{
-
+				cha->setLimit(100);
+				comment = "is no longer limited in members.";
+			}
+			else
+			{
+				user->addMsgToSend(ERR_UNKNOWNMODE(str[2]));
+				return 1;
 			}
 		}
 		else
@@ -375,11 +423,15 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
-	//check if the channel exist
 	Channel	*cha = server->findChannel(str[1]);
 	if (cha == NULL)
 	{
 		user->addMsgToSend(ERR_NOSUCHCHANNEL(cha->getName()));
+		return 1;
+	}
+	if (cha->isInChannel(user) == false)
+	{
+		user->addMsgToSend(ERR_NOTONCHANNEL(cha->getName()));
 		return 1;
 	}
 	if (str.size() == 2)
@@ -391,19 +443,23 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 	}
 	else
 	{
-		if (cha->isInvitOnly())
+		if (cha->isTopicChange() == false && cha->isOperator(user) == false)
 		{
-			if (cha->isInvited(user))
-			{
-				user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
-				return 1;
-			}
+			user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
+			return 1;
+		}
+		if (str[2].size() < 1)
+		{
+			cha->setTopic("");
+		}
+		else
+		{
+			cha->setTopic(str[2]);
+			std::vector<User*>	listUser = cha->getUsers();
+			for (int i = 0; listUser[i]; i++)
+				listUser[i]->addMsgToSend(TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), str[2]));
 		}
 	}
-	cha->setTopic(str[2]);
-	std::vector<User*>	listUser = cha->getUsers();
-	for (int i = 0; listUser[i]; i++)
-		listUser[i]->addMsgToSend(TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), str[2]));
 	return 0;
 }
 //user->addMsgToSendToClient(RPL_TOPICWHOTIME((*i)->getNick(),str[1], user->getNick(), str[2], ??));

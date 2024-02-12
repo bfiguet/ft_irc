@@ -6,13 +6,13 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/12 17:18:51 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/12 19:36:40 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
-Channel::Channel(std::string name): _name(name), _pw(""), _topic(), _keyProtect(false){}
+Channel::Channel(std::string name): _name(name), _pw(""), _topic(), _keyProtect(false), _operator(NULL), _userLimit(100){}
 
 Channel::~Channel(){}
 
@@ -27,10 +27,12 @@ std::vector<User *>	Channel::getUsers() const
 
 std::string	Channel::getTopic() const{ return _topic;}
 
+User*	Channel::getOperator() const{ return _operator; }
+
 bool	Channel::getKeyProtect()const{ return _keyProtect; }
 
-bool	Channel::isOperator(const User* user) const
-{ return (std::find(_operators.begin(), _operators.end(), user) != _operators.end());}
+//bool	Channel::isOperator(const User* user) const
+//{ return (std::find(_operators.begin(), _operators.end(), user) != _operators.end());}
 
 bool	Channel::isInvited(const User* user) const
 { return (std::find(_invited.begin(), _invited.end(), user) != _invited.end());}
@@ -94,10 +96,21 @@ void	Channel::delUser(User* user)
 void	Channel::inviteUser(User* user)
 {_invited.push_back(user);}
 
-void	Channel::setOperator(User* user, bool isOperator)
+void	Channel::setOperator(User* user)
 {
-	if (isOperator)
-		_operators.push_back(user);
-	else
-		_operators.erase(std::find(_operators.begin(), _operators.end(), user));
+	_operator = user;
 }
+
+void	Channel::delOperator(User* user)
+{
+	_operator = NULL;
+}
+
+//void	Channel::setOperator(User* user, bool isOperator)
+//{
+//	_operator
+//	if (isOperator)
+//		_operators.push_back(user);
+//	else
+//		_operators.erase(std::find(_operators.begin(), _operators.end(), user));
+//}
