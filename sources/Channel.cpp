@@ -6,13 +6,13 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/11 16:13:36 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/12 17:18:51 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
-Channel::Channel(std::string name): _name(name), _pw(""), _topic(){}
+Channel::Channel(std::string name): _name(name), _pw(""), _topic(), _keyProtect(false){}
 
 Channel::~Channel(){}
 
@@ -26,6 +26,8 @@ std::vector<User *>	Channel::getUsers() const
 {return _users;}
 
 std::string	Channel::getTopic() const{ return _topic;}
+
+bool	Channel::getKeyProtect()const{ return _keyProtect; }
 
 bool	Channel::isOperator(const User* user) const
 { return (std::find(_operators.begin(), _operators.end(), user) != _operators.end());}
@@ -73,6 +75,9 @@ void	Channel::setInvitOnly(bool onOff)
 
 void	Channel::setTopicChange(bool onOff)
 {_TopicChangeRestriction = onOff;}
+
+void	Channel::setKeyProtect(bool val)
+{_keyProtect = val;}
 
 void	Channel::addUser(User* user)
 {

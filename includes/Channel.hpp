@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:12:34 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/11 16:05:29 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/12 17:17:42 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ private:
 	unsigned long				_userLimit;
 	bool						_invitOnly;
 	bool						_TopicChangeRestriction;
+	bool						_keyProtect;
 	std::vector<User *>			_users;
 	std::vector<User *>			_operators;
 	std::vector<User *>			_invited;
@@ -39,6 +40,7 @@ public:
 	std::vector<User *>			getUsers() const;
 	unsigned long				getUserCount() const;
 	std::string					getTopic() const;
+	bool						getKeyProtect()const;
 
 	bool						isOperator(const User* user) const;
 	bool						isInvited(const User* user) const;
@@ -52,6 +54,7 @@ public:
 	void						setLimit(unsigned long val);
 	void						setInvitOnly(bool val);
 	void						setTopicChange(bool val);
+	void						setKeyProtect(bool val);
 
 	void						addUser(User* user);
 	void						delUser(User* user);

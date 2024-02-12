@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/11 23:04:45 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/12 17:19:34 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,8 @@ extern bool g_run;
 
 # define ERR_NEEDMOREPARAMS(command) (std::string("461 ") + command + " :Not enough parameters\r\n")
 
+# define ERR_UNKNOWNMODE(modechar) (": 472" + modechar + " :is unknown mode char to me\r\n")
+
 # define ERR_PASSWDMISMATCH "464 :Password incorrect\r\n"
 # define ERR_USERMISMATCH "464 : User incorrect\r\n"
 
@@ -165,4 +167,9 @@ extern bool g_run;
 # define RPL_UMODEIS(nick, mode, char) (" 221 " + nick + " " + mode + char + "\r\n")
 # define ERR_USERONCHANNEL(nick, invitenick, chan) ("443 " + nick + " " + invitenick + " " + chan + ":is already on channel\r\n")
 # define RPL_PRIVMSG_CHANEL(nickname, username, cmd, chanel, msg) (nickname + " " + username + " " + cmd + " " + chanel + " " + msg + "\r\n")
+
+# define	MODE(channel, mode, comment) (" MODE " + channel + " " + mode + " :" + comment + "\r\n")
+
+# define    ERR_KEYSET(channel) (": 467 " + channel + " :Channel key already set\r\n")
+
 #endif

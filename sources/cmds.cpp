@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/11 23:12:16 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/12 17:46:31 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,51 +207,119 @@ int	cmdPart(Server *server, std::vector<std::string> str, User *user){
 	return 0;
 }
 
-//Command: MODE <target> [<modestring> [<mode arguments>...]]
+//Command: MODE <channel> [<modestring> [<mode arguments>...]]
+//modesting (+ || -) && a-zA-Z
+//arg ???
 int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdMode--" << std::endl;
 	std::cout << "str[1]=" << str[1]<< "str[2]=" << str[2] << std::endl;
-	(void)server;
+	Channel				*cha = server->findChannel(str[1]);
+	std::vector<User*>	listUser = cha->getUsers();
+	std::string			comment = "";
 
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
-	if (str[1][0] != '#')
+	if (str[2] == "" || str[1][0] != '#')
+		return 0;
+	if (str[1][0] == '#')
 	{
-		if (str.size() < 3)
+		if (cha == NULL)
 		{
-			user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+			user->addMsgToSend(ERR_NOSUCHCHANNEL(cha->getName()));
 			return 1;
 		}
-		//CLIENT DOESN'T HAVE RIGHT PRIV TO DO THAT
-		//if (user->isRegisterd() == false) // channel
-		//{
-		//	user->addMsgToSend(ERR_NOPRIVILEGES);//good msg??
-		//	return 1;
-		//}
+		else if (cha->isInChannel(user) == false)
+		{
+			user->addMsgToSend(ERR_NOTONCHANNEL(cha->getName()));
+			return 1;
+		}
+		else if (cha->isOperator(user) == false)
+		{
+			user->addMsgToSend(ERR_NOPRIVILEGES);
+			return 1;
+		}
+		if (str[2][0] == '+')
+		{
+			// +i : invite only, un utilisateur doit être invité avant de pouvoir rejoindre le channel.
+			if (str[2][1] == 'i' || str[2][1] == 'I')
+			{
+				cha->setInvitOnly(true);
+				comment = "is now invite-only.";
+			}
+			// +t : topic protection, seuls les ChannelOperator peuvent changer le topic.
+			else if (str[2][1] == 't' || str[2][1] == 'T')
+			{
+				cha->setTopicChange(false);
+				comment = "topic is now protected.";
+			}
+			// +k : key protect, place un mot de passe sur le channel. Les utilisateurs doivent indiquer ce mot de passe avec /JOIN #CHANNEL PASSWORD
+			else if (str[2][1] == 'k' || str[2][1] == 'K')
+			{
+				if (str[3] == "")
+				{
+					user->addMsgToSend(ERR_NEEDMOREPARAMS(str[3]));
+					return 1;
+				}
+				else if (cha->getKeyProtect() == true)
+				{
+					user->addMsgToSend(ERR_KEYSET(cha->getName()));
+					return 1;
+				}
+				else
+				{
+					cha->setKeyProtect(true);
+					cha->setPw(str[3]);
+					comment = "is now locked.";
+				}
+			}
+			// +o : donne le status opérateur à un utilisateur (ChannelOperator)
+			else if (str[2][1] == 'o' || str[2][1] == 'O')
+			{
+				
+			}
+			// +l : limite le nombre maximal d'utilisateurs dans un channel
+			else if (str[2][1] == 'l' || str[2][1] == 'L')
+			{
 
-		//NOT FINISH
+			}
+		}
+		else if (str[2][0] == '-')
+		{
+			if (str[2][1] == 'i' || str[2][1] == 'I')
+			{
 
-		//if (user->isRegisterd() == false)
-		//	user->setIsRegisterd(0);
-	}
-	//SET MODE FOR A CHANEL / SET MODE FOR A CLIENT IN THE CHANEL
-	else
-	{
-		//Channel *cha = server->findChannel(str[1]);
-		// +i : invite only, un utilisateur doit être invité avant de pouvoir rejoindre le channel.
-		// +t : topic protection, seuls les ChannelOperator peuvent changer le topic.
-		// +k : key protect, place un mot de passe sur le channel. Les utilisateurs doivent indiquer ce mot de passe avec /JOIN #CHANNEL PASSWORD
-		// +o : donne le status opérateur à un utilisateur (ChannelOperator)
-		// +l : limite le nombre maximal d'utilisateurs dans un channel
+			}
+			else if (str[2][1] == 't' || str[2][1] == 'T')
+			{
+
+			}
+			else if (str[2][1] == 'k' || str[2][1] == 'K')
+			{
+
+			}
+			else if (str[2][1] == 'o' || str[2][1] == 'O')
+			{
+
+			}
+			else if (str[2][1] == 'l' || str[2][1] == 'L')
+			{
+
+			}
+		}
+		else
+		{
+			user->addMsgToSend(ERR_UNKNOWNMODE(str[2]));
+			return 1;
+		}
+		for (int i = 0; listUser[i]; i++)
+			listUser[i]->addMsgToSend(MODE(cha->getName(), str[2], comment));
 	}
 	return 0;
 }
 
-//The KICK command can be used to request the forced removal of a user from a channel.
-//It causes the <user> to be removed from the <channel> by force.
 //Command: KICK <channel> <user> <comment>
 int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdKick--" << std::endl;
@@ -298,7 +366,6 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 	return 0;
 }
 
-//The TOPIC command is used to change or view the topic of the given channel.
 //Command: TOPIC <channel> [<topic>]
 int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdTopic--" << std::endl;
@@ -341,8 +408,6 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 }
 //user->addMsgToSendToClient(RPL_TOPICWHOTIME((*i)->getNick(),str[1], user->getNick(), str[2], ??));
 
-//The KILL command is used to close the connection between a given client and the server they are connected to.
-//KILL is a privileged command and is available only to IRC Operators.
 //Command: KILL <nickname> <comment>
 int	cmdKill(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdKill--" << std::endl;
@@ -370,7 +435,6 @@ int	cmdKill(Server *server, std::vector<std::string> str, User *user){
 	return 1;
 }
 
-//The QUIT command is used to terminate a client’s connection to the server.
 //Command: QUIT
 int	cmdQuit(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdQuit--" << std::endl;
