@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 11:48:37 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 12:35:20 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,6 @@ std::string	Channel::getTopic() const{ return _topic;}
 bool	Channel::isInvited(const User* user) const
 { return (std::find(_invited.begin(), _invited.end(), user) != _invited.end());}
 
-//unsigned long	Channel::getUserCount() const
-//{return (_userCount);}
-
 int	Channel::getUserCount() const
 {return (_userCount);}
 
@@ -55,12 +52,12 @@ bool	Channel::isOperator(const User* user) const
 //Channels names beginning with a '&', '#', '+' or '!'
 // length up to 50 char whithout the first char
 bool	Channel::isValidName(std::string name){
-	if (name.length() > 51 || name.length() , 1)
+	if (name.length() > 51 || !name.length())
+		return false;
+	if (name[0] != '#' && name[0] != '&' && name[0] != '!' && name[0] != '+')
 		return false;
 	//if ((name.find(',') != std::string::npos) || (name.find('	') != std::string::npos) || name.find(' ') != std::string::npos)
 	//	return false;
-	if (name[0] != '#' && name[0] != '&' && name[0] != '!' && name[0] != '+')
-		return false;
 	return true;
 }
 

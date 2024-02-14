@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:12:34 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 11:47:18 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 12:35:34 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,6 @@ private:
 	std::string				_pw;
 	std::string				_operatorPw;
 	std::string				_topic;
-	//unsigned long			_userCount;
-	//unsigned long			_userLimit;
 	int						_userCount;
 	int						_userLimit;
 	bool					_invitOnly;
@@ -39,7 +37,6 @@ public:
 	std::string				getName()const;
 	std::string				getPw() const;
 	std::vector<User *>		getUsers() const;
-	//unsigned long			getUserCount() const;
 	int						getUserCount() const;
 	std::string				getTopic() const;
 

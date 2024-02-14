@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/11 15:36:37 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 12:23:16 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ int	Server::receiveMsg(int fd){
 		delUser(user);
 		return(0);
 	}
-	// std::cout << "debug: message received " << buffer << std::endl;
+	//std::cout << "debug: message received " << buffer << std::endl;
 	user->addMsg(buffer);
 	return (0);
 }
@@ -128,7 +128,7 @@ int Server::polloutHandler(int fd)
 	// std::cout << "User is " << user->getFd() << " " << user->getNick() << std::endl;
 	if (!user->getMsgsToSend().empty())
 	{
-		std::cout << user->getNick() << " messages to send:" << user->getMsgsToSend() << std::endl;
+		std::cout << user->getNick() << " messages to send:\n" << user->getMsgsToSend() << std::endl;
 		user->sendMsg(user->getMsgsToSend());
 		user->setMsgsToSend("");
 	}
@@ -190,7 +190,7 @@ void	Server::callCmds(User* user)
 {
 	// std::cout << "debug: executing cmd on user " << user->getFd() << std::endl;
 	std::string cmd = user->extractCmd();
-	// std::cout << "debug: executing cmd ->" << cmd << "|" << cmd.size() << std::endl;
+	 //std::cout << "debug: executing cmd ->" << cmd << "|" << cmd.size() << std::endl;
 	if (cmd.empty())
 		return;
 	executeCmd(cmd, user);
@@ -225,13 +225,13 @@ void	Server::executeCmd(std::string str, User* user){
 	char const*                 index;
 
 	word = str.substr(0, str.find(' '));
-	// std::cout << "debug: cmd word obtained " << word << std::endl;
+	//std::cout << "debug: executeCmd " << str << std::endl;
 	int	(*fun[])(Server* server, std::vector<std::string> arguments, User* user) = {
 		&cmdPass, &cmdNick, &cmdUser, &cmdInvite, &cmdKill, &cmdTopic, &cmdKick, &cmdPart,
 		&cmdPing, &cmdMode, &cmdQuit, &cmdJoin, &cmdPrivmsg, &cmdPrivmsg
 	};
 	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "JOIN", "PRIVMSG", "MSG"};
-	std::vector<std::string> _cmd(commands, commands + 11);
+	std::vector<std::string> _cmd(commands, commands + 14);
 	// std::cout << "debug: function pointer array done" << _cmd.size() << std::endl;
 	// std::cout << "debug: _cmd " << _cmd[0] << std::endl;
 	// for (int i = 0; i < 10; i++)
@@ -265,12 +265,11 @@ void	Server::executeCmd(std::string str, User* user){
 				arguments.push_back(word);
 			}
 			std::cout << "\nCommand= " << arguments[0] << std::endl;
-			std::cout << "Params= " << str << std::endl;
 			(*fun[ind])(this, arguments, user);
 		}
 		ind++;
 	}
-	displayUser(user);
+	//displayUser(user);
 	// std::cout << "debug: command " << word << " not found" << std::endl;
 }
 
@@ -311,11 +310,11 @@ User*	Server::findUser(int fd){
 
 void	Server::displayUser(User* user){
 	std::cout << "New user received" << std::endl;
-	std::cout <<"User " << user->getUser() << " are connected"<< std::endl;
-	std::cout << " nickname: " << user->getNick() << std::endl;
-	std::cout << " realname: " <<user->getRealname() << std::endl;
-	std::cout << " server: " <<user->getHost() << std::endl;
-	std::cout << " pass: " <<user->getPass() << std::endl;
+	std::cout << "User " << user->getUser() << " are connected"<< std::endl;
+	std::cout << "nickname: " << user->getNick() << std::endl;
+	std::cout << "realname: " <<user->getRealname() << std::endl;
+	std::cout << "server: " <<user->getHost() << std::endl;
+	std::cout << "pass: " <<user->getPass() << std::endl;
 	std::cout << std::endl;
 }
 

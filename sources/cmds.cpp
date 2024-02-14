@@ -6,12 +6,9 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 11:49:04 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 12:36:52 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-//coder OPER ?? // Command: OPER <name> <password>
-// The OPER command is used by a normal user to obtain IRC operator privileges.
 
 #include "Irc.hpp"
 
@@ -80,7 +77,7 @@ int	cmdPass(Server *server, std::vector<std::string> str, User *user){
 		return 1;
 	}
 	user->setPass(str[1]);
-	std::cout << "Password is good" << std::endl;
+	//std::cout << "Password is good" << std::endl;
 	return 0;
 }
 
@@ -115,8 +112,6 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 	return 0;
 }
 
-//The PING command is sent by either clients or servers to check the other side of the connection 
-// is still connected and/or to check for connection latency, at the application layer.
 //Command: PING <token>
 int	cmdPing(Server *server, std::vector<std::string> str, User *user){
 	(void)server;
@@ -130,10 +125,6 @@ int	cmdPing(Server *server, std::vector<std::string> str, User *user){
 	return 0;
 }
 
-//Command: PONG [<server>] <token>
-
-//The INVITE command is used to invite a user to a channel. 
-//The parameter <nickname> is the nickname of the person to be invited to the target channel <channel>.
 // Command: INVITE <nickname> <channel>
 int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdInvite--" << std::endl;
@@ -210,10 +201,8 @@ int	cmdPart(Server *server, std::vector<std::string> str, User *user){
 //Command: MODE <channel> [<modestring> [<mode arguments>...]]
 //modesting (+ || -) && a-zA-Z
 int	cmdMode(Server *server, std::vector<std::string> str, User *user){
-	std::cout << "--cmdMode--" << std::endl;
-	std::cout << "str[1]=" << str[1]<< "str[2]=" << str[2] << std::endl;
-	Channel				*cha = server->findChannel(str[1]);
-	std::vector<User*>	listUser = cha->getUsers();
+	//std::cout << "--cmdMode--" << std::endl;
+	//std::cout << "str[1]=" << str[1]<< " str[2]=" << str[2] << std::endl;
 	std::string			comment = "";
 
 	if (str.size() < 2)
@@ -221,10 +210,10 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
-	if (str[2] == "" || str[1][0] != '#')
-		return 0;
-	if (str[1][0] == '#')
+	if (str[1][0] == '#' && str[2].empty() == false)
 	{
+		Channel				*cha = server->findChannel(str[1]);
+		std::vector<User*>	listUser = cha->getUsers();
 		if (cha == NULL)
 		{
 			user->addMsgToSend(ERR_NOSUCHCHANNEL(cha->getName()));
@@ -251,6 +240,7 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 			// +t : topic protection, seuls les ChannelOperator peuvent changer le topic.
 			else if (str[2][1] == 't' || str[2][1] == 'T')
 			{
+				
 				cha->setTopicChange(false);
 				comment = "topic is now protected.";
 			}
