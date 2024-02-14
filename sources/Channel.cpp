@@ -6,13 +6,13 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 12:35:20 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 14:59:59 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
-Channel::Channel(std::string name): _name(name), _pw(""), _topic(), _userLimit(100){}
+Channel::Channel(std::string name): _name(name), _pw(""), _topic(), _userCount(0), _userLimit(100){}
 
 Channel::~Channel(){}
 

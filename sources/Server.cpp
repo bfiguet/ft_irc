@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 13:26:21 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 15:01:13 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ int		Server::newSock(){
 	if (bind(serverSocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 	{
 		std::cout << "Error: binding socket " << strerror(errno) << std::endl;
-		std::cout << "test" << std::endl;
 		return (-1);
 	}
 	//Listening socket
@@ -181,20 +180,20 @@ int	Server::start(){
 		{
 			// std::cout << "debug cmds on fd " << (*i).fd << std::endl;
 			if (i != _pollfds.begin())
-				callCmds(findUser(((*i)).fd));
+				if (callCmds(findUser(((*i)).fd)) == 1)
+					std::cout << "need password to connect" << std::endl;
 		}
 	}
-	std::cout << "debug: end start" << std::endl;
 	return 0;
 }
 
-void	Server::callCmds(User* user)
+int	Server::callCmds(User* user)
 {
 	// std::cout << "debug: executing cmd on user " << user->getFd() << std::endl;
 	std::string cmd = user->extractCmd();
 	 //std::cout << "debug: executing cmd ->" << cmd << "|" << cmd.size() << std::endl;
 	if (cmd.empty())
-		return;
+		return 0;
 	executeCmd(cmd, user);
 	// std::cout << "debug: execution done" << std::endl;
 	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
@@ -217,10 +216,11 @@ void	Server::callCmds(User* user)
 		}
 		else
 		{
-			std::cout << "need password to connect" << std::endl;
 			delUser(user);
+			return 1;
 		}
 	}
+	return 0;
 }
 
 void	Server::executeCmd(std::string str, User* user){
@@ -315,14 +315,19 @@ void	Server::displayUser(User* user){
 
 void	Server::deleteUserFromChannels(User* user)
 {
-	if (_channels.size() > 1)
+	if (_channels.size() >= 1)
 	{
 		for (std::vector<Channel*>::iterator it=_channels.begin(); ;it++)
 		{
 			if ((*it)->isInChannel(user))
+			{
 				(*it)->delUser(user);
-			if((*it)->getUserCount() == 0)
-				_channels.erase(it);
+				if ((*it)->getUserCount() < 1)
+				{
+					_channels.erase(it);
+					delete(*it);
+				}
+			}
 			if (it == _channels.end())
 				break;
 		}

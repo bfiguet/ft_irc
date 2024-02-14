@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 13:39:10 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 14:27:05 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,13 @@ bool	checkNick(std::string str){
 
 //Command: NICK <nickname>
 int	cmdNick(Server *server, std::vector<std::string> str, User *user){
-	
+	std::vector<User*>	listUser = server->getUsers();
+
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NONICKNAMEGIVEN);
 		return 1;
 	}
-	std::vector<User*>	listUser = server->getUsers();
 	if (std::find(listUser.begin(), listUser.end(), user) != listUser.end() == false)
 	{
 		user->addMsgToSend(ERR_NICKNAMEINUSE(user->getNick()));
@@ -135,7 +135,7 @@ int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
 	}
 	if (cha == NULL)
 	{
-		user->addMsgToSend(ERR_NOSUCHCHANNEL(cha->getName()));
+		user->addMsgToSend(ERR_NOSUCHCHANNEL(str[2]));
 		return 1;
 	}
 	if (cha->isInChannel(user) == false)
@@ -478,9 +478,9 @@ int	cmdKill(Server *server, std::vector<std::string> str, User *user){
 
 //Command: QUIT
 int	cmdQuit(Server *server, std::vector<std::string> str, User *user){
-	std::cout << "--cmdQuit--" << std::endl;
+	//std::cout << "--cmdQuit--" << std::endl;
 	(void) str;
-
+	std::cout << user->getNick() << " on fd " << user->getFd() << " has leaving" << std::endl;
 	server->delUser(user);
 	return 0;
 }
@@ -488,13 +488,13 @@ int	cmdQuit(Server *server, std::vector<std::string> str, User *user){
 //Command: JOIN <channel> <key>
 int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdJoin--" << std::endl;
-	Channel	*cha = server->findChannel(str[1]);
 
 	if (str.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
+	Channel	*cha = server->findChannel(str[1]);
 	if (cha == NULL)
 	{
 		if (cha->isValidName(str[1]) == false)
@@ -502,15 +502,15 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
 			user->addMsgToSend(ERR_BADCHANMASK(str[1]));
 			return 1;
 		}
-		std::cout << "--creation of the channel--" << std::endl;
 		server->addChannel(str[1]);
 		cha = server->findChannel(str[1]);
-
-		//set mode
+		std::cout << "--creation of the channel-- " << cha->getName() << std::endl;
+		cha->isOperator(user);
+		std::cout << user->getNick() << " is IRC operator in this channel" << std::endl;
 	}
 	if (cha->isInChannel(user) == false)
 	{
-		std::cout << "--add user in this channel--" << std::endl;
+		std::cout << "add " << user->getNick() << " in this channel" << std::endl;
 		cha->addUser(user);
 	}
 	std::vector<User *> listUser = cha->getUsers();
