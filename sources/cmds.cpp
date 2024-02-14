@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/12 19:51:01 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 11:32:13 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,14 +262,13 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 					user->addMsgToSend(ERR_NEEDMOREPARAMS(str[3]));
 					return 1;
 				}
-				else if (cha->getKeyProtect() == true)
+				else if (!cha->getPw().empty())
 				{
 					user->addMsgToSend(ERR_KEYSET(cha->getName()));
 					return 1;
 				}
 				else
 				{
-					cha->setKeyProtect(true);
 					cha->setPw(str[3]);
 					comment = "is now locked.";
 				}
@@ -319,12 +318,12 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 			}
 			if (str[2][0] == '+')
 			{
-				cha->setOperator(userOp);
+				cha->setOperators(userOp, true);
 				comment = "is now channel operator.";
 			}
 			else if (str[2][0] == '-')
 			{
-				cha->delOperator(userOp);
+				cha->setOperators(userOp, false);
 				comment = "is no longer operator.";
 			}
 		}
