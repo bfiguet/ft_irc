@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 15:01:13 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 15:23:42 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ int	Server::receiveMsg(int fd){
 		delUser(user);
 		return(0);
 	}
-	//std::cout << "debug: message received " << buffer << std::endl;
+	std::cout << "debug: message received " << buffer << std::endl;
 	user->addMsg(buffer);
 	return (0);
 }
@@ -233,9 +233,9 @@ void	Server::executeCmd(std::string str, User* user){
 	//std::cout << "debug: executeCmd " << str << std::endl;
 	int	(*fun[])(Server* server, std::vector<std::string> arguments, User* user) = {
 		&cmdPass, &cmdNick, &cmdUser, &cmdInvite, &cmdKill, &cmdTopic, &cmdKick, &cmdPart,
-		&cmdPing, &cmdMode, &cmdQuit, &cmdJoin, &cmdPrivmsg, &cmdPrivmsg
+		&cmdPing, &cmdMode, &cmdQuit, &cmdPrivmsg, &cmdJoin, &cmdPrivmsg
 	};
-	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "JOIN", "PRIVMSG", "MSG"};
+	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "PRIVMSG", "JOIN", "MSG"};
 	std::vector<std::string> _cmd(commands, commands + 14);
 	// std::cout << "debug: function pointer array done" << _cmd.size() << std::endl;
 	// std::cout << "debug: _cmd " << _cmd[0] << std::endl;

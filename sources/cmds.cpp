@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 14:27:05 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 15:45:55 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 	(void)server;
 	std::string	tmp;
 
-	if (user->getUser() == str.at(1))
+	if (user->getUser() == str[1])
 	{
 		user->addMsgToSend(ERR_ALREADYREGISTERED);
 		return 1;
@@ -97,13 +97,13 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 	{
 		user->setUser(str[1]);
 		user->setHost(str[3]);
-		if (str.at(4)[0] == ':')
+		if (str[4][0] == ':')
 		{
-			tmp = str.at(4).substr(1);
+			tmp = str[4].substr(1);
 			user->setRealname(tmp);
 		}
 		 tmp += " ";
-		 tmp += str.at(5);
+		 tmp += str[5];
 		 user->setRealname(tmp);
 	}
 	return 0;
@@ -522,10 +522,10 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
 //Command: PRIVMSG <target> <text to be sent>
 int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdPrivmsg--" << std::endl;
-	std::cout << "nick/channel= " << str[1] << std::endl;
-	std::cout << "msg= " << str[2] << std::endl;
+	std::cout << "target " << str[1] << std::endl;
+	std::cout << "text to be sent " << str[2] << std::endl;
 	std::string	msg;
-	std::vector<std::string>::iterator cpy;
+
 	User* dest = server->findUser(str[1]);
 	Channel	*cha = server->findChannel(str[1]);
 
@@ -534,17 +534,12 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
-	for (std::vector<std::string>::iterator it = str.begin() + 2; it != str.end(); ++it)
-	{
-		msg += *it;
-		cpy = it;
-		if (++cpy != str.end())
-			msg += " ";
-	}
+	if (str[2][0] == ':')
+		msg = str[2].substr(1);
 	if (str[1][0] != '#' && str[1][0] != '&') //tagret == user
 	{
 		if (dest)
-			dest->sendMsg(PRIVMSG(user->getNick(), user->getUser(), user->getHost(), dest->getUser(), msg));
+			dest->addMsgToSend(PRIVMSG(user->getNick(), user->getUser(), user->getHost(), dest->getUser(), msg));
 		else
 		{
 			user->addMsgToSend(ERR_NOSUCHNICK(dest->getNick()));
@@ -560,7 +555,6 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
 				user->addMsgToSend(ERR_CANNOTSENDTOCHAN(user->getNick(), cha->getName()));
 				return 1;
 			}
-
 			std::vector<User *> listUser = cha->getUsers();
 			for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
 			{
