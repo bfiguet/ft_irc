@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 11:32:48 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 11:48:37 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,10 @@ std::string	Channel::getTopic() const{ return _topic;}
 bool	Channel::isInvited(const User* user) const
 { return (std::find(_invited.begin(), _invited.end(), user) != _invited.end());}
 
-unsigned long	Channel::getUserCount() const
+//unsigned long	Channel::getUserCount() const
+//{return (_userCount);}
+
+int	Channel::getUserCount() const
 {return (_userCount);}
 
 bool	Channel::isInvitOnly()const
@@ -42,6 +45,11 @@ bool	Channel::isTopicChange()const
 bool	Channel::isInChannel(const User* user)
 {
 	return (std::find(_users.begin(), _users.end(), user) != _users.end());
+}
+
+bool	Channel::isOperator(const User* user) const
+{
+	return(std::find(_operators.begin(), _operators.end(), user) != _operators.end());
 }
 
 //Channels names beginning with a '&', '#', '+' or '!'

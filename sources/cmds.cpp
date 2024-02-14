@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 11:32:13 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 11:49:04 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -341,7 +341,6 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 			}
 			else if (str[2][1] == 'k' || str[2][1] == 'K')
 			{
-				cha->setKeyProtect(false);
 				cha->setPw("");
 				comment = "is no longer locked.";
 			}
@@ -451,7 +450,7 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 		{
 			cha->setTopic("");
 		}
-		else
+		else if (cha->isTopicChange() == true && cha->isOperator(user) == true)
 		{
 			cha->setTopic(str[2]);
 			std::vector<User*>	listUser = cha->getUsers();
