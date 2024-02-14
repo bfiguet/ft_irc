@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 15:45:55 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 16:19:26 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -525,7 +525,6 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "target " << str[1] << std::endl;
 	std::cout << "text to be sent " << str[2] << std::endl;
 	std::string	msg;
-
 	User* dest = server->findUser(str[1]);
 	Channel	*cha = server->findChannel(str[1]);
 
@@ -542,7 +541,7 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
 			dest->addMsgToSend(PRIVMSG(user->getNick(), user->getUser(), user->getHost(), dest->getUser(), msg));
 		else
 		{
-			user->addMsgToSend(ERR_NOSUCHNICK(dest->getNick()));
+			user->addMsgToSend(ERR_NOSUCHNICK(str[1]));
 			return 1;
 		}
 	}
@@ -558,9 +557,9 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
 			std::vector<User *> listUser = cha->getUsers();
 			for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
 			{
-				if ((*it)->getNick() == user->getNick())
-					continue;
-				(*it)->addMsgToSend(RPL_PRIVMSG_CHANEL(user->getNick(), user->getUser(), str[0], cha->getName(), str[2]));
+				//if ((*it)->getNick() == user->getNick())
+				//	continue;
+				(*it)->addMsgToSend(RPL_PRIVMSG_CHANEL(user->getNick(), user->getUser(), str[0], cha->getName(), msg));
 			}
 		}
 		else
