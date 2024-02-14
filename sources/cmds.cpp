@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 12:36:52 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 13:39:10 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,10 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 		return 1;
 	}
 	std::vector<User*>	listUser = server->getUsers();
-	for (int i = 0; listUser[i]; i++)
+	if (std::find(listUser.begin(), listUser.end(), user) != listUser.end() == false)
 	{
-		if (listUser[i]->getNick() == str[1] && listUser[i]->getFd() != user->getFd())
-		{
-			user->addMsgToSend(ERR_NICKNAMEINUSE(user->getNick()));
-			return 1;
-		}
+		user->addMsgToSend(ERR_NICKNAMEINUSE(user->getNick()));
+		return 1;
 	}
 	if (checkNick(str[1]) == false)
 	{
@@ -178,7 +175,7 @@ int	cmdPart(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
-	for (size_t	i = 1; i < str.size(); i++)
+	for (size_t	i = 0; i < str.size(); ++i)
 	{
 		if (server->findChannel(str[i]) == NULL)
 		{
@@ -350,8 +347,8 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 			user->addMsgToSend(ERR_UNKNOWNMODE(str[2]));
 			return 1;
 		}
-		for (int i = 0; listUser[i]; i++)
-			listUser[i]->addMsgToSend(MODE(cha->getName(), str[2], comment));
+		for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
+			(*it)->addMsgToSend(MODE(cha->getName(), str[2], comment));
 	}
 	return 0;
 }
@@ -396,8 +393,8 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 	std::vector<User*>	listUser = cha->getUsers();
 	if (str[3].size() > 0)
 		reason = str[3];
-	for (int i = 0; listUser[i]; i++)
-		listUser[i]->addMsgToSend(KICK(user->getNick(), user->getUser(), user->getHost(), cha->getName(), userToDel->getNick(), reason));
+	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
+		(*it)->addMsgToSend(KICK(user->getNick(), user->getUser(), user->getHost(), cha->getName(), userToDel->getNick(), reason));
 	cha->delUser(userToDel);
 	return 0;
 }
@@ -444,8 +441,8 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 		{
 			cha->setTopic(str[2]);
 			std::vector<User*>	listUser = cha->getUsers();
-			for (int i = 0; listUser[i]; i++)
-				listUser[i]->addMsgToSend(TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), str[2]));
+			for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
+				(*it)->addMsgToSend(TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), str[2]));
 		}
 	}
 	return 0;
@@ -517,8 +514,8 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
 		cha->addUser(user);
 	}
 	std::vector<User *> listUser = cha->getUsers();
-	for (int i = 0; listUser[i]; i++)
-		listUser[i]->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
+	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
+		(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
 	return 0;
 }
 
@@ -563,12 +560,13 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
 				user->addMsgToSend(ERR_CANNOTSENDTOCHAN(user->getNick(), cha->getName()));
 				return 1;
 			}
+
 			std::vector<User *> listUser = cha->getUsers();
-			for (int i = 0; listUser[i]; i++)
+			for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
 			{
-				if (listUser[i]->getNick() == user->getNick())
+				if ((*it)->getNick() == user->getNick())
 					continue;
-				listUser[i]->addMsgToSend(RPL_PRIVMSG_CHANEL(user->getNick(), user->getUser(), str[0], cha->getName(), str[2]));
+				(*it)->addMsgToSend(RPL_PRIVMSG_CHANEL(user->getNick(), user->getUser(), str[0], cha->getName(), str[2]));
 			}
 		}
 		else

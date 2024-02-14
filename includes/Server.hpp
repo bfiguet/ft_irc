@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/10 12:49:55 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 13:14:31 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ private:
 	int							_sock;
 	std::vector<pollfd>			_pollfds;
 	std::vector<User *>			_users;
-	// std::vector<std::string>	_cmd;
 	std::vector<Channel *>		_channels;
 
 	int								pollinHandler(int fd);
@@ -43,7 +42,6 @@ public:
 	int								newSock();
 	int								newUser();
 	void							delUser(User*);
-	void							disconnectUser(User* user);
 	int								receiveMsg(int fd);
 	void							executeCmd(std::string str, User* user);
 	User*							findUser(int fd);

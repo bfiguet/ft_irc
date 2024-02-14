@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 12:23:16 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/14 13:26:21 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _po
 }
 
 Server::~Server() {
+	std::cout << "~Server" << std::endl;
 	close(_sock);
 	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
 	{
@@ -183,6 +184,7 @@ int	Server::start(){
 				callCmds(findUser(((*i)).fd));
 		}
 	}
+	std::cout << "debug: end start" << std::endl;
 	return 0;
 }
 
@@ -214,7 +216,10 @@ void	Server::callCmds(User* user)
 			// std::cout << "debug: registeration done" << std::endl;
 		}
 		else
+		{
+			std::cout << "need password to connect" << std::endl;
 			delUser(user);
+		}
 	}
 }
 
@@ -275,20 +280,10 @@ void	Server::executeCmd(std::string str, User* user){
 
 void	Server::delUser(User* user)
 {
+	//std::cout << "--delUser--" << std::endl;
 	deleteUserFromChannels(user);
-	disconnectUser(user);
-	_users.erase(std::find(_users.begin(), _users.end(), user));
-}
-
-void	Server::disconnectUser(User* user)
-{	
 	close(user->getFd());
-	for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
-	{
-		if ((i)->fd == user->getFd())
-			_pollfds.erase(i);
-	}
-	delUser(user);
+	//_users.erase(std::find(_users.begin(), _users.end(), user));
 }
 
 User*	Server::findUser(std::string nickname)
@@ -320,15 +315,18 @@ void	Server::displayUser(User* user){
 
 void	Server::deleteUserFromChannels(User* user)
 {
-	for (std::vector<Channel*>::iterator it=_channels.begin(); ;it++)
-    {
-		if ((*it)->isInChannel(user))
-			(*it)->delUser(user);
-        if((*it)->getUserCount() == 0)
-            _channels.erase(it);
-        if (it == _channels.end())
-            break;
-    }
+	if (_channels.size() > 1)
+	{
+		for (std::vector<Channel*>::iterator it=_channels.begin(); ;it++)
+		{
+			if ((*it)->isInChannel(user))
+				(*it)->delUser(user);
+			if((*it)->getUserCount() == 0)
+				_channels.erase(it);
+			if (it == _channels.end())
+				break;
+		}
+	}
 }
 
 	// std::vector<Channel*>::iterator chan = std::find(_channels.begin(), _channels.end(), channelName); DOESN'T WORK!!!
