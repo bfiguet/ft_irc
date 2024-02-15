@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/15 14:34:40 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/15 15:06:54 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,18 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NONICKNAMEGIVEN);
 		return 1;
 	}
-	if ((std::find(listUser.begin(), listUser.end(), user) != listUser.end()) == false)
-	{
-		user->addMsgToSend(ERR_NICKNAMEINUSE(user->getNick()));
-		return 1;
+	//if ((std::find(listUser.begin(), listUser.end(), user) != listUser.end()) == false)
+	//{
+	//	user->addMsgToSend(ERR_NICKNAMEINUSE(user->getNick()));
+	//	return 1;
+	//}
+	for (std::vector<User*>::iterator i = listUser.begin(); i != listUser.end(); i++)
+    {
+        if ((*i)->getNick() == str[1])
+        {
+			user->addMsgToSend(ERR_NICKNAMEINUSE(user->getNick()));
+        	return 1;
+		}
 	}
 	if (checkNick(str[1]) == false)
 	{
