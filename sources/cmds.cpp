@@ -47,7 +47,7 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 	//}
 	for (std::vector<User*>::iterator i = listUser.begin(); i != listUser.end(); i++)
     {
-        if ((*i)->getNick() == str[1])
+        if ((*i)->getNick().compare(str[1]) == 0)
         {
 			user->addMsgToSend(ERR_NICKNAMEINUSE(user->getNick()));
         	return 1;
