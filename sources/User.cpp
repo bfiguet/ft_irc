@@ -3,30 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 12:24:19 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/16 14:26:26 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
-	std::string				_nick;
-	std::string				_user;
-	std::string				_realname;
-	std::string				_host;
-	std::string				_pass;
-	std::string				_msg;
-	std::string				_msgsToSend;
-	std::vector<Channel *>	_channels;
-	bool					_isRegistered;
-	bool					_disconnect;
+	//std::string				_nick;
+	//std::string				_user;
+	//std::string				_realname;
+	//std::string				_host;
+	//std::string				_pass;
+	//std::string				_msg;
+	//std::string				_msgsToSend;
+	//std::vector<Channel *>	_channels;
+	//bool					_isRegistered;
+	//bool					_disconnect;
 
 User::User(int fd): _sock(fd), _nick(""), _user(""),
 					_realname(""), _host(""), _pass(""),
 					_msg(""), _msgsToSend(""), _isRegistered(false),
-					_disconnect(false) {}
+					_disconnect(false), _nbChannel(10) {}
 
 User::~User() {}
 
@@ -49,6 +49,16 @@ std::string	User::getMsgsToSend() const{return _msgsToSend;};
 bool		User::isRegisterd() const {return _isRegistered;}
 
 bool		User::isDisconnect() const {return _disconnect;}
+
+bool		User::addNewChannel(){ 
+	if (_nbChannel - 1 >= 0)
+	{
+		_nbChannel--;
+		return true;
+	}
+	else
+		return false;
+}
 
 void		User::setNick(std::string str){ _nick = str; }
 

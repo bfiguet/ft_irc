@@ -6,13 +6,14 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 14:59:59 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/16 14:34:07 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
-Channel::Channel(std::string name): _name(name), _pw(""), _topic(), _userCount(0), _userLimit(100){}
+Channel::Channel(std::string name): _name(name), _pw(""), _topic(""), _userCount(0)
+	, _userLimit(100), _invitOnly(false), _TopicChangeRestriction(false){}
 
 Channel::~Channel(){}
 
@@ -33,6 +34,9 @@ bool	Channel::isInvited(const User* user) const
 int	Channel::getUserCount() const
 {return (_userCount);}
 
+int	Channel::getLimit() const
+{return (_userLimit);}
+
 bool	Channel::isInvitOnly()const
 {return (_invitOnly);}
 
@@ -49,15 +53,17 @@ bool	Channel::isOperator(const User* user) const
 	return(std::find(_operators.begin(), _operators.end(), user) != _operators.end());
 }
 
-//Channels names beginning with a '&', '#', '+' or '!'
-// length up to 50 char whithout the first char
+//Channels names beginning with a '&', '#'
+// length up to 200 char whithout the first char
+// no coma space or ASCII 7 or :
 bool	Channel::isValidName(std::string name){
-	if (name.length() > 51 || !name.length())
+	if (name.length() > 201 || !name.length())
 		return false;
-	if (name[0] != '#' && name[0] != '&' && name[0] != '!' && name[0] != '+')
+	if (name[0] != '#' && name[0] != '&')
 		return false;
-	//if ((name.find(',') != std::string::npos) || (name.find('	') != std::string::npos) || name.find(' ') != std::string::npos)
-	//	return false;
+	if ((name.find(',') != std::string::npos) || name.find(' ') != std::string::npos 
+		|| name.find(7) != std::string::npos || name.find(':') != std::string::npos)
+		return false;
 	return true;
 }
 
@@ -67,7 +73,7 @@ void	Channel::setTopic(std::string topic)
 void	Channel::setPw(std::string passWord)
 {_pw = passWord;}
 
-void	Channel::setLimit(unsigned long userLimit)
+void	Channel::setLimit(int userLimit)
 {_userLimit = userLimit;}
 
 void	Channel::setInvitOnly(bool onOff)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 12:19:30 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/16 14:00:57 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ private:
 	std::vector<Channel *>	_channels;
 	bool					_isRegistered;
 	bool					_disconnect;
+	int						_nbChannel;
 	//time_t					_timeOut;
 
 public:
@@ -48,6 +49,7 @@ public:
 
 	bool		isRegisterd() const;
 	bool		isDisconnect() const;
+	bool		addNewChannel();
 
 	void		setNick(std::string str);
 	void		setUser(std::string str);

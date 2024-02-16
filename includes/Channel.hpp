@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:12:34 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 12:35:34 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/16 14:32:49 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ class Channel
 private:
 	std::string				_name;
 	std::string				_pw;
-	std::string				_operatorPw;
 	std::string				_topic;
 	int						_userCount;
 	int						_userLimit;
@@ -38,6 +37,7 @@ public:
 	std::string				getPw() const;
 	std::vector<User *>		getUsers() const;
 	int						getUserCount() const;
+	int						getLimit() const;
 	std::string				getTopic() const;
 
 	bool					isOperator(const User* user) const;
@@ -49,7 +49,7 @@ public:
 
 	void					setTopic(std::string str);
 	void					setPw(std::string str);
-	void					setLimit(unsigned long val);
+	void					setLimit(int val);
 	void					setInvitOnly(bool val);
 	void					setTopicChange(bool val);
 

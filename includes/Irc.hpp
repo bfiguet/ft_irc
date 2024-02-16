@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 11:18:16 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/16 14:23:26 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ extern bool g_run;
 
 # define ERR_NEEDMOREPARAMS(command) (std::string("461 ") + command + " :Not enough parameters\r\n")
 
-# define ERR_UNKNOWNMODE(modechar) (": 472" + modechar + " :is unknown mode char to me\r\n")
+# define ERR_UNKNOWNMODE(modechar) (": 472 " + modechar + " :is unknown mode char to me\r\n")
 
 # define ERR_PASSWDMISMATCH "464 :Password incorrect\r\n"
 # define ERR_USERMISMATCH "464 : User incorrect\r\n"
@@ -129,7 +129,12 @@ extern bool g_run;
 
 # define RPL_YOUREOPER(nick) ("381 " + nick + " :You are now an IRC operator\r\n")
 /*CHANNELS*/
+
 # define ERR_BADCHANMASK(channel) ("476 " + channel + " :Bad Channel Mask\r\n")
+
+# define ERR_BADCHANNELKEY(channel) ("475 " + channel + " :Cannot join channel (+k)\r\n")
+
+# define ERR_INVALIDKEY(channel) ("525 " + channel + " :Key is not well-formed\r\n")
 
 # define ERR_NOPRIVILEGES "481 :Permission Denied- You're not an IRC operator\r\n"
 
@@ -171,7 +176,7 @@ extern bool g_run;
 
 # define RPL_MSG(nickname, username, host, cmd, dest_name, msg) (":" + nickname + "!" + username + "@" + host + " " + cmd + " " + dest_name + " :" + msg + "\r\n")
 
-# define RPL_PRIVMSG_CLIENT(nickname, username, cmd, dest_name, msg) ("301" + nickname + " " + username + " " + cmd + " " + dest_name + " " + msg + "\r\n")
+# define RPL_PRIVMSG_CLIENT(nickname, username, cmd, dest_name, msg) ("301 " + nickname + " " + username + " " + cmd + " " + dest_name + " " + msg + "\r\n")
 
 
 # define	MODE(channel, mode, comment) (" MODE " + channel + " " + mode + " :" + comment + "\r\n")
