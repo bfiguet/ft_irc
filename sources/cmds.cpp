@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 14:44:40 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/16 14:46:16 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,6 +279,8 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 				}
 				nb = atoi(str[3].c_str());
 				if (nb < 1 && cha->getUserCount() >= nb)
+				{
+					//msg?
 					return 1;
 				cha->setLimit(nb);
 				comment = "is now limited to " + str[3] + " users.";
@@ -522,32 +524,14 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
 		cha->setOperators(user, true);
 		std::cout << user->getNick() << " is IRC operator in this channel" << std::endl;
 	}
-	if (cha->getPw() != "" && str.size() < 3)
+	if (cha->isInChannel(user) == false)
 	{
-		user->addMsgToSend(ERR_BADCHANNELKEY(str[1]));
-		return 1;
+		std::cout << "add " << user->getNick() << " in this channel" << std::endl;
+		cha->addUser(user);
 	}
-	if (cha->getLimit() == cha->getUserCount())
-	{
-		user->addMsgToSend(ERR_CHANNELISFULL(user->getNick(), str[1]));
-		return 1;
-	}
-	if (cha->isInvitOnly() == true && cha->isInvited(user) == false)
-	{
-		user->addMsgToSend(ERR_INVITEONLYCHAN(user->getNick(), str[1]));
-		return 1;
-	}
-	else if (cha->getPw() == "" || (cha->getPw().compare(str[2]) == 0))
-	{
-		if (cha->isInChannel(user) == false)
-		{
-			std::cout << "add " << user->getNick() << " in this channel" << std::endl;
-			cha->addUser(user);
-		}
-		std::vector<User *> listUser = cha->getUsers();
-		for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
-			(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
-	}
+	std::vector<User *> listUser = cha->getUsers();
+	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
+		(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
 	return 0;
 }
 
