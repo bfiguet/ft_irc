@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:01:29 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 15:01:38 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/16 15:40:41 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,10 +105,10 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 			tmp = str[4].substr(1);
 			user->setRealname(tmp);
 		}
-		 tmp += " ";
-		 //ATTENTION FAIRE BOUCLE
-		 tmp += str[5];
-		 user->setRealname(tmp);
+		tmp += " ";
+		for (size_t i = 5; i < str.size(); i++)
+			tmp += str[i];
+		user->setRealname(tmp);
 	}
 	return 0;
 }
@@ -193,7 +193,14 @@ int	cmdPart(Server *server, std::vector<std::string> str, User *user)
 			return 1;
 		}
 		if (str[2].size() > 0)
+		{
 			reason = str[2];
+			for (size_t i = 3; i <= str.size(); i++)
+			{
+				reason += " ";
+				reason += str[i];
+			}
+		}
 		user->addMsgToSend(PART(user->getNick(), user->getUser(), user->getHost(), str[1], reason));
 		server->findChannel(str[i])->delUser(user);
 	}
@@ -404,7 +411,14 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 	}
 	std::vector<User*>	listUser = cha->getUsers();
 	if (str[3].size() > 0)
+	{
 		reason = str[3];
+		for (size_t i = 4; i < str.size(); i++)
+		{
+			reason += " ";
+			reason += str[i];
+		}
+	}
 	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
 		(*it)->addMsgToSend(KICK(user->getNick(), user->getUser(), user->getHost(), cha->getName(), userToDel->getNick(), reason));
 	cha->delUser(userToDel);
@@ -526,14 +540,32 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
 		cha->setOperators(user, true);
 		std::cout << user->getNick() << " is IRC operator in this channel" << std::endl;
 	}
-	if (cha->isInChannel(user) == false)
+	if (cha->getPw() != "" && str.size() < 3)
 	{
-		std::cout << "add " << user->getNick() << " in this channel" << std::endl;
-		cha->addUser(user);
+		user->addMsgToSend(ERR_BADCHANNELKEY(str[1]));
+		return 1;
 	}
-	std::vector<User *> listUser = cha->getUsers();
-	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
-		(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
+	if (cha->getLimit() == cha->getUserCount())
+	{
+		user->addMsgToSend(ERR_CHANNELISFULL(user->getNick(), str[1]));
+		return 1;
+	}
+	if (cha->isInvitOnly() == true && cha->isInvited(user) == false)
+	{
+		user->addMsgToSend(ERR_INVITEONLYCHAN(user->getNick(), str[1]));
+		return 1;
+	}
+	else if (cha->getPw() == "" || (cha->getPw().compare(str[2]) == 0))
+	{
+		if (cha->isInChannel(user) == false)
+		{
+			std::cout << "add " << user->getNick() << " in this channel" << std::endl;
+			cha->addUser(user);
+		}
+		std::vector<User *> listUser = cha->getUsers();
+		for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
+			(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
+	}
 	return 0;
 }
 
@@ -545,7 +577,7 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
 	std::string	msg;
 	User* dest = server->findUser(str[1]);
 	Channel	*cha = server->findChannel(str[1]);
-//ATTENTION FAIRE BOUCLE DE STR[2] ET TOUT LES STR APRES
+
 	if (str.size() < 3)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -553,6 +585,11 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
 	}
 	if (str[2][0] == ':')
 		msg = str[2].substr(1);
+	for (size_t i = 3; i < str.size(); i++)
+	{
+		msg += " ";
+		msg += str[i];
+	}
 	if (str[1][0] != '#' && str[1][0] != '&') //tagret == user
 	{
 		if (dest)
