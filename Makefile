@@ -6,7 +6,7 @@
 #    By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/09 13:35:00 by bfiguet           #+#    #+#              #
-#    Updated: 2024/01/25 18:43:53 by bfiguet          ###   ########.fr        #
+#    Updated: 2024/02/16 17:33:29 by bfiguet          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,31 +14,35 @@ NAME		= ircserv
 CC			= c++
 CFLAGS		= -Wall -Wextra -Werror -g3 -std=c++98
 
-INC_PATH	= ./includes/
-INC			= -I $(INC_PATH)
+I			= includes
+INCS		= $(wildcard $I/*.hpp)
 
-SRC_PATH	= ./sources/
-SRC			= $(wildcard $(SRC_PATH)*.cpp)
+S			= sources
+SRCS		=	$(wildcard $S/*.cpp) \
+				$(wildcard $S/cmds/*.cpp)
 
-OBJ_PATH	= ./obj/
-OBJ			= $(SRC:$(SRC_PATH)%.cpp=$(OBJ_PATH)%.o)
+O			= obj
+OBJS		= $(SRCS:$S/%.cpp=$O/%.o)
 
 # valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes
 # lsof -i -a -c ircserv  // leaks fd (sockets).
 
-all:	$(OBJ_PATH) $(NAME)
+#irssi -c localhost -p port -w password -n nick1
 
-$(OBJ_PATH):
-	mkdir -p $(OBJ_PATH)
+all:	$(NAME)
 
-$(OBJ_PATH)%.o: $(SRC_PATH)%.cpp
-	$(CC) $(CFLAGS) -c $< -o $@ $(INC)
+$O:
+	@mkdir -p $O
 
-$(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $@ $(INC)
+$O/%.o: $S/%.cpp Makefile $(INCS) | $O
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -I$I -c $< -o $@
+
+$(NAME): $(OBJS)
+	$(CC) $(CFLAGS) -I$I $(OBJS) -o $@
 
 clean:
-	rm -rf $(OBJ_PATH)
+	rm -rdf $O
 
 fclean: clean
 	rm -f $(NAME)
