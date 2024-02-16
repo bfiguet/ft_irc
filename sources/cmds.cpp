@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/15 15:12:23 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/16 10:51:58 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ int	cmdUser(Server *server, std::vector<std::string> str, User *user){
 	(void)server;
 	std::string	tmp;
 
-	if (user->getUser() == str[1])
+	if (user->isRegisterd())
 	{
 		user->addMsgToSend(ERR_ALREADYREGISTERED);
 		return 1;
@@ -508,7 +508,7 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
 		server->addChannel(str[1]);
 		cha = server->findChannel(str[1]);
 		std::cout << "--creation of the channel-- " << cha->getName() << std::endl;
-		cha->isOperator(user);
+		cha->setOperators(user, true);
 		std::cout << user->getNick() << " is IRC operator in this channel" << std::endl;
 	}
 	if (cha->isInChannel(user) == false)
@@ -562,6 +562,7 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
 			{
 				//if ((*it)->getNick() == user->getNick())
 				//	continue;
+				(*it)->addMsgToSend("ICI\n");
 				(*it)->addMsgToSend(RPL_PRIVMSG_CHANEL(user->getNick(), user->getUser(), str[0], cha->getName(), msg));
 			}
 		}
