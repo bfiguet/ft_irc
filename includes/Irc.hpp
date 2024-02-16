@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/12 17:19:34 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/16 11:18:16 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,13 @@ extern bool g_run;
 # define ERR_USERSDONTMATCH(nick) ("502 " + nick + " :Cannot change change mode for other users\r\n")
 # define RPL_UMODEIS(nick, mode, char) (" 221 " + nick + " " + mode + char + "\r\n")
 # define ERR_USERONCHANNEL(nick, invitenick, chan) ("443 " + nick + " " + invitenick + " " + chan + ":is already on channel\r\n")
+
 # define RPL_PRIVMSG_CHANEL(nickname, username, cmd, chanel, msg) (nickname + " " + username + " " + cmd + " " + chanel + " " + msg + "\r\n")
+
+# define RPL_MSG(nickname, username, host, cmd, dest_name, msg) (":" + nickname + "!" + username + "@" + host + " " + cmd + " " + dest_name + " :" + msg + "\r\n")
+
+# define RPL_PRIVMSG_CLIENT(nickname, username, cmd, dest_name, msg) ("301" + nickname + " " + username + " " + cmd + " " + dest_name + " " + msg + "\r\n")
+
 
 # define	MODE(channel, mode, comment) (" MODE " + channel + " " + mode + " :" + comment + "\r\n")
 
