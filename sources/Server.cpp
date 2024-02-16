@@ -3,14 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 15:23:42 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/16 13:01:58 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
+
+int	errMsg(std::string msg)
+{
+	std::cerr <<  msg << std::endl;
+	return (-1);
+}
 
 Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _port(port) {
 	_sock = newSock();
@@ -41,10 +47,7 @@ int		Server::newSock(){
 	//create socket
 	serverSocket = socket(AF_INET, SOCK_STREAM,0);
 	if (serverSocket < 0)
-	{
-		std::cout <<"Error: server socket error " << strerror(errno) << std::endl;
-		return (-1);
-	}
+		return (errMsg("Error: server socket error " + std::string(strerror(errno))));
 	std::cout << "Server Socket connection created..." << std::endl;
 	bzero((char *) &server_addr, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
@@ -53,16 +56,10 @@ int		Server::newSock(){
 
 	//binds the socket to the address and port number specified in addr(custom data structure)
 	if (bind(serverSocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
-	{
-		std::cout << "Error: binding socket " << strerror(errno) << std::endl;
-		return (-1);
-	}
+		return (errMsg("Error: binding socket " + std::string(strerror(errno))));
 	//Listening socket
 	if (listen(serverSocket, 1000) < 0) //compare with others
-	{
-		std::cout << "Error: listening socket " << strerror(errno) << std::endl;
-		return (-1);
-	}
+		return (errMsg("Error: listening socket " + std::string(strerror(errno))));
 	return serverSocket;
 }
 
@@ -73,10 +70,7 @@ int	Server::newUser(){
 	//accept user
 	userSocket = accept(_sock, (sockaddr*)&server_addr, &size);
 	if (userSocket < 0)
-	{
-		std::cerr << "Error: failed to accept new connection" << strerror(errno) << std::endl;
-		return(1);
-	}
+		return(errMsg("Error: failed to accept new connection" + std::string(strerror(errno))));
 	pollfd temppollfd;
 	temppollfd.fd = userSocket;
 	temppollfd.events = POLLIN | POLLOUT;
@@ -105,7 +99,7 @@ int	Server::receiveMsg(int fd){
 			std::cout << "User " << user->getNick() << " has disconnected with EOF" << std::endl;
 		else
 			std::cout << "Error recv: " << strerror(errno) << "disconnecting user " << user->getNick() << std::endl;
-		delUser(user);
+		user->setDisconnect(true);
 		return(0);
 	}
 	std::cout << "debug: message received " << buffer << std::endl;
@@ -139,12 +133,14 @@ int Server::pollerrHandler(int fd)
 {
 	// std::cout << "debug: pollerr event " << fd << std::endl;
 	if (fd == _sock)
-	{
-		std::cout << "Error: server socket " << strerror(errno) << std::endl;
-		return(1);
-	}
-	delUser(findUser(fd));
+		return(errMsg("Error: server socket " + std::string(strerror(errno))));
+	findUser(fd)->setDisconnect(true);
 	return (0);
+}
+
+bool isUserDisconnect(User* user)
+{
+	return (user->isDisconnect());
 }
 
 int	Server::start(){
@@ -155,10 +151,7 @@ int	Server::start(){
 		events = poll((_pollfds.begin()).base(), _pollfds.size(), 0);
 		// std::cout << "debug: events " << events << std::endl;
 		if ( events < 0)
-		{
-			std::cerr << "Error: poll error: " << strerror(errno) << std::endl;
-			return 1;
-		}
+			return (errMsg("Error: poll error: " + std::string(strerror(errno))));
 		if (events == 0)
 				continue;
 		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
@@ -183,8 +176,26 @@ int	Server::start(){
 				if (callCmds(findUser(((*i)).fd)) == 1)
 					std::cout << "need password to connect" << std::endl;
 		}
+		deleteDisconnected();
 	}
 	return 0;
+}
+
+void	Server::deleteDisconnected()
+{
+	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
+		if ((*i)->isDisconnect())
+		{
+			for(std::vector<pollfd>::iterator it = _pollfds.begin(); it != _pollfds.end(); it++)
+				if ((*it).fd == (*i)->getFd())
+				{
+					close((*it).fd);
+					_pollfds.erase(it);
+					break;
+				}
+			deleteUserFromChannels(*i);
+		}
+	_users.erase(std::remove_if(_users.begin(), _users.end(), isUserDisconnect), _users.end());
 }
 
 int	Server::callCmds(User* user)
@@ -216,7 +227,7 @@ int	Server::callCmds(User* user)
 		}
 		else
 		{
-			delUser(user);
+			user->setDisconnect(true);
 			return 1;
 		}
 	}
@@ -278,12 +289,22 @@ void	Server::executeCmd(std::string str, User* user){
 	// std::cout << "debug: command " << word << " not found" << std::endl;
 }
 
-void	Server::delUser(User* user)
+std::vector<User*>::iterator	Server::delUser(User* user)
 {
 	//std::cout << "--delUser--" << std::endl;
+	// std::cout << "debug: " << (*it)->getNick() << std::endl;
 	deleteUserFromChannels(user);
-	close(user->getFd());
-	//_users.erase(std::find(_users.begin(), _users.end(), user));
+	std::cout << "debug: 1" << std::endl;
+	for(std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
+		if ((*i).fd == user->getFd())
+		{
+			close((*i).fd);
+			_pollfds.erase(i);
+			break;
+		}
+	std::cout << "debug: 2" << std::endl;
+	return (_users.erase(std::find(_users.begin(), _users.end(), user)));
+	// std::cout << "debug: 3" << std::endl;
 }
 
 User*	Server::findUser(std::string nickname)
@@ -317,19 +338,19 @@ void	Server::deleteUserFromChannels(User* user)
 {
 	if (_channels.size() >= 1)
 	{
-		for (std::vector<Channel*>::iterator it=_channels.begin(); ;it++)
+		for (std::vector<Channel*>::iterator it=_channels.begin(); it == _channels.end();)
 		{
 			if ((*it)->isInChannel(user))
 			{
 				(*it)->delUser(user);
 				if ((*it)->getUserCount() < 1)
 				{
-					_channels.erase(it);
 					delete(*it);
+					it = _channels.erase(it);
 				}
+				else
+					it++;
 			}
-			if (it == _channels.end())
-				break;
 		}
 	}
 }

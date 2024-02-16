@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 12:31:00 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/16 12:19:30 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ private:
 	std::string				_msgsToSend;
 	std::vector<Channel *>	_channels;
 	bool					_isRegistered;
+	bool					_disconnect;
 	//time_t					_timeOut;
 
 public:
@@ -46,6 +47,7 @@ public:
 	std::string	getMsgsToSend() const;
 
 	bool		isRegisterd() const;
+	bool		isDisconnect() const;
 
 	void		setNick(std::string str);
 	void		setUser(std::string str);
@@ -53,6 +55,7 @@ public:
 	void		setHost(std::string str);
 	void		setPass(std::string str);
 	void		setIsRegisterd(bool val);
+	void		setDisconnect(bool val);
 	void		addMsg(std::string str);
 	void		setMsg(std::string str);
 	void		addMsgToSend(std::string str);

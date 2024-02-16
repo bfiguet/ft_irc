@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 14:08:13 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/16 12:53:54 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ public:
 	int						start();
 	int						newSock();
 	int						newUser();
-	void					delUser(User*);
+	std::vector<User*>::iterator	delUser(User* user);
+	void					deleteDisconnected();
 	int						receiveMsg(int fd);
 	void					executeCmd(std::string str, User* user);
 	User*					findUser(int fd);

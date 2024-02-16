@@ -6,13 +6,27 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/09 12:30:38 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/16 12:24:19 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
-User::User(int fd): _sock(fd) { _msg = ""; }
+	std::string				_nick;
+	std::string				_user;
+	std::string				_realname;
+	std::string				_host;
+	std::string				_pass;
+	std::string				_msg;
+	std::string				_msgsToSend;
+	std::vector<Channel *>	_channels;
+	bool					_isRegistered;
+	bool					_disconnect;
+
+User::User(int fd): _sock(fd), _nick(""), _user(""),
+					_realname(""), _host(""), _pass(""),
+					_msg(""), _msgsToSend(""), _isRegistered(false),
+					_disconnect(false) {}
 
 User::~User() {}
 
@@ -34,6 +48,8 @@ std::string	User::getMsgsToSend() const{return _msgsToSend;};
 
 bool		User::isRegisterd() const {return _isRegistered;}
 
+bool		User::isDisconnect() const {return _disconnect;}
+
 void		User::setNick(std::string str){ _nick = str; }
 
 void		User::setUser(std::string str){ _user = str; }
@@ -45,6 +61,8 @@ void		User::setHost(std::string str){_host = str;}
 void		User::setPass(std::string str){_pass = str;}
 
 void		User::setIsRegisterd(bool val){_isRegistered = val;}
+
+void		User::setDisconnect(bool val){_disconnect = val;}
 
 void		User::setMsg(std::string str){ _msg = str; }
 
