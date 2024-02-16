@@ -6,7 +6,11 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 14:59:36 by bfiguet          ###   ########.fr       */
+<<<<<<<<< Temporary merge branch 1
+/*   Updated: 2024/02/16 13:09:05 by bfiguet          ###   ########.fr       */
+=========
+/*   Updated: 2024/02/16 14:44:40 by bfiguet          ###   ########.fr       */
+>>>>>>>>> Temporary merge branch 2
 /*                                                                            */
 /* ************************************************************************** */
 
