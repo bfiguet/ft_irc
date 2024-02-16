@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:17:57 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 11:21:46 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/16 13:09:05 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,9 +247,9 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 			// +k : key protect, place un mot de passe sur le channel. Les utilisateurs doivent indiquer ce mot de passe avec /JOIN #CHANNEL PASSWORD
 			else if (str[2][1] == 'k' || str[2][1] == 'K')
 			{
-				if (str[3] == "")
+				if (str.size() < 4)
 				{
-					user->addMsgToSend(ERR_NEEDMOREPARAMS(str[3]));
+					user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 					return 1;
 				}
 				else if (!cha->getPw().empty())
@@ -264,20 +264,17 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 				}
 			}
 			// +l : limite le nombre maximal d'utilisateurs dans un channel
-			else if (str[2][1] == 'l' || str[2][1] == 'L')
+			else if (str[2][1] == 'l')
 			{
 				int nb = 0;
-				if (str[3] == "")
+				if (str.size() < 4)
 				{
-					user->addMsgToSend(ERR_NEEDMOREPARAMS(str[3]));
+					user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 					return 1;
 				}
 				nb = atoi(str[3].c_str());
-				if (nb < 1 && cha->getUserCount() >= nb)
-				{
-					//msg?
+				if (nb <= 1 && cha->getUserCount() >= nb)
 					return 1;
-				}
 				cha->setLimit(nb);
 				comment = "is now limited to " + str[3] + " users.";
 			}
@@ -291,9 +288,9 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 		else if (str[2][1] == 'o' || str[2][1] == 'O')
 		{
 			User *userOp = server->findUser(str[3]);
-			if (str[3] == "")
+			if (str.size() < 3)
 			{
-				user->addMsgToSend(ERR_NEEDMOREPARAMS(str[3]));
+				user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 				return 1;
 			}
 			else if (userOp == NULL)
@@ -405,6 +402,7 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 //Command: TOPIC <channel> [<topic>]
 int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdTopic--" << std::endl;
+	std::string	topic;
 
 	if (str.size() < 2)
 	{
@@ -436,16 +434,15 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 			user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
 			return 1;
 		}
-		if (str[2].size() < 1)
-		{
+		topic = str[2].substr(1);
+		if (topic.size() < 1)
 			cha->setTopic("");
-		}
-		else if (cha->isTopicChange() == true && cha->isOperator(user) == true)
+		else if ((cha->isTopicChange() == true) || (cha->isTopicChange() == false && cha->isOperator(user) == true))
 		{
-			cha->setTopic(str[2]);
+			cha->setTopic(topic);
 			std::vector<User*>	listUser = cha->getUsers();
 			for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
-				(*it)->addMsgToSend(TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), str[2]));
+				(*it)->addMsgToSend(TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), topic));
 		}
 	}
 	return 0;
@@ -483,8 +480,9 @@ int	cmdKill(Server *server, std::vector<std::string> str, User *user){
 int	cmdQuit(Server *server, std::vector<std::string> str, User *user){
 	//std::cout << "--cmdQuit--" << std::endl;
 	(void) str;
+	(void) server;
 	std::cout << user->getNick() << " on fd " << user->getFd() << " has leaving" << std::endl;
-	server->delUser(user);
+	user->setDisconnect(true);
 	return 0;
 }
 
@@ -511,14 +509,22 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
 		cha->setOperators(user, true);
 		std::cout << user->getNick() << " is IRC operator in this channel" << std::endl;
 	}
-	if (cha->isInChannel(user) == false)
+	if (cha->getPw() != "" && str.size() < 3)
 	{
-		std::cout << "add " << user->getNick() << " in this channel" << std::endl;
-		cha->addUser(user);
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+		return 1;
 	}
-	std::vector<User *> listUser = cha->getUsers();
-	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
-		(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
+	else if (cha->getPw() == "" || (cha->getPw().compare(str[2]) == 0))
+	{
+		if (cha->isInChannel(user) == false)
+		{
+			std::cout << "add " << user->getNick() << " in this channel" << std::endl;
+			cha->addUser(user);
+		}
+		std::vector<User *> listUser = cha->getUsers();
+		for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
+			(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
+	}
 	return 0;
 }
 

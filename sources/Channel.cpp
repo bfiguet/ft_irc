@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 14:59:59 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/16 12:28:00 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,17 @@ bool	Channel::isOperator(const User* user) const
 	return(std::find(_operators.begin(), _operators.end(), user) != _operators.end());
 }
 
-//Channels names beginning with a '&', '#', '+' or '!'
-// length up to 50 char whithout the first char
+//Channels names beginning with a '&', '#'
+// length up to 200 char whithout the first char
+// no coma space or ASCII 7 or :
 bool	Channel::isValidName(std::string name){
-	if (name.length() > 51 || !name.length())
+	if (name.length() > 201 || !name.length())
 		return false;
-	if (name[0] != '#' && name[0] != '&' && name[0] != '!' && name[0] != '+')
+	if (name[0] != '#' && name[0] != '&')
 		return false;
-	//if ((name.find(',') != std::string::npos) || (name.find('	') != std::string::npos) || name.find(' ') != std::string::npos)
-	//	return false;
+	if ((name.find(',') != std::string::npos) || name.find(' ') != std::string::npos 
+		|| name.find(7) != std::string::npos || name.find(':') != std::string::npos)
+		return false;
 	return true;
 }
 
