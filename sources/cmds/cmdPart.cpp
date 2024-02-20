@@ -33,16 +33,16 @@ int	cmdPart(Server *server, std::vector<std::string> str, User *user)
 		user->addMsgToSend(ERR_NOTONCHANNEL(str[1]));
 		return 1;
 	}
-	if (str[2].size() > 0)
-	{
-		reason = str[2];
-		for (size_t i = 3; i < str.size(); i++)
+	if (str.size() > 1)
+		for (size_t i = 2; i < str.size(); i++)
 		{
 			reason += " ";
 			reason += str[i];
 		}
-	}
+	std::cout << "debug: msg to send" << std::endl;
 	user->addMsgToSend(PART(user->getNick(), user->getUser(), user->getHost(), str[1], reason));
+	std::cout << "debug: msg sent" << std::endl;
 	server->findChannel(str[1])->delUser(user);
+	std::cout << "debug: user removed from channel" << std::endl;
 	return 0;
 }
