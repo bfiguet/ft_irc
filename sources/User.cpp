@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: algeorge <algeorge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 14:26:26 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/21 16:12:14 by algeorge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ std::string	User::getMsgsToSend() const{return _msgsToSend;};
 bool		User::isRegisterd() const {return _isRegistered;}
 
 bool		User::isDisconnect() const {return _disconnect;}
+
+bool		User::canAddNewChannel() const {return (_nbChannel - 1 >= 0);}
 
 bool		User::addNewChannel(){ 
 	if (_nbChannel - 1 >= 0)

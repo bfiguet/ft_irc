@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdJoin.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: algeorge <algeorge@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 15:55:10 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/21 16:11:49 by algeorge         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
-	if (user->addNewChannel() == false)
+	if (user->canAddNewChannel() == false)
 	{
 		user->addMsgToSend(ERR_TOOMANYCHANNELS(user->getNick(), str[1]));
 		return 1;
@@ -66,5 +66,6 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user){
 		for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
 			(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
 	}
+	user->addNewChannel();
 	return 0;
 }
