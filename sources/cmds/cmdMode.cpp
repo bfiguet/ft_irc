@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdMode.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:16 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 18:05:51 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/21 15:12:01 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,13 +104,13 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 		// +o : gives operator status to a user (ChannelOperator)
 		else if (str[2][1] == 'o')
 		{
-			User *userOp = server->findUser(str[3]);
 			if (str.size() < 3)
 			{
 				user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 				return 1;
 			}
-			else if (userOp == NULL)
+			User *userOp = server->findUser(str[3]);
+			if (userOp == NULL)
 			{
 				user->addMsgToSend(ERR_NOSUCHNICK(str[3]));
 				return 1;

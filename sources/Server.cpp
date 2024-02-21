@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/21 12:42:50 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/21 13:00:53 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,11 @@ Server::~Server() {
 	{
 		close((*i)->getFd());
 		delete(*i);
+	}
+	for (std::vector<Channel*>::iterator i = _channels.begin(); i != _channels.end();)
+	{
+		delete(*i);
+		i = _channels.erase(i);
 	}
 	std::cout << "END SERVER" <<std::endl;
 }
@@ -351,22 +356,9 @@ void	Server::displayUser(User* user){
 void	Server::deleteUserFromChannels(User* user)
 {
 	if (_channels.size() > 0)
-	{
 		for (std::vector<Channel*>::iterator it=_channels.begin(); it == _channels.end(); it++)
-		{
 			if ((*it)->isInChannel(user))
-			{
 				(*it)->delUser(user);
-				// if ((*it)->getUserCount() < 1)
-				// {
-				// 	delete(*it);
-				// 	it = _channels.erase(it);
-				// }
-				// else
-				// 	it++;
-			}
-		}
-	}
 }
 
 	// std::vector<Channel*>::iterator chan = std::find(_channels.begin(), _channels.end(), channelName); DOESN'T WORK!!!
