@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 12:53:54 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/21 12:41:32 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ public:
 	int						newUser();
 	std::vector<User*>::iterator	delUser(User* user);
 	void					deleteDisconnected();
+	void					deleteEmptyChannels();
 	int						receiveMsg(int fd);
 	void					executeCmd(std::string str, User* user);
 	User*					findUser(int fd);
@@ -59,6 +60,7 @@ public:
     };
 };
 
+// void					deleteEmptyChannel(std::vector<Channel*>& _channels);
 	typedef int				(*fun)(Server* server, std::vector<std::string> str, User *user);
 	int						cmdPass(Server *server, std::vector<std::string> str, User *user);
 	int						cmdUser(Server *server, std::vector<std::string> str, User *user);

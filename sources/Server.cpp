@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 13:01:58 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/21 12:42:50 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,11 +138,6 @@ int Server::pollerrHandler(int fd)
 	return (0);
 }
 
-bool isUserDisconnect(User* user)
-{
-	return (user->isDisconnect());
-}
-
 int	Server::start(){
 	int	events;
 	std::cout << "Server IRC Start!" << std::endl;
@@ -177,15 +172,30 @@ int	Server::start(){
 					std::cout << "need password to connect" << std::endl;
 		}
 		deleteDisconnected();
+		deleteEmptyChannels();
 	}
 	return 0;
 }
 
+void	Server::deleteEmptyChannels()
+{
+	for (std::vector<Channel*>::iterator i = _channels.begin(); i != _channels.end();)
+		if ((*i)->getUserCount() == 0)
+		{
+			delete(*i);
+			i = _channels.erase(i);
+		}
+		else
+			i++;
+}
+
 void	Server::deleteDisconnected()
 {
-	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
+	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end();)
+	{
 		if ((*i)->isDisconnect())
 		{
+			std::cout << "Disconnecting user " << (*i)->getNick() << std::endl;
 			for(std::vector<pollfd>::iterator it = _pollfds.begin(); it != _pollfds.end(); it++)
 				if ((*it).fd == (*i)->getFd())
 				{
@@ -194,8 +204,12 @@ void	Server::deleteDisconnected()
 					break;
 				}
 			deleteUserFromChannels(*i);
+			delete(*i);
+			i = _users.erase(i);
 		}
-	_users.erase(std::remove_if(_users.begin(), _users.end(), isUserDisconnect), _users.end());
+		else
+			i++;
+	}
 }
 
 int	Server::callCmds(User* user)
@@ -336,20 +350,20 @@ void	Server::displayUser(User* user){
 
 void	Server::deleteUserFromChannels(User* user)
 {
-	if (_channels.size() >= 1)
+	if (_channels.size() > 0)
 	{
-		for (std::vector<Channel*>::iterator it=_channels.begin(); it == _channels.end();)
+		for (std::vector<Channel*>::iterator it=_channels.begin(); it == _channels.end(); it++)
 		{
 			if ((*it)->isInChannel(user))
 			{
 				(*it)->delUser(user);
-				if ((*it)->getUserCount() < 1)
-				{
-					delete(*it);
-					it = _channels.erase(it);
-				}
-				else
-					it++;
+				// if ((*it)->getUserCount() < 1)
+				// {
+				// 	delete(*it);
+				// 	it = _channels.erase(it);
+				// }
+				// else
+				// 	it++;
 			}
 		}
 	}
