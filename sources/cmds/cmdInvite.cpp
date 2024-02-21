@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:50:06 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/21 14:59:36 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/21 15:47:37 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,14 @@
 // Command: INVITE <nickname> <channel>
 int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
 	std::cout << "--cmdInvite--" << std::endl;
-	Channel	*cha = server->findChannel(str[2]);
-	User	*userNew = server->findUser(str[1]);
 
 	if (str.size() < 3)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
 		return 1;
 	}
+	Channel	*cha = server->findChannel(str[2]);
+	User	*userNew = server->findUser(str[1]);
 	if (cha == NULL)
 	{
 		user->addMsgToSend(ERR_NOSUCHCHANNEL(str[2]));
