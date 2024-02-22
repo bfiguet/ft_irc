@@ -6,7 +6,7 @@
 #    By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/09 13:35:00 by bfiguet           #+#    #+#              #
-#    Updated: 2024/02/16 17:33:29 by bfiguet          ###   ########.fr        #
+#    Updated: 2024/02/22 13:46:23 by bfiguet          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,9 @@ OBJS		= $(SRCS:$S/%.cpp=$O/%.o)
 # lsof -i -a -c ircserv  // leaks fd (sockets).
 
 #irssi -c localhost -p port -w password -n nick1
+
+#nc localhost port -C 
+# -C add->(\r\n)
 
 all:	$(NAME)
 
