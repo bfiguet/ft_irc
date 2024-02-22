@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/22 13:43:39 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/22 18:07:55 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 {
 	std::cout << "--cmdJoin--" << std::endl;
+	size_t	i_pw = 0;
 	size_t	end_cha = 0;
 	size_t	end_pw = 0;
 
@@ -79,27 +80,24 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 			}
 			else if (str.size() > 2)
 			{
-				for (size_t index = 0; index < str[2].size(); i++)
+				std::string pw = "";
+				while (str[2][end_pw] && str[2][end_pw] != ',')
+					end_pw++;
+				pw = str[2].substr(i_pw, end_pw);
+				if (cha->getPw().compare(pw) == 0)
 				{
-					std::string pw = "";
-					while (str[2][end_pw] && str[2][end_pw] != ',')
-						end_pw++;
-					pw = str[2].substr(index, end_pw);
-					if (cha->getPw().compare(pw) == 0)
+					if (cha->isInChannel(user) == false)
 					{
-						if (cha->isInChannel(user) == false)
-						{
-							std::cout << "add " << user->getNick() << " in this channel" << std::endl;
-							cha->addUser(user);
-						}
-						std::vector<User *> listUser = cha->getUsers();
-						for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
-							(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
+						std::cout << "add " << user->getNick() << " in this channel" << std::endl;
+						cha->addUser(user);
 					}
-					index = end_pw;
-					if (str[2][end_pw] == ',')
-						end_pw++;
+					std::vector<User *> listUser = cha->getUsers();
+					for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
+						(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
 				}
+				if (str[2][end_pw] == ',')
+					end_pw++;
+				i_pw = end_pw;
 			}
 			user->addNewChannel();
 			i = end_cha;
