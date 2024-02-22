@@ -1,0 +1,15 @@
+/mode #channel -o user1
+This crashes when user1 already lost the channel operator position and I try it again.
+->OK
+
+/join channel
+When #channel is invite-only and the user got kicked out, the user can join back without a new invite.
+
+/topic #channel "new topic"
+The channel's topic becomes ["new] instead of [new topic].
+->OK
+
+/join channel1,channel2 key1,key2
+(channel1's password is [key1], channel2's password is [key2])
+The user can access channel1 but not channel2, and even after trying [/join channel2 key2],
+the user cannot join channel2 even after disabling password protection on channel2.
