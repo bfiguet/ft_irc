@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:52:28 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 15:52:44 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/22 17:21:53 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,11 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 			return 1;
 		}
 		topic = str[2].substr(1);
+		for (size_t i = 3; i < str.size(); i++)
+		{
+			topic += " ";
+			topic += str[i];
+		}
 		if (topic.size() < 1)
 			cha->setTopic("");
 		else if ((cha->isTopicChange() == true) || (cha->isTopicChange() == false && cha->isOperator(user) == true))
