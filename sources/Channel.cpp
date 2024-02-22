@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 14:46:50 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/22 16:23:48 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	Channel::inviteUser(User* user)
 
 void	Channel::setOperators(User* user, bool isOperator)
 {
-	if (isOperator)
+	if (isOperator == true)
 		_operators.push_back(user);
 	else
 		_operators.erase(std::find(_operators.begin(), _operators.end(), user));
