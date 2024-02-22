@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 17:52:35 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/22 17:51:47 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,5 +62,6 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
 		(*it)->addMsgToSend(KICK(user->getNick(), user->getUser(), user->getHost(), cha->getName(), userToDel->getNick(), reason));
 	cha->delUser(userToDel);
+	cha->setInviteUser(userToDel, false);
 	return 0;
 }

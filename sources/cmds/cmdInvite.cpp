@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdInvite.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:50:06 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/21 15:47:37 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/22 17:46:57 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 
 // Command: INVITE <nickname> <channel>
 int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
-	std::cout << "--cmdInvite--" << std::endl;
-
+	//std::cout << "--cmdInvite--" << std::endl;
 	if (str.size() < 3)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
@@ -48,8 +47,7 @@ int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_USERONCHANNEL(user->getNick(), userNew->getNick(), cha->getName()));
 		return 1;
 	}
-	// cha->addUser(userNew);
-	cha->inviteUser(userNew);
+	cha->setInviteUser(userNew, true);
 	user->addMsgToSend(RPL_INVITING(user->getNick(), user->getUser(), server->getHost(), userNew->getNick(), cha->getName()));
 	userNew->addMsgToSend(INVITE(user->getNick(), user->getUser(), server->getHost(), userNew->getNick(), cha->getName()));
 	return 0;
