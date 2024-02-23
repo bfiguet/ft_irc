@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdPart.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:50:31 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/21 10:54:53 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/23 14:45:49 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 //Command: PART <channel> <reason>
 int	cmdPart(Server *server, std::vector<std::string> str, User *user)
 {
-	//std::cout << "--cmdPart--" << std::endl;
 	std::string	reason = "";
 
 	if (str.size() < 2)
@@ -39,10 +38,7 @@ int	cmdPart(Server *server, std::vector<std::string> str, User *user)
 			reason += " ";
 			reason += str[i];
 		}
-	// std::cout << "debug: msg to send" << std::endl;
 	user->addMsgToSend(PART(user->getNick(), user->getUser(), user->getHost(), str[1], reason));
-	// std::cout << "debug: msg sent" << std::endl;
 	server->findChannel(str[1])->delUser(user);
-	// std::cout << "debug: user removed from channel" << std::endl;
 	return 0;
 }

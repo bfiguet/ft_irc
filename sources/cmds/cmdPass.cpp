@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:47:42 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 18:24:46 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:46:02 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,5 @@ int	cmdPass(Server *server, std::vector<std::string> str, User *user){
 		return 1;
 	}
 	user->setPass(str[1]);
-	//std::cout << "Password is good" << std::endl;
 	return 0;
 }

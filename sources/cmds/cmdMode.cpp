@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:16 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 10:36:58 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 15:42:53 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,7 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 	}
 	if (str[1][0] == '#' && str.size() >= 3)
 	{
-		Channel				*cha = server->findChannel(str[1]);
-		std::vector<User*>	listUser = cha->getUsers();		
+		Channel				*cha = server->findChannel(str[1]);		
 		if (cha == NULL)
 		{
 			user->addMsgToSend(ERR_NOSUCHCHANNEL(cha->getName()));

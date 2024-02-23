@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:52:28 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/22 17:21:53 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:46:40 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 //Command: TOPIC <channel> [<topic>]
 int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
-	std::cout << "--cmdTopic--" << std::endl;
 	std::string	topic;
 
 	if (str.size() < 2)

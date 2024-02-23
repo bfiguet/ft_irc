@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:46:13 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 13:35:45 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:44:55 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,7 @@ bool	checkNick(std::string str){
 int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 	std::vector<User*>	listUser = server->getUsers();
 	std::cout << "cmdNick " << str[1] << std::endl;
-	//if (str.size() < 2)
-	//{
-	//	user->addMsgToSend(ERR_NONICKNAMEGIVEN(user->getHost()));
-	//	return 1;
-	//}
+
 	for (std::vector<User*>::iterator i = listUser.begin(); i != listUser.end(); i++)
     {
         if ((*i)->getNick().compare(str[1]) == 0)
@@ -60,6 +56,5 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 	else
 		user->addMsgToSend(NICK_CHANGE(user->getNick(), str[1]));
 	user->setNick(str[1]);
-	//std::cout << "user->getNick()=" << user->getNick() << std::endl;
 	return 0;
 }

@@ -1,5 +1,8 @@
 1./mode #channel -o user1
 This crashes when user1 already lost the channel operator position and I try it again.
+->Crashes again
+munmap_chunk(): invalid pointer
+Aborted (core dumped)
 ->fixed by bfiguet
 
 2./join channel
@@ -32,8 +35,10 @@ the user cannot join channel2 even after disabling password protection on channe
 
 9./Trying to join without a password in a password-protected channel redirects to an empty channel.
 9B./Trying again with the right password doesn't work immediately afterwards and some random non-command has to be entered before it works.
+->fixed by bfiguet
 
 10./ 433 and 431 are not up to norm.
+->fixed by bfiguet
 
 11./Kicking an user causes a segfault.
 ->fixed by bfiguet

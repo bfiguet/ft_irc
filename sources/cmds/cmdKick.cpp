@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 13:52:31 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:44:21 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 //Command: KICK <channel> <user> <comment>
 int	cmdKick(Server *server, std::vector<std::string> str, User *user){
-	std::cout << "--cmdKick--" << std::endl;
 	std::string	reason = "";
 
 	if (str.size() < 3)

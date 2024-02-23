@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:52:54 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 15:53:53 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:44:26 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 //Command: KILL <nickname> <comment>
 int	cmdKill(Server *server, std::vector<std::string> str, User *user){
-	std::cout << "--cmdKill--" << std::endl;
 	std::string	reason = "";
 
 	if (str.size() < 2)
