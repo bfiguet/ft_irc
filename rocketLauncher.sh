@@ -13,7 +13,7 @@ make re
 
 sleep 2
 
-terminator -e "./rocketLauncher_client.sh $port $password; exec bash"
+terminator -e "./Launcher_client.sh $port $password; exec bash"
 
 # Launch the IRC server
 valgrind --track-fds=all ./ircserv $port $password

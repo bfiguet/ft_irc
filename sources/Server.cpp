@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 09:47:09 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/23 11:48:08 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,12 +238,24 @@ int	Server::callCmds(User* user)
 		// std::cout << "debug: recalling callCmds:" << user->getMsg() << std::endl;
 		callCmds(user);
 	}
-	if (!user->isRegisterd() && !user->getNick().empty() && !user->getRealname().empty() && !user->getHost().empty())
+	if (!user->isRegisterd() && !user->getRealname().empty() && !user->getHost().empty())
 	{
 		// std::cout << "debug: checking registeration" << std::endl;
 		if (user->getPass() == _pw)
 		{
 			user->setIsRegisterd(true);
+			if (user->getNick().empty())
+			{
+				user->addMsgToSend(ERR_NONICKNAMEGIVEN);
+				std::vector<std::string> args;
+				args.push_back("");
+				std::stringstream stream;
+				stream << _users.size();
+				std::string str;
+				stream >> str;
+				args.push_back("Guest" + str);
+				cmdNick(this, args, user);
+			}
 			user->addMsgToSend(RPL_WELCOME(user->getNick(), user->getUser(), _host));
 			user->addMsgToSend(RPL_YOURHOST(_host));
 			user->addMsgToSend(RPL_CREATED(_host));

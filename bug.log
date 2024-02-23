@@ -20,5 +20,8 @@ the user cannot join channel2 even after disabling password protection on channe
 ->OK
 
 6./User unable to change nickname when it is already in use due to server connection not complete.
+->fixed by ali
 
 7./Implement timeout mechanics.
+
+8./  433 and 431 are not up to norm.

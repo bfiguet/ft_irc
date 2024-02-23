@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdNick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:46:13 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 15:49:07 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 11:49:06 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 	}
 	if (user->getNick() == "")
 	{
-		user->sendMsg(NICK(str[1]));
+		user->addMsgToSend(NICK(str[1]));
 	}
 	else
 		user->addMsgToSend(NICK_CHANGE(user->getNick(), str[1]));
