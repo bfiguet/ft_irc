@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:52:28 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:46:40 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 15:49:50 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 	Channel	*cha = server->findChannel(str[1]);
 	if (cha == NULL)
 	{
-		user->addMsgToSend(ERR_NOSUCHCHANNEL(cha->getName()));
+		user->addMsgToSend(ERR_NOSUCHCHANNEL(str[1]));
 		return 1;
 	}
 	if (cha->isInChannel(user) == false)
