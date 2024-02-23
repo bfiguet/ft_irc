@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 15:02:06 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/23 15:23:19 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ int	Server::newUser(){
 	_pollfds.push_back(temppollfd);
 	User* user = new User(userSocket);
 	user->setIsRegisterd(false);
+	user->setTimeStamp();
 	_users.push_back(user);
 	std::cout << "New user on fd " << user->getFd() << std::endl;
 	return (0);

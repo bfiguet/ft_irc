@@ -8,6 +8,7 @@ Aborted (core dumped)
 2./join channel
 When #channel is invite-only and the user got kicked out, the user can join back without a new invite.
 ->fixed by bfiguet
+2B(bug or feature?)/Two invites in a row from user1 to user2 allow user2 to join back in an invite-only channel after being kicked without needing a new invite one time only.
 
 3./topic #channel "new topic"
 The channel's topic becomes ["new] instead of [new topic].
@@ -18,6 +19,7 @@ The channel's topic becomes ["new] instead of [new topic].
 The user can access channel1 but not channel2, and even after trying [/join channel2 key2],
 the user cannot join channel2 even after disabling password protection on channel2.
 ->fixed by bfiguet
+4B.Trying with three channels triggers a 476 #chan2,#chan3 Bad Channel Mask message, and the channels 2 and 3 are inaccessible even by trying them one by one.
 
 5./mode changes should result in response from server confirming the changed mode.
 ->fixed by bfiguet
@@ -42,3 +44,14 @@ the user cannot join channel2 even after disabling password protection on channe
 
 11./Kicking an user causes a segfault.
 ->fixed by bfiguet
+
+12./Getting time out immediately after starting sessions with any user.
+Server Socket connection created...
+Server IRC Start!
+New user on fd 4
+User  has timed out.
+Disconnecting user
+New user on fd 4
+User  has timed out.
+Disconnecting user
+->OK
