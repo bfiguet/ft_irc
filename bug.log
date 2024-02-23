@@ -20,6 +20,7 @@ The user can access channel1 but not channel2, and even after trying [/join chan
 the user cannot join channel2 even after disabling password protection on channel2.
 ->fixed by bfiguet
 4B.Trying with three channels triggers a 476 #chan2,#chan3 Bad Channel Mask message, and the channels 2 and 3 are inaccessible even by trying them one by one.
+->fixed by bfiguet
 
 5./mode changes should result in response from server confirming the changed mode.
 ->fixed by bfiguet
@@ -46,12 +47,7 @@ the user cannot join channel2 even after disabling password protection on channe
 ->fixed by bfiguet
 
 12./Getting time out immediately after starting sessions with any user.
-Server Socket connection created...
-Server IRC Start!
-New user on fd 4
-User  has timed out.
-Disconnecting user
-New user on fd 4
-User  has timed out.
-Disconnecting user
-->OK
+->Fixed by Ali
+
+13./Multiple invites stack
+->fixed by Ali

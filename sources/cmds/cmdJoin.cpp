@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:44:13 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 16:35:53 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,13 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 		if (str[1][i] == '#')
 		{
 			std::string	channel = "";
+			int	nb = 0;
 			while (str[1][end_cha] && str[1][end_cha] != ',')
+			{
 				end_cha++;
-			channel = str[1].substr(i, end_cha);
+				nb++;
+			}
+			channel = str[1].substr(i, nb);
 			Channel	*cha = server->findChannel(channel);
 			if (cha == NULL)
 			{
@@ -80,9 +84,13 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 			else if (str.size() > 2)
 			{
 				std::string pw = "";
+				nb = 0;
 				while (str[2][end_pw] && str[2][end_pw] != ',')
+				{
 					end_pw++;
-				pw = str[2].substr(i_pw, end_pw);
+					nb++;
+				}
+				pw = str[2].substr(i_pw, nb);
 				if (cha->getPw().compare(pw) == 0)
 				{
 					if (cha->isInChannel(user) == false)

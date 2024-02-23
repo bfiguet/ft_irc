@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:44:21 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 16:46:32 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,14 +43,17 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_USERNOTINCHANNEL(userToDel->getNick(), str[1]));
 		return 1;
 	}
-	else if (cha->isInvited(user) == true)
+	else if (cha->isOperator(user) == false)
 	{
 		user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
 		return 1;
 	}
 	if (str[3].size() > 0)
 	{
-		reason = str[3];
+		if (str[3][0] == ':')
+			reason = str[3].substr(1);
+		else
+			reason = str[3];
 		for (size_t i = 4; i < str.size(); i++)
 		{
 			reason += " ";
