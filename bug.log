@@ -24,4 +24,10 @@ the user cannot join channel2 even after disabling password protection on channe
 
 7./Implement timeout mechanics.
 
-8./  433 and 431 are not up to norm.
+8./When kicked out of a channel, the user should be back in the main channel instead of just staying there.
+8B./[status] doesn't come back immediately after being kicked and it only works properly after some random non-command is entered afterwards.
+
+9./Trying to join without a password in a password-protected channel redirects to an empty channel.
+9B./Trying again with the right password doesn't work immediately afterwards and some random non-command has to be entered before it works.
+
+10./ 433 and 431 are not up to norm.
