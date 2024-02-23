@@ -19,3 +19,6 @@ the user cannot join channel2 even after disabling password protection on channe
 5./mode changes should result in response from server confirming the changed mode.
 ->OK
 
+6./User unable to change nickname when it is already in use due to server connection not complete.
+
+7./Implement timeout mechanics.
