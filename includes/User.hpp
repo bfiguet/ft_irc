@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:04:08 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:58:13 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ private:
 	bool					_isRegistered;
 	bool					_disconnect;
 	int						_nbChannel;
-	//time_t					_timeOut;
+	struct timeval			_timestamp;
 
 public:
 	User(int fd);
@@ -46,6 +46,7 @@ public:
 	std::string	getPass()const;
 	std::string	getMsg()const;
 	std::string	getMsgsToSend() const;
+	timeval		getTimeStamp() const;
 
 	bool		isRegisterd() const;
 	bool		isDisconnect() const;
@@ -63,6 +64,7 @@ public:
 	void		setMsg(std::string str);
 	void		addMsgToSend(std::string str);
 	void		setMsgsToSend(std::string str);
+	void		setTimeStamp();
 	void		sendMsg(std::string msg);
 	std::string	extractCmd();
 

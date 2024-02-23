@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/21 12:41:32 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/23 14:56:33 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ public:
 	void					deleteUserFromChannels(User* user);
 	int						callCmds(User* user);
 	void					addChannel(std::string name);
+	void					checkTimeout();
 
 	class BadServInit: public std::exception
     {

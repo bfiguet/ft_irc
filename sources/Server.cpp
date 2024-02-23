@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 13:38:53 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 15:02:06 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ int	Server::receiveMsg(int fd){
 	int valread = 1;
 
 	// std::cout << "debug: Receiving message" << buffer << std::endl;
+	user->setTimeStamp();
 	bzero(buffer, BUFFERSIZE);
 	valread = recv(fd, buffer, BUFFERSIZE, 0);
 	if (valread < 0 || valread == 0)
@@ -183,10 +184,25 @@ int	Server::start(){
 				if (callCmds(findUser(((*i)).fd)) == 1)
 					std::cout << "need password to connect" << std::endl;
 		}
+		checkTimeout();
 		deleteDisconnected();
 		deleteEmptyChannels();
 	}
 	return 0;
+}
+
+void	Server::checkTimeout()
+{
+	struct timeval time;
+	gettimeofday(&time, NULL);
+	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
+	{
+		if (time.tv_sec - (*i)->getTimeStamp().tv_sec >= 90)
+		{
+			std::cout << "User " << (*i)->getNick() << " has timed out." << std::endl;
+			(*i)->setDisconnect(true);
+		}
+	}
 }
 
 void	Server::deleteEmptyChannels()

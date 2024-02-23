@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:04:02 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:58:06 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,12 @@ std::string	User::getMsg()const{ return _msg; }
 
 std::string	User::getMsgsToSend() const{return _msgsToSend;};
 
+timeval		User::getTimeStamp() const
+{
+	return (_timestamp);
+}
+
+
 bool		User::isRegisterd() const {return _isRegistered;}
 
 bool		User::isDisconnect() const {return _disconnect;}
@@ -83,6 +89,11 @@ void		User::addMsg(std::string str){ _msg += str; }
 void		User::addMsgToSend(std::string str){ _msgsToSend += str; }
 
 void		User::setMsgsToSend(std::string str){_msgsToSend = str;}
+
+void		User::setTimeStamp()
+{
+	gettimeofday(&_timestamp, NULL);
+}
 
 void		User::sendMsg(std::string msg){
 	if (send(_sock, msg.c_str(), msg.length(), 0) < 0)
