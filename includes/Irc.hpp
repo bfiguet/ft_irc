@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 10:36:25 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 13:35:53 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,11 @@ extern bool g_run;
 
 # define ERR_NOORIGIN(nick)("409 " + nick + " :No origin specified\r\n")
 
-# define ERR_NONICKNAMEGIVEN "431 :No nickname given\r\n"
+# define ERR_NONICKNAMEGIVEN(localhost) (":" + localhost + " 431 :" + " :No nickname given\r\n")
 
-# define ERR_ERRONEUSNICKNAME(nick)("432 " + nick + " :Erroneous nickname\r\n")
+# define ERR_ERRONEUSNICKNAME(localhost, nick) (":" + localhost + " 432 " + nick + " :Erroneus nickname\r\n")
 
-# define ERR_NICKNAMEINUSE(nick)(" 433 " + nick + " :Nickname is already in use\r\n")
+# define ERR_NICKNAMEINUSE(nick)(": 433 localhost " + nick + " :Nickname is already in use\r\n")
 
 # define ERR_USERNOTINCHANNEL(nick, chan)("441 " + nick + " " + chan + " :They aren't on that channel\r\n")
 
@@ -135,10 +135,8 @@ extern bool g_run;
 
 # define TOPIC(nick, user, host, chan, topic)(":" + nick + "!" + user + "@" + host + " TOPIC " + chan + " :" + topic + "\r\n")
 
-# define MSG(nickname, username, host, cmd, dest_name, msg)(":" + nickname + "!" + username + "@" + host + " " + cmd + " " + dest_name + " :" + msg + "\r\n")
+# define MSG(nick, username, host, cmd, dest_name, msg)(":" + nick + "!" + username + "@" + host + " " + cmd + " " + dest_name + " :" + msg + "\r\n")
 
-//# define MODE2(channel, mode, comment)(" MODE " + channel + " " + mode + " :" + comment + "\r\n")
-
-# define MODE(nickname, channel, mode, param) (":" + nickname + "!" + "@localhost MODE " + channel + " " + mode + " " + param + "\r\n")
+# define MODE(nick, channel, mode, param) (":" + nick + "!" + "@localhost MODE " + channel + " " + mode + " " + param + "\r\n")
 
 #endif

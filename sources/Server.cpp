@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 11:48:08 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/23 13:38:53 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,13 +240,12 @@ int	Server::callCmds(User* user)
 	}
 	if (!user->isRegisterd() && !user->getRealname().empty() && !user->getHost().empty())
 	{
-		// std::cout << "debug: checking registeration" << std::endl;
 		if (user->getPass() == _pw)
 		{
 			user->setIsRegisterd(true);
 			if (user->getNick().empty())
 			{
-				user->addMsgToSend(ERR_NONICKNAMEGIVEN);
+				//user->addMsgToSend(ERR_NONICKNAMEGIVEN(user->getHost()));
 				std::vector<std::string> args;
 				args.push_back("");
 				std::stringstream stream;
@@ -261,7 +260,6 @@ int	Server::callCmds(User* user)
 			user->addMsgToSend(RPL_CREATED(_host));
 			user->addMsgToSend(RPL_MYINFO(_host));
 			displayUser(user);
-			// std::cout << "debug: registeration done" << std::endl;
 		}
 		else
 		{

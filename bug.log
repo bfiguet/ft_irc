@@ -1,27 +1,35 @@
 1./mode #channel -o user1
 This crashes when user1 already lost the channel operator position and I try it again.
-->OK
+->fixed by bfiguet
 
 2./join channel
 When #channel is invite-only and the user got kicked out, the user can join back without a new invite.
-->OK
+->fixed by bfiguet
 
 3./topic #channel "new topic"
 The channel's topic becomes ["new] instead of [new topic].
-->OK
+->fixed by bfiguet
 
 4./join channel1,channel2 key1,key2
 (channel1's password is [key1], channel2's password is [key2])
 The user can access channel1 but not channel2, and even after trying [/join channel2 key2],
 the user cannot join channel2 even after disabling password protection on channel2.
-->OK
+->fixed by bfiguet
 
 5./mode changes should result in response from server confirming the changed mode.
-->OK
+->fixed by bfiguet
 
 6./User unable to change nickname when it is already in use due to server connection not complete.
 ->fixed by ali
 
 7./Implement timeout mechanics.
 
-8./  433 and 431 are not up to norm.
+8./When kicked out of a channel, the user should be back in the main channel instead of just staying there.
+8B./[status] doesn't come back immediately after being kicked and it only works properly after some random non-command is entered afterwards.
+->fixed by bfiguet
+
+9./Trying to join without a password in a password-protected channel redirects to an empty channel.
+9B./Trying again with the right password doesn't work immediately afterwards and some random non-command has to be entered before it works.
+
+10./ 433 and 431 are not up to norm.
+->fixed by bfiguet

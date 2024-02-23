@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdJoin.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 10:08:05 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/23 14:21:58 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 //Command: JOIN <channel>,<channels> <key>,<key>
 int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 {
-	std::cout << "--cmdJoin--" << std::endl;
+	//std::cout << "--cmdJoin--" << std::endl;
 	size_t	i_pw = 0;
 	size_t	end_cha = 0;
 	size_t	end_pw = 0;
@@ -99,7 +99,7 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 					end_pw++;
 				i_pw = end_pw;
 			}
-			user->addNewChannel();
+			cha->setInviteUser(user, false);
 			i = end_cha;
 			if (str[1][end_cha] == ',')
 				end_cha++;

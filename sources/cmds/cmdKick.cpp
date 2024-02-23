@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdKick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 10:50:19 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/23 13:52:31 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 	}
 	Channel *cha = server->findChannel(str[1]);
 	User	*userToDel = server->findUser(str[2]);
-	if (server->findUser(str[2]) != userToDel)
+	if (userToDel == NULL)
 	{
 		user->addMsgToSend(ERR_NOSUCHNICK(str[2]));
 		return 1;
@@ -49,7 +49,6 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
 		return 1;
 	}
-	std::vector<User*>	listUser = cha->getUsers();
 	if (str[3].size() > 0)
 	{
 		reason = str[3];
@@ -59,9 +58,10 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 			reason += str[i];
 		}
 	}
+	std::vector<User*>	listUser = cha->getUsers();
 	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
 		(*it)->addMsgToSend(KICK(user->getNick(), user->getUser(), user->getHost(), cha->getName(), userToDel->getNick(), reason));
-	cha->setInviteUser(userToDel, false);
+	
 	cha->delUser(userToDel);
 	return 0;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: algeorge <algeorge@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/21 16:12:35 by algeorge         ###   ########.fr       */
+/*   Updated: 2024/02/23 14:04:08 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ public:
 	bool		isRegisterd() const;
 	bool		isDisconnect() const;
 	bool		canAddNewChannel() const;
-	bool		addNewChannel();
+	//bool		addNewChannel();
 
 	void		setNick(std::string str);
 	void		setUser(std::string str);

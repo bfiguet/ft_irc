@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/22 17:44:49 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:22:45 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,15 +90,15 @@ void	Channel::addUser(User* user)
 
 void	Channel::delUser(User* user)
 {
-	_users.erase(std::find(_users.begin(), _users.end(), user));
 	_userCount--;
+	_users.erase(std::find(_users.begin(), _users.end(), user));
 }
 
 void	Channel::setInviteUser(User* user, bool onoff)
 {
 	if (onoff == true)
 		_invited.push_back(user);
-	else
+	else if (isInvited(user) == true)
 		_invited.erase(std::find(_invited.begin(), _invited.end(), user));
 }
 
