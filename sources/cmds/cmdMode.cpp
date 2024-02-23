@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:16 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/22 16:29:17 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 10:36:58 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 	//std::cout << "--cmdMode--" << std::endl;
 	//std::cout << "str[1]" << str[1] << std::endl;
+	//std::cout << "str[2]" << str[2] << std::endl;
 	std::string			comment = "";
 	User				*userOp = NULL;
 
@@ -52,12 +53,12 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 					if (str[2][0] == '+')
 					{
 						cha->setInvitOnly(true);
-						comment = "is now invite-only.";
+						//comment = "is now invite-only.";
 					}
 					else if (str[2][0] == '-')
 					{
 						cha->setInvitOnly(false);
-						comment = "is no longer invite-only.";
+						//comment = "is no longer invite-only.";
 					}
 					break;
 				// +k : key protect, set password on channel
@@ -82,13 +83,14 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 						else
 						{
 							cha->setPw(str[3]);
-							comment = "is now locked.";
+							//comment = "is now locked.";
+							comment = str[3];
 						}
 					}
 					else if (str[2][0] == '-')
 					{
 						cha->setPw("");
-						comment = "is no longer locked.";
+						//comment = "is no longer locked.";
 					}
 					break;
 				// +l : limits max number of users in a channel
@@ -102,15 +104,16 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 							return 1;
 						}
 						nb = atoi(str[3].c_str());
-						if (nb < 1 && cha->getUserCount() >= nb)
+						if (nb < 1 || cha->getUserCount() > nb)
 							return 1;
 						cha->setLimit(nb);
-						comment = "is now limited to " + str[3] + " users.";
+						//comment = "is now limited to " + str[3] + " users.";
+						comment = str[3];
 					}
 					else if (str[2][0] == '-')
 					{
 						cha->setLimit(100);
-						comment = "is no longer limited in members.";
+						//comment = "is no longer limited in members.";
 					}
 					break;
 				// +o : gives operator status to a user (ChannelOperator)
@@ -134,12 +137,14 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 					else if (str[2][0] == '+')
 					{
 						cha->setOperators(userOp, true);
-						comment = "is now channel operator.";
+						//comment = "is now channel operator.";
+						comment = userOp->getNick();
 					}
 					else if (str[2][0] == '-')
 					{
 						cha->setOperators(userOp, false);
-						comment = "is no longer operator.";
+						//comment = "is no longer operator.";
+						comment = userOp->getNick();
 					}
 					break;
 				// +t : topic protection, Only ChannelOperator can change topic
@@ -147,12 +152,12 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 					if (str[2][0] == '+')
 					{
 						cha->setTopicChange(true);
-						comment = "topic is now protected.";
+						//comment = "topic is now protected.";
 					}
 					else if (str[2][0] == '-')
 					{
 						cha->setTopicChange(false);
-						comment = "topic is no longer protected.";
+						//comment = "topic is no longer protected.";
 					}
 					break;
 					
@@ -162,8 +167,9 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 					break;
 				}
 			}
+			std::vector<User *> listUser = cha->getUsers();
 			for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
-				(*it)->addMsgToSend(MODE(cha->getName(), str[2], comment));
+				(*it)->addMsgToSend(MODE(user->getNick(), cha->getName(), str[2], comment));
 		}
 	}
 	return 0;

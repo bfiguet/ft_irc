@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 18:43:33 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 10:36:25 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,8 @@ extern bool g_run;
 
 # define MSG(nickname, username, host, cmd, dest_name, msg)(":" + nickname + "!" + username + "@" + host + " " + cmd + " " + dest_name + " :" + msg + "\r\n")
 
-# define MODE(channel, mode, comment)(" MODE " + channel + " " + mode + " :" + comment + "\r\n")
+//# define MODE2(channel, mode, comment)(" MODE " + channel + " " + mode + " :" + comment + "\r\n")
+
+# define MODE(nickname, channel, mode, param) (":" + nickname + "!" + "@localhost MODE " + channel + " " + mode + " " + param + "\r\n")
 
 #endif

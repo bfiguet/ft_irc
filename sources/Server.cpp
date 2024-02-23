@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/21 13:00:53 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/23 09:47:09 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	errMsg(std::string msg)
 	return (-1);
 }
 
-Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _port(port) {
+Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _port(port), _sock(-1) {
 	_sock = newSock();
 	if (_sock < 0)
 		throw(Server::BadServInit());
@@ -31,7 +31,8 @@ Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _po
 
 Server::~Server() {
 	std::cout << "~Server" << std::endl;
-	close(_sock);
+	if (_sock >= 0)
+		close(_sock);
 	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
 	{
 		close((*i)->getFd());
@@ -61,10 +62,16 @@ int		Server::newSock(){
 
 	//binds the socket to the address and port number specified in addr(custom data structure)
 	if (bind(serverSocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
+	{
+		close(_sock);
 		return (errMsg("Error: binding socket " + std::string(strerror(errno))));
+	}
 	//Listening socket
 	if (listen(serverSocket, 1000) < 0) //compare with others
+	{
+		close(_sock);
 		return (errMsg("Error: listening socket " + std::string(strerror(errno))));
+	}
 	return serverSocket;
 }
 
