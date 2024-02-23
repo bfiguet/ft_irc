@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:30 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/16 18:37:25 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:46:26 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,6 @@
 
 //Command: PRIVMSG <target> <text to be sent>
 int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdPrivmsg--" << std::endl;
-	//std::cout << "target " << str[1] << std::endl;
-//	std::cout << "text to be sent " << str[2] << std::endl;
 	std::string	msg;
 	User* dest = server->findUser(str[1]);
 	Channel	*cha = server->findChannel(str[1]);

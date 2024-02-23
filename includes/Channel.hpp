@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:12:34 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 13:54:18 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:56:10 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ public:
 	void					setInvitOnly(bool val);
 	void					setTopicChange(bool val);
 	void					setInviteUser(User* user, bool onoff);
-	void					setOperators(User* user, bool isOperator);
+	void					setOperators(User* user, bool onoff);
 
 	void					addUser(User* user);
 	void					delUser(User* user);

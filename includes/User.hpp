@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:04:08 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:47:09 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ public:
 	bool		isRegisterd() const;
 	bool		isDisconnect() const;
 	bool		canAddNewChannel() const;
-	//bool		addNewChannel();
 
 	void		setNick(std::string str);
 	void		setUser(std::string str);

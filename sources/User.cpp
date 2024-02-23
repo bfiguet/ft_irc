@@ -6,22 +6,11 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:04:02 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:47:28 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
-
-	//std::string				_nick;
-	//std::string				_user;
-	//std::string				_realname;
-	//std::string				_host;
-	//std::string				_pass;
-	//std::string				_msg;
-	//std::string				_msgsToSend;
-	//std::vector<Channel *>	_channels;
-	//bool					_isRegistered;
-	//bool					_disconnect;
 
 User::User(int fd): _sock(fd), _nick(""), _user(""),
 					_realname(""), _host(""), _pass(""),
@@ -51,16 +40,6 @@ bool		User::isRegisterd() const {return _isRegistered;}
 bool		User::isDisconnect() const {return _disconnect;}
 
 bool		User::canAddNewChannel() const {return (_nbChannel - 1 >= 0);}
-
-//bool		User::addNewChannel(){ 
-//	if (_nbChannel - 1 >= 0)
-//	{
-//		_nbChannel--;
-//		return true;
-//	}
-//	else
-//		return false;
-//}
 
 void		User::setNick(std::string str){ _nick = str; }
 
@@ -97,7 +76,5 @@ std::string	User::extractCmd()
 		return ("");
 	cmd = _msg.substr(0, cmdEnd - _msg.c_str());
 	_msg = _msg.substr(cmd.size() + 2, _msg.size() - cmd.size() + 2);
-	// std::cout << "debug: command extraction: |cmd|buffer|" << std::endl << "|" << cmd << "|" << _msg << "|" << std::endl;
 	return (cmd);
 }
-

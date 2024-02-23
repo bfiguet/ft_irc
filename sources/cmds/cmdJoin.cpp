@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:40:02 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:44:13 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 //Command: JOIN <channel>,<channels> <key>,<key>
 int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 {
-	//std::cout << "--cmdJoin--" << std::endl;
 	size_t	i_pw = 0;
 	size_t	end_cha = 0;
 	size_t	end_pw = 0;
