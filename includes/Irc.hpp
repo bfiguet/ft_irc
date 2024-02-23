@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 13:35:53 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:38:51 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ extern bool g_run;
 
 # define ERR_INVITEONLYCHAN(nick, chan)("473 " + nick + " " + chan + " :Cannot join channel (+i)\r\n")
 
-# define ERR_BADCHANNELKEY(channel)("475 " + channel + " :Cannot join channel (+k)\r\n")
+# define ERR_BADCHANNELKEY(nick, channel)("475 " + nick + " " + channel + " :Cannot join channel (+k)\r\n")
 
 # define ERR_BADCHANMASK(channel)("476 " + channel + " :Bad Channel Mask\r\n")
 

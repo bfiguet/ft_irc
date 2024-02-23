@@ -32,6 +32,7 @@ the user cannot join channel2 even after disabling password protection on channe
 
 9./Trying to join without a password in a password-protected channel redirects to an empty channel.
 9B./Trying again with the right password doesn't work immediately afterwards and some random non-command has to be entered before it works.
+->fixed by bfiguet
 
 10./ 433 and 431 are not up to norm.
 ->fixed by bfiguet

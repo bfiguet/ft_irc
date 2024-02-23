@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:21:58 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:40:02 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 			}
 			if (cha->getPw() != "" && str.size() < 3)
 			{
-				user->addMsgToSend(ERR_BADCHANNELKEY(channel));
+				user->addMsgToSend(ERR_BADCHANNELKEY(user->getNick(), channel));
 				return 1;
 			}
 			if (cha->getLimit() == cha->getUserCount())
