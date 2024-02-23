@@ -5,6 +5,7 @@ This crashes when user1 already lost the channel operator position and I try it 
 2./join channel
 When #channel is invite-only and the user got kicked out, the user can join back without a new invite.
 ->OK
+Fixed by Ali
 
 3./topic #channel "new topic"
 The channel's topic becomes ["new] instead of [new topic].
@@ -15,3 +16,7 @@ The channel's topic becomes ["new] instead of [new topic].
 The user can access channel1 but not channel2, and even after trying [/join channel2 key2],
 the user cannot join channel2 even after disabling password protection on channel2.
 ->OK
+
+5./mode changes should result in response from server confirming the changed mode.
+->OK
+
