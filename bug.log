@@ -8,7 +8,7 @@ Aborted (core dumped)
 2./join channel
 When #channel is invite-only and the user got kicked out, the user can join back without a new invite.
 ->fixed by bfiguet
-2B(bug or feature?)/Two invites in a row from user1 to user2 allow user2 to join back once in an invite-only channel after being kicked without needing a new invite.
+2B(bug or feature?)/Two invites in a row from user1 to user2 allow user2 to join back in an invite-only channel after being kicked without needing a new invite one time only.
 
 3./topic #channel "new topic"
 The channel's topic becomes ["new] instead of [new topic].
