@@ -5,7 +5,6 @@ This crashes when user1 already lost the channel operator position and I try it 
 2./join channel
 When #channel is invite-only and the user got kicked out, the user can join back without a new invite.
 ->OK
-Fixed by Ali
 
 3./topic #channel "new topic"
 The channel's topic becomes ["new] instead of [new topic].

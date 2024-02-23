@@ -9,17 +9,11 @@ fi
 port=$1
 password=$2
 
-make re
 
+# Wait for the server to start
 sleep 2
-
-terminator -e "./rocketLauncher_client.sh $port $password; exec bash"
-
-# Launch the IRC server
-valgrind --track-fds=all ./ircserv $port $password
-
-# Waimaket for the server to start
-sleep 1
 
 # Launch two instances of irssi, each in a separate terminal window, connecting to the server
 
+terminator -e "irssi -c localhost -p $port -w $password -n ali; exec bash"
+irssi -c localhost -p $port -w $password -n bland; exec bash

@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 08:22:13 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/23 10:08:05 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,6 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 				{
 					std::cout << "add " << user->getNick() << " in this channel" << std::endl;
 					cha->addUser(user);
-					if (cha->isInvited(user))
-						cha->setInviteUser(user, false);
 				}
 				std::vector<User *> listUser = cha->getUsers();
 				for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
