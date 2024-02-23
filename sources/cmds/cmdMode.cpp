@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:16 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 15:42:53 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 15:45:17 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 		Channel				*cha = server->findChannel(str[1]);		
 		if (cha == NULL)
 		{
-			user->addMsgToSend(ERR_NOSUCHCHANNEL(cha->getName()));
+			user->addMsgToSend(ERR_NOSUCHCHANNEL(str[1]));
 			return 1;
 		}
 		else if (cha->isInChannel(user) == false)
