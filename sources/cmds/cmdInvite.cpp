@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:50:06 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/22 17:46:57 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 14:43:59 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 // Command: INVITE <nickname> <channel>
 int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdInvite--" << std::endl;
 	if (str.size() < 3)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));

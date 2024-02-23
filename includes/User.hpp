@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:58:13 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/23 15:08:12 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ public:
 	bool		isRegisterd() const;
 	bool		isDisconnect() const;
 	bool		canAddNewChannel() const;
-	//bool		addNewChannel();
 
 	void		setNick(std::string str);
 	void		setUser(std::string str);
