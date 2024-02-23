@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdInvite.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:50:06 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:43:59 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/23 15:46:14 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_USERONCHANNEL(user->getNick(), userNew->getNick(), cha->getName()));
 		return 1;
 	}
-	cha->setInviteUser(userNew, true);
+	if (!cha->isInvited(userNew))
+		cha->setInviteUser(userNew, true);
 	user->addMsgToSend(RPL_INVITING(user->getNick(), user->getUser(), server->getHost(), userNew->getNick(), cha->getName()));
 	userNew->addMsgToSend(INVITE(user->getNick(), user->getUser(), server->getHost(), userNew->getNick(), cha->getName()));
 	return 0;

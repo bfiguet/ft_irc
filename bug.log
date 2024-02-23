@@ -46,12 +46,7 @@ the user cannot join channel2 even after disabling password protection on channe
 ->fixed by bfiguet
 
 12./Getting time out immediately after starting sessions with any user.
-Server Socket connection created...
-Server IRC Start!
-New user on fd 4
-User  has timed out.
-Disconnecting user
-New user on fd 4
-User  has timed out.
-Disconnecting user
-->OK
+->Fixed by Ali
+
+13./Multiple invites stack
+->fixed by Ali
