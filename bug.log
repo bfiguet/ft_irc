@@ -1,5 +1,8 @@
 1./mode #channel -o user1
 This crashes when user1 already lost the channel operator position and I try it again.
+->Crashes again
+munmap_chunk(): invalid pointer
+Aborted (core dumped)
 ->fixed by bfiguet
 
 2./join channel
