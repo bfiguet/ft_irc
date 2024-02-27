@@ -30,7 +30,7 @@ the user cannot join channel2 even after disabling password protection on channe
 ->fixed by ali
 
 7./Implement timeout mechanics.
-->ok
+->Implemented by Ali
 
 8./When kicked out of a channel, the user should be back in the main channel instead of just staying there.
 8B./[status] doesn't come back immediately after being kicked and it only works properly after some random non-command is entered afterwards.
