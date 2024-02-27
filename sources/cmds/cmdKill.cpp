@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdKill.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:52:54 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:44:26 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/27 10:51:52 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ int	cmdKill(Server *server, std::vector<std::string> str, User *user){
 	{
 		if (str[2].size() > 0)
 			reason = str[2];
-		server->delUser(server->findUser(str[1]));
+		// server->delUser(server->findUser(str[1]));
+		server->findUser(str[1])->setDisconnect(true);
 		user->addMsgToSend(KILL(user->getNick(), user->getUser(), user->getHost(), str[1], reason));
 		return 0;
 	}

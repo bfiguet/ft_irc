@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 11:31:50 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/27 11:39:37 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,12 +64,8 @@ extern bool g_run;
 
 # define RPL_INVITING(nick, user, host, invitenick, channel)("341 " + nick + "!" + user + "@" + host + " " + invitenick + " " + channel + "\r\n")
 
-//# define JOIN(nick, user, host, chan)(":" + nick + "!" + user + "@" + host  + " JOIN " + chan + "\r\n")
 # define RPL_NAMREPLY(nick, user, host, channel, all_users)("353 " + nick + "!" + user + "@" + host + " " + channel + " : " + all_users + "\r\n")
-//# define RPL_NAMREPLY(channel, all_users)("353 " + channel + " :" + all_users + "\r\n")
-//# define RPL_NAMREPLY(channel, all_users)("353 " + channel + " :" + all_users + "\r\n")
 
-//# define RPL_ENDOFNAMES(channel)("366 " + channel + " :End of /NAMES list \r\n")
 # define RPL_ENDOFNAMES(nick, user, host, channel)("366 " + nick + "!" + user + "@" + host + " " + channel + " \r\n")
 
 //# define RPL_BANLIST(host, channel, mask)(":" + host + " 367 " + channel + " " + mask + "\r\n")

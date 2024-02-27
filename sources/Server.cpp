@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 15:23:19 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/27 11:17:51 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,11 @@ int		Server::newSock(){
 	if (serverSocket < 0)
 		return (errMsg("Error: server socket error " + std::string(strerror(errno))));
 	std::cout << "Server Socket connection created..." << std::endl;
+	int optval = 1;
+	if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0){
+		close(serverSocket);
+		return (errMsg("Error: setting socket options " + std::string(strerror(errno))));
+	}
 	bzero((char *) &server_addr, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -63,13 +68,13 @@ int		Server::newSock(){
 	//binds the socket to the address and port number specified in addr(custom data structure)
 	if (bind(serverSocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 	{
-		close(_sock);
+		close(serverSocket);
 		return (errMsg("Error: binding socket " + std::string(strerror(errno))));
 	}
 	//Listening socket
-	if (listen(serverSocket, 1000) < 0) //compare with others
+	if (listen(serverSocket, 1000) < 0)
 	{
-		close(_sock);
+		close(serverSocket);
 		return (errMsg("Error: listening socket " + std::string(strerror(errno))));
 	}
 	return serverSocket;
@@ -103,7 +108,6 @@ int	Server::receiveMsg(int fd){
 	bzero(buffer, BUFFERSIZE);
 	int valread = 1;
 
-	// std::cout << "debug: Receiving message" << buffer << std::endl;
 	user->setTimeStamp();
 	bzero(buffer, BUFFERSIZE);
 	valread = recv(fd, buffer, BUFFERSIZE, 0);
@@ -116,14 +120,12 @@ int	Server::receiveMsg(int fd){
 		user->setDisconnect(true);
 		return(0);
 	}
-	std::cout << "debug: message received " << buffer << std::endl;
 	user->addMsg(buffer);
 	return (0);
 }
 
 int	Server::pollinHandler(int fd)
 {
-	// std::cout << "debug: pollin event " << fd << std::endl;
 	if (fd == _sock)
 		return(newUser());
 	return(receiveMsg(fd));
@@ -131,9 +133,7 @@ int	Server::pollinHandler(int fd)
 
 int Server::polloutHandler(int fd)
 {
-	// std::cout << "debug: pollout event " << fd << std::endl;
 	User* user = findUser(fd);
-	// std::cout << "User is " << user->getFd() << " " << user->getNick() << std::endl;
 	if (!user->getMsgsToSend().empty())
 	{
 		std::cout << user->getNick() << " messages to send:\n" << user->getMsgsToSend() << std::endl;
@@ -145,7 +145,6 @@ int Server::polloutHandler(int fd)
 
 int Server::pollerrHandler(int fd)
 {
-	// std::cout << "debug: pollerr event " << fd << std::endl;
 	if (fd == _sock)
 		return(errMsg("Error: server socket " + std::string(strerror(errno))));
 	findUser(fd)->setDisconnect(true);
@@ -158,7 +157,6 @@ int	Server::start(){
 	while (g_run == true)
 	{
 		events = poll((_pollfds.begin()).base(), _pollfds.size(), 0);
-		// std::cout << "debug: events " << events << std::endl;
 		if ( events < 0)
 			return (errMsg("Error: poll error: " + std::string(strerror(errno))));
 		if (events == 0)
@@ -180,7 +178,6 @@ int	Server::start(){
 		}
 		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
 		{
-			// std::cout << "debug cmds on fd " << (*i).fd << std::endl;
 			if (i != _pollfds.begin())
 				if (callCmds(findUser(((*i)).fd)) == 1)
 					std::cout << "need password to connect" << std::endl;
@@ -243,18 +240,12 @@ void	Server::deleteDisconnected()
 
 int	Server::callCmds(User* user)
 {
-	// std::cout << "debug: executing cmd on user " << user->getFd() << std::endl;
 	std::string cmd = user->extractCmd();
-	 //std::cout << "debug: executing cmd ->" << cmd << "|" << cmd.size() << std::endl;
 	if (cmd.empty())
 		return 0;
 	executeCmd(cmd, user);
-	// std::cout << "debug: execution done" << std::endl;
 	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
-	{
-		// std::cout << "debug: recalling callCmds:" << user->getMsg() << std::endl;
 		callCmds(user);
-	}
 	if (!user->isRegisterd() && !user->getRealname().empty() && !user->getHost().empty())
 	{
 		if (user->getPass() == _pw)
@@ -262,7 +253,6 @@ int	Server::callCmds(User* user)
 			user->setIsRegisterd(true);
 			if (user->getNick().empty())
 			{
-				//user->addMsgToSend(ERR_NONICKNAMEGIVEN(user->getHost()));
 				std::vector<std::string> args;
 				args.push_back("");
 				std::stringstream stream;
@@ -289,35 +279,21 @@ int	Server::callCmds(User* user)
 
 void	Server::executeCmd(std::string str, User* user){
 	std::vector<std::string>	arguments;
-	// std::stringstream			is(str);
 	std::string					word;
 	char const*                 index;
 
 	word = str.substr(0, str.find(' '));
-	//std::cout << "debug: executeCmd " << str << std::endl;
 	int	(*fun[])(Server* server, std::vector<std::string> arguments, User* user) = {
 		&cmdPass, &cmdNick, &cmdUser, &cmdInvite, &cmdKill, &cmdTopic, &cmdKick, &cmdPart,
 		&cmdPing, &cmdMode, &cmdQuit, &cmdPrivmsg, &cmdJoin, &cmdPrivmsg
 	};
 	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "PRIVMSG", "JOIN", "MSG"};
 	std::vector<std::string> _cmd(commands, commands + 14);
-	// std::cout << "debug: function pointer array done" << _cmd.size() << std::endl;
-	// std::cout << "debug: _cmd " << _cmd[0] << std::endl;
-	// for (int i = 0; i < 10; i++)
 	int	ind = 0;
 	for (std::vector<std::string>::iterator i = _cmd.begin(); i != _cmd.end(); i++)
-	// for (std::size_t i = 0; i < _cmd.size(); ++i)
 	{
-		// std::cout << "debug: searching for command" << std::endl;
 		if ( word.compare(*i) == 0)
 		{
-			// std::cout << "debug: command found" << std::endl;
-			// while (!str.empty())
-			// {
-			// 	word = str.substr(0, str.find(' '));
-			// 	str = str.substr(str.find(' ') + 1, -1);
-			// 	arguments.push_back(word);
-			// }
 			while (!str.empty())
 			{
 				index = std::strstr(str.c_str(), " ");
@@ -338,27 +314,20 @@ void	Server::executeCmd(std::string str, User* user){
 		}
 		ind++;
 	}
-	//displayUser(user);
-	// std::cout << "debug: command " << word << " not found" << std::endl;
 }
 
-std::vector<User*>::iterator	Server::delUser(User* user)
-{
-	//std::cout << "--delUser--" << std::endl;
-	// std::cout << "debug: " << (*it)->getNick() << std::endl;
-	deleteUserFromChannels(user);
-	std::cout << "debug: 1" << std::endl;
-	for(std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
-		if ((*i).fd == user->getFd())
-		{
-			close((*i).fd);
-			_pollfds.erase(i);
-			break;
-		}
-	std::cout << "debug: 2" << std::endl;
-	return (_users.erase(std::find(_users.begin(), _users.end(), user)));
-	// std::cout << "debug: 3" << std::endl;
-}
+// std::vector<User*>::iterator	Server::delUser(User* user)
+// {
+// 	deleteUserFromChannels(user);
+// 	for(std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
+// 		if ((*i).fd == user->getFd())
+// 		{
+// 			close((*i).fd);
+// 			_pollfds.erase(i);
+// 			break;
+// 		}
+// 	return (_users.erase(std::find(_users.begin(), _users.end(), user)));
+// }
 
 User*	Server::findUser(std::string nickname)
 {
@@ -395,7 +364,6 @@ void	Server::deleteUserFromChannels(User* user)
 				(*it)->delUser(user);
 }
 
-	// std::vector<Channel*>::iterator chan = std::find(_channels.begin(), _channels.end(), channelName); DOESN'T WORK!!!
 Channel*	Server::findChannel(std::string channelName)
 {
 	for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)
