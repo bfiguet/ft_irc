@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdKick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 16:46:32 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/27 11:20:31 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 	std::vector<User*>	listUser = cha->getUsers();
 	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
 		(*it)->addMsgToSend(KICK(user->getNick(), user->getUser(), user->getHost(), cha->getName(), userToDel->getNick(), reason));
-	
 	cha->delUser(userToDel);
 	return 0;
 }

@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:56:33 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/27 10:52:17 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ public:
 	int						start();
 	int						newSock();
 	int						newUser();
-	std::vector<User*>::iterator	delUser(User* user);
+	// std::vector<User*>::iterator	delUser(User* user);
 	void					deleteDisconnected();
 	void					deleteEmptyChannels();
 	int						receiveMsg(int fd);

@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 10:48:16 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/27 11:17:51 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,11 @@ int		Server::newSock(){
 	if (serverSocket < 0)
 		return (errMsg("Error: server socket error " + std::string(strerror(errno))));
 	std::cout << "Server Socket connection created..." << std::endl;
+	int optval = 1;
+	if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0){
+		close(serverSocket);
+		return (errMsg("Error: setting socket options " + std::string(strerror(errno))));
+	}
 	bzero((char *) &server_addr, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -63,13 +68,13 @@ int		Server::newSock(){
 	//binds the socket to the address and port number specified in addr(custom data structure)
 	if (bind(serverSocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 	{
-		close(_sock);
+		close(serverSocket);
 		return (errMsg("Error: binding socket " + std::string(strerror(errno))));
 	}
 	//Listening socket
 	if (listen(serverSocket, 1000) < 0)
 	{
-		close(_sock);
+		close(serverSocket);
 		return (errMsg("Error: listening socket " + std::string(strerror(errno))));
 	}
 	return serverSocket;
@@ -311,18 +316,18 @@ void	Server::executeCmd(std::string str, User* user){
 	}
 }
 
-std::vector<User*>::iterator	Server::delUser(User* user)
-{
-	deleteUserFromChannels(user);
-	for(std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
-		if ((*i).fd == user->getFd())
-		{
-			close((*i).fd);
-			_pollfds.erase(i);
-			break;
-		}
-	return (_users.erase(std::find(_users.begin(), _users.end(), user)));
-}
+// std::vector<User*>::iterator	Server::delUser(User* user)
+// {
+// 	deleteUserFromChannels(user);
+// 	for(std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
+// 		if ((*i).fd == user->getFd())
+// 		{
+// 			close((*i).fd);
+// 			_pollfds.erase(i);
+// 			break;
+// 		}
+// 	return (_users.erase(std::find(_users.begin(), _users.end(), user)));
+// }
 
 User*	Server::findUser(std::string nickname)
 {
