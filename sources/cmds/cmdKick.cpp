@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdKick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 13:59:36 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 14:36:21 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 std::string joinArgs(size_t i, std::vector<std::string> args, char add)
 {
 	std::string str = "";
-	for (i = 4; i < args.size(); i++)
+	for (; i < args.size(); i++)
 	{
 		str += add;
 		str += args[i];

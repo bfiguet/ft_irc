@@ -14,6 +14,8 @@ When #channel is invite-only and the user got kicked out, the user can join back
 3./topic #channel "new topic"
 The channel's topic becomes ["new] instead of [new topic].
 ->fixed by bfiguet
+<!> This one is back
+->fixed by bfiguet
 
 4./join channel1,channel2 key1,key2
 (channel1's password is [key1], channel2's password is [key2])
@@ -22,6 +24,10 @@ the user cannot join channel2 even after disabling password protection on channe
 ->fixed by bfiguet
 4B.Trying with three channels triggers a 476 #chan2,#chan3 Bad Channel Mask message, and the channels 2 and 3 are inaccessible even by trying them one by one.
 ->fixed by bfiguet
+4C.
+Trying to join three channels with only the first right: joining chan1 but not chan2 and 3.
+Then trying the same command but with the first two being right: joining chan1 (already joined) and chan2 but not 3.
+Then trying with all three being right allows access to chan3, but doesn't show the log like on the first two.
 
 5./mode changes should result in response from server confirming the changed mode.
 ->fixed by bfiguet

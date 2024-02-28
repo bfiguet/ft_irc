@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:52:28 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 13:51:53 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 14:36:30 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int	cmdTopic(Server *server, std::vector<std::string> args, User *user){
 			return 1;
 		}
 		topic = args[2].substr(1);
-		topic += joinArgs(3, args, ' '); 
+		topic += joinArgs(3, args, ' ');
 		if (topic.size() < 1)
 			cha->setTopic("");
 		else if ((cha->isTopicUnprotected() == true) || (cha->isTopicUnprotected() == false && cha->isOperator(user) == true))
