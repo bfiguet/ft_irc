@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdUser.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:48:25 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 13:53:21 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 14:18:16 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,14 @@ int	cmdUser(Server *server, std::vector<std::string> args, User *user){
 		user->setHost(args[3]);
 		if (args[4][0] == ':')
 		{
-			tmp = args[4].substr(1);
-			user->setRealname(tmp);
+			if (args[4].size() > 2)
+				tmp = args[4].substr(1);
 		}
-		tmp += " ";
-		tmp += joinArgs(5, args, ' ');
+		if (args.size() > 5)
+		{
+			tmp += " ";
+			tmp += joinArgs(5, args, ' ');
+		}
 		user->setRealname(tmp);
 	}
 	return 0;
