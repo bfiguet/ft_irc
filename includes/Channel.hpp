@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:12:34 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 10:24:25 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 11:12:05 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ public:
 	int						getUserCount() const;
 	int						getLimit() const;
 	std::string				getTopic() const;
+	std::string				listNames();
 
 	bool					isOperator(const User* user) const;
 	bool					isInvited(const User* user) const;
@@ -60,7 +61,7 @@ public:
 
 	void					addUser(User* user);
 	void					delUser(User* user);
-	void					ListNames(User* user);
+	void					proadcast(std::string msg);
 };
 
 #endif

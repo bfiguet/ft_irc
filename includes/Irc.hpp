@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 16:23:13 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 11:40:06 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@
 # include <unistd.h>
 # include <algorithm>
 # include <sys/time.h>
+# include "Server.hpp"
 # include "User.hpp"
 # include "Channel.hpp"
-# include "Server.hpp"
 #define LOCAL_HOST "127.0.0.1"
 #define BUFFERSIZE 1024
 #define MAX_EVENTS 10

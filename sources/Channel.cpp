@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 10:37:43 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 11:11:52 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,6 @@ void	Channel::addUser(User* user)
 {
 	_users.push_back(user);
 	_userCount++;
-	ListNames(user);
 }
 
 void	Channel::delUser(User* user)
@@ -117,7 +116,7 @@ void	Channel::setOperators(User* user, bool onoff)
 		_operators.erase(std::find(_operators.begin(), _operators.end(), user));
 }
 
-void	Channel::ListNames(User* user)
+std::string	Channel::listNames()
 {
 	std::vector<User *> listUser = getUsers();
 	std::string			all_names;
@@ -130,9 +129,13 @@ void	Channel::ListNames(User* user)
 		all_names += (*it)->getNick();
 		all_names += " ";
 	}
-	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)//put in channel
+	return (all_names);
+}
+
+void	Channel::proadcast(std::string msg)
+{
+	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
 	{
-		(*it)->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), getName(), all_names));
-		(*it)->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), getName()));
+		(*i)->addMsgToSend(msg);	
 	}
 }

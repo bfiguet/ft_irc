@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 10:43:08 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 11:40:45 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,21 +287,22 @@ void	Server::executeCmd(std::string str, User* user){
 	{
 		if ( word.compare(*i) == 0)
 		{
-			while (!str.empty())
-			{
-				index = std::strstr(str.c_str(), " ");
-				if (index == NULL)
-				{
-					word = str;
-					str.clear();
-				}
-				else
-				{
-					word = str.substr(0, index - str.c_str());
-					str = str.substr(index - str.c_str() + 1, str.size() - word.size() + 1);
-				}
-				arguments.push_back(word);
-			}
+			arguments = ft_split(str, ' ');
+			// while (!str.empty())
+			// {
+			// 	index = std::strstr(str.c_str(), " ");
+			// 	if (index == NULL)
+			// 	{
+			// 		word = str;
+			// 		str.clear();
+			// 	}
+			// 	else
+			// 	{
+			// 		word = str.substr(0, index - str.c_str());
+			// 		str = str.substr(index - str.c_str() + 1, str.size() - word.size() + 1);
+			// 	}
+			// 	arguments.push_back(word);
+			// }
 			std::cout << "\nCommand= " << arguments[0] << std::endl;
 			(*fun[ind])(this, arguments, user);
 		}

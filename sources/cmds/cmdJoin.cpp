@@ -3,135 +3,133 @@
 /*                                                        :::      ::::::::   */
 /*   cmdJoin.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 10:43:42 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 11:37:57 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
-std::string	maskList(Channel *cha, User *user, std::string mask)
+std::vector<std::string>	ft_split(std::string str, char delimiter)
 {
-	if (cha->isInvitOnly() == true)
-		mask += "i";
-	if (cha->isTopicUnprotected() == true)
-		mask += "t";
-	if (cha->isLimited() == true)
-		mask += "l";
-	if (cha->getPw() != "")
-		mask += "k";
-	if (cha->isOperator(user) == true)
-		mask += "i";
-	return mask;
+	std::string					temp;
+	std::vector<std::string>	strs;
+
+	while (!str.empty())
+	{
+		temp = str.substr(0, str.find(delimiter));
+		strs.push_back(temp);
+		if (temp.size() == str.size())
+		    str = "";
+		else
+    		str = str.substr(temp.size() + 1, str.size() - temp.size());
+	}
+	return (strs);
+}
+
+void	cmdJoinPars(std::vector<std::string>& chanNames, std::vector<std::string>& passWords, std::string names, std::string pass)
+{
+	chanNames = ft_split(names, ',');
+	if (!pass.empty())
+	{
+		passWords = ft_split(pass, ',');
+		if (!pass.empty() && pass[pass.size() - 1] == ',')
+			passWords.push_back("");
+	}
+}
+
+Channel*	createChannel(Server* server, User* user, std::string name)
+{
+	Channel* cha = NULL;
+	if (cha->isValidName(name) == false)
+	{
+		user->addMsgToSend(ERR_BADCHANMASK(name));
+		return NULL;
+	}
+	server->addChannel(name);
+	cha = server->findChannel(name);
+	std::cout << "--creation of the channel-- " << cha->getName() << std::endl;
+	cha->setOperators(user, true);
+	std::cout << user->getNick() << " is IRC operator in this channel" << std::endl;
+	return (cha);
+}
+
+int	joinChannel(Server* server, std::string chaName, User* user, std::string passWord)
+{
+	Channel	*cha = server->findChannel(chaName);
+	if (cha == NULL)
+	{
+		cha = createChannel(server, user, chaName);
+		if (cha == NULL)
+			return (1);
+	}
+	if (cha->isInChannel(user))
+	{
+		return (0);
+	}
+	if (cha->getLimit() == cha->getUserCount())
+	{
+		user->addMsgToSend(ERR_CHANNELISFULL(user->getNick(), chaName));
+		return 1;
+	}
+	if (cha->isInvitOnly() == true && cha->isInvited(user) == false)
+	{
+		user->addMsgToSend(ERR_INVITEONLYCHAN(user->getNick(), chaName));
+		return 1;
+	}
+	if (cha->getPw().compare(passWord) == 0)
+	{
+		std::cout << "add " << user->getNick() << " in this channel" << std::endl;
+		cha->addUser(user);
+		cha->proadcast(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
+		user->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), cha->getName(), cha->listNames()));
+		user->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
+		if (!cha->getTopic().empty())
+						user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), cha->getTopic()));
+		cha->setInviteUser(user, false);
+	}
+	else
+	{
+		user->addMsgToSend(ERR_BADCHANNELKEY(user->getNick(), chaName));
+		return 1;
+	}
+	return (0);
 }
 
 //Command: JOIN <channel>,<channels> <key>,<key>
-int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
+int	cmdJoin(Server *server, std::vector<std::string> args, User *user)
 {
-	size_t	i_pw = 0;
-	size_t	end_cha = 0;
-	size_t	end_pw = 0;
+	std::vector<std::string> chanNames;
+	std::vector<std::string> passWords;
+	std::string pass;
 
-	if (str.size() < 2)
+	if (args.size() < 2)
 	{
-		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
 		return 1;
 	}
 	if (user->canAddNewChannel() == false)
 	{
-		user->addMsgToSend(ERR_TOOMANYCHANNELS(user->getNick(), str[1]));
+		user->addMsgToSend(ERR_TOOMANYCHANNELS(user->getNick(), args[1]));
 		return 1;
 	}
-	for (size_t i = 0; i < str[1].size(); i++)
+	if (args.size() > 2)
+		cmdJoinPars(chanNames, passWords, args[1], args[2]);
+	else
+		cmdJoinPars(chanNames, passWords, args[1], "");
+	std::vector<std::string>::iterator ipass = passWords.begin();
+	for (std::vector<std::string>::iterator iname = chanNames.begin(); iname != chanNames.end(); iname++)
 	{
-		if (str[1][i] == '#')
-		{
-			std::string	channel = "";
-			int	nb = 0;
-			while (str[1][end_cha] && str[1][end_cha] != ',') //optimization
-			{
-				end_cha++;
-				nb++;
-			}
-			channel = str[1].substr(i, nb);
-			Channel	*cha = server->findChannel(channel);
-			if (cha == NULL)
-			{
-				if (cha->isValidName(channel) == false)
-				{
-					user->addMsgToSend(ERR_BADCHANMASK(channel));
-					return 1;
-				}
-				cha = server->addChannel(channel);
-				std::cout << "--creation of the channel-- " << cha->getName() << std::endl;
-				cha->setOperators(user, true);
-				std::cout << user->getNick() << " is IRC operator in this channel" << std::endl;
-			}
-			if (cha->getPw() != "" && str.size() < 3)
-			{
-				user->addMsgToSend(ERR_BADCHANNELKEY(user->getNick(), channel));
-				return 1;
-			}
-			if (cha->getLimit() == cha->getUserCount())
-			{
-				user->addMsgToSend(ERR_CHANNELISFULL(user->getNick(), channel));
-				return 1;
-			}
-			if (cha->isInvitOnly() == true && cha->isInvited(user) == false)
-			{
-				user->addMsgToSend(ERR_INVITEONLYCHAN(user->getNick(), channel));
-				return 1;
-			}
-			else if (cha->getPw() == "") //optimization A
-			{
-				if (cha->isInChannel(user) == false)
-				{
-					std::cout << "add " << user->getNick() << " in this channel" << std::endl;
-					cha->addUser(user);
-				}
-				std::vector<User *> listUser = cha->getUsers();
-				for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++) //put in channel
-					(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
-				if (!cha->getTopic().empty())
-					user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), cha->getTopic()));
-			}
-			else if (str.size() > 2) //optimization with A
-			{
-				std::string pw = "";
-				nb = 0;
-				while (str[2][end_pw] && str[2][end_pw] != ',')
-				{
-					end_pw++;
-					nb++;
-				}
-				pw = str[2].substr(i_pw, nb);
-				if (cha->getPw().compare(pw) == 0 || cha->getPw().empty())
-				{
-					if (cha->isInChannel(user) == false)
-					{
-						std::cout << "add " << user->getNick() << " in this channel" << std::endl;
-						cha->addUser(user);
-					}
-					std::vector<User *> listUser = cha->getUsers();
-					for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)//put in channel
-						(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
-					if (!cha->getTopic().empty())
-						user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), cha->getTopic()));
-				}
-				if (str[2][end_pw] == ',')
-					end_pw++;
-				i_pw = end_pw;
-			}
-			cha->setInviteUser(user, false);
-			i = end_cha;
-			if (str[1][end_cha] == ',')
-				end_cha++;
-			std::string mask = "";
-			mask = maskList(cha, user, mask);
-			user->addMsgToSend(RPL_CHANNELMODEIS(user->getNick(), user->getUser(), user->getHost(), cha->getName(), "+", mask));
-		}
+		if (ipass == passWords.end())
+			pass = "";
+		else
+			pass = *ipass;
+		if (joinChannel(server, *iname, user, pass))
+			return (1);
+		if (ipass != passWords.end())
+			ipass++;
 	}
 	return 0;
 }
