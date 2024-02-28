@@ -6,29 +6,29 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:16 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 13:41:05 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 15:04:47 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
+#include "Server.hpp"
 
-std::string	keyMode(Channel* cha, User* user, std::vector<std::string> args, bool oper)
+int	keyMode(Channel* cha, User* user, std::vector<std::string> args, bool oper, std::string comment)
 {
-	std::string comment = "";
 	if (args.size() < 4)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
-		return comment;
+		return 1;
 	}
 	else if (!cha->getPw().empty())
 	{
 		user->addMsgToSend(ERR_KEYSET(cha->getName()));
-		return comment;
+		return 1;
 	}
 	else if (args[3].size() < 2 || args[3].size() > 8)
 	{
 		user->addMsgToSend(ERR_INVALIDKEY(args[1]));
-		return comment;
+		return 1;
 	}
 	if (oper == true)
 	{
@@ -37,33 +37,32 @@ std::string	keyMode(Channel* cha, User* user, std::vector<std::string> args, boo
 	}
 	else
 		cha->setPw("");
-	return comment;
+	return 0;
 }
 
-std::string	operatorMode(Server* server, Channel* cha, User* user, std::vector<std::string> args, bool oper)
+int	operatorMode(Server* server, Channel* cha, User* user, std::vector<std::string> args, bool oper, std::string comment)
 {
 	User* userOp = NULL;
-	std::string comment = "";
 	if (args.size() < 4)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
-		return comment;
+		return 1;
 	}
 	userOp = server->findUser(args[3]);
 	if (userOp == NULL)
 	{
 		user->addMsgToSend(ERR_NOSUCHNICK(args[3]));
-		return comment;
+		return 1;
 	}
 	if (cha->isInChannel(userOp) == false)
 	{
 		user->addMsgToSend(ERR_NOTONCHANNEL(cha->getName()));
-		return comment;
+		return 1;
 	}
 	userOp = server->findUser(args[3]);
 	cha->setOperators(userOp, oper);
 	comment = userOp->getNick();
-	return comment;
+	return 0;
 }
 
 int	errChannel(Channel* cha, User* user, std::vector<std::string> args)
@@ -88,32 +87,30 @@ int	errChannel(Channel* cha, User* user, std::vector<std::string> args)
 	return 0;
 }
 
-std::string	limitMode(Channel* cha, User* user, bool oper, std::vector<std::string> args)
+int	limitMode(Channel* cha, User* user, bool oper, std::vector<std::string> args, std::string comment)
 {
-	std::string comment = "";
 	if (oper == true)
 	{
 		int nb = 0;
 		if (args.size() < 4)
 		{
 			user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
-			return comment;
+			return 1;
 		}
 		nb = atoi(args[3].c_str());
 		if (nb < 1 || cha->getUserCount() > nb)
-			return comment;
+			return 1;
 		cha->setIsLimited(nb, true);
 		comment = args[3];
 	}
 	else
 		cha->setIsLimited(100, false);
-	return comment;
+	return 0;
 }
 
 //Command: MODE <channel> [<modestring> [<mode arguments>...]]
 int	cmdMode(Server *server, std::vector<std::string> args, User *user){
 	std::string			comment = "";
-	//User*				userOp = NULL;
 
 	if (args.size() < 2)
 	{
@@ -136,20 +133,22 @@ int	cmdMode(Server *server, std::vector<std::string> args, User *user){
 					break;
 				// +k : key protect, set password on channel
 				case 'k':
-					comment = keyMode(cha, user, args, oper);
+					if (keyMode(cha, user, args, oper, comment))
+						return 1;
 					break;
 				// +l : limits max number of users in a channel
 				case 'l':
-					comment = limitMode(cha, user, oper, args);
+					if (limitMode(cha, user, oper, args, comment))
+						return 1;
 					break;
 				// +o : gives operator status to a user (ChannelOperator)
 				case 'o':
-					comment = operatorMode(server, cha, user, args, oper);
+					if (operatorMode(server, cha, user, args, oper, comment))
+						return 1;
 					break;
 				// +t : topic protection, Only ChannelOperator can change topic
 				case 't':
-					if (oper == true)
-						cha->setTopicChange(oper);
+					cha->setTopicChange(oper);
 					break;
 				default:
 				{
