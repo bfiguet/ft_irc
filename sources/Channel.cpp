@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:15:52 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 15:52:19 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ bool	Channel::isInvitOnly()const
 bool	Channel::isLimited()const
 {return (_isLimited);}
 
-bool	Channel::isTopicUnprotected()const
+bool	Channel::TopicIsprotected()const
 {return _TopicChangeRestriction;}
 
 bool	Channel::isInChannel(const User* user)

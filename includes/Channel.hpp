@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:12:34 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 12:29:49 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 15:52:13 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ public:
 	bool					isOperator(const User* user) const;
 	bool					isInvited(const User* user) const;
 	bool					isInvitOnly()const;
-	bool					isTopicUnprotected()const;
+	bool					TopicIsprotected()const;
 	bool					isInChannel(const User* user);
 	bool					isValidName(std::string name);
 	bool					isLimited()const;

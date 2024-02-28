@@ -6,21 +6,21 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:16 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:04:47 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 15:56:19 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 #include "Server.hpp"
 
-int	keyMode(Channel* cha, User* user, std::vector<std::string> args, bool oper, std::string comment)
+int	keyMode(Channel* cha, User* user, std::vector<std::string> args, bool oper, std::string &comment)
 {
-	if (args.size() < 4)
+	if (args.size() < 4 && oper == true)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
 		return 1;
 	}
-	else if (!cha->getPw().empty())
+	else if (!cha->getPw().empty() && oper == true)
 	{
 		user->addMsgToSend(ERR_KEYSET(cha->getName()));
 		return 1;
@@ -40,7 +40,7 @@ int	keyMode(Channel* cha, User* user, std::vector<std::string> args, bool oper, 
 	return 0;
 }
 
-int	operatorMode(Server* server, Channel* cha, User* user, std::vector<std::string> args, bool oper, std::string comment)
+int	operatorMode(Server* server, Channel* cha, User* user, std::vector<std::string> args, bool oper, std::string &comment)
 {
 	User* userOp = NULL;
 	if (args.size() < 4)
@@ -87,7 +87,7 @@ int	errChannel(Channel* cha, User* user, std::vector<std::string> args)
 	return 0;
 }
 
-int	limitMode(Channel* cha, User* user, bool oper, std::vector<std::string> args, std::string comment)
+int	limitMode(Channel* cha, User* user, bool oper, std::vector<std::string> args, std::string &comment)
 {
 	if (oper == true)
 	{
