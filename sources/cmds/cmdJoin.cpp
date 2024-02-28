@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:12:52 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 15:15:29 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,8 +109,8 @@ int	cmdJoin(Server *server, std::vector<std::string> args, User *user)
 			pass = "";
 		else
 			pass = *ipass;
-		std::cout << "Joining cahnnel " << *iname << " " << pass << "!" << std::endl;
-		joinChannel(server, *iname, user, pass);
+		if (joinChannel(server, *iname, user, pass))
+			return (1);
 		if (ipass != passWords.end())
 			ipass++;
 	}
