@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:30 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:47:13 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 15:58:26 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> args, User *user){
 				return 1;
 			}
 		}
-
 		else
 		{
 			user->addMsgToSend(ERR_NOSUCHCHANNEL(args[1]));
