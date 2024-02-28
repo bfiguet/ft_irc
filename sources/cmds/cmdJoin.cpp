@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 10:17:27 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 10:43:42 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,7 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 					user->addMsgToSend(ERR_BADCHANMASK(channel));
 					return 1;
 				}
-				server->addChannel(channel); //optimization
-				cha = server->findChannel(channel);
+				cha = server->addChannel(channel);
 				std::cout << "--creation of the channel-- " << cha->getName() << std::endl;
 				cha->setOperators(user, true);
 				std::cout << user->getNick() << " is IRC operator in this channel" << std::endl;
@@ -92,22 +91,9 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 					std::cout << "add " << user->getNick() << " in this channel" << std::endl;
 					cha->addUser(user);
 				}
-				//std::string			all_names;
 				std::vector<User *> listUser = cha->getUsers();
 				for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++) //put in channel
-				{
-					//all_names += " ";
-					//if (cha->isOperator((*it)) == true)
-					//	all_names += "@";
-					//else
-					//	all_names += " ";
-					//all_names += (*it)->getNick();
-					//all_names += " ";
-					
-					//user->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), cha->getName(), all_names)); //put in func addUser at channel
-					//user->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), cha->getName()));//put in func addUser at channel
 					(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
-				}
 				if (!cha->getTopic().empty())
 					user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), cha->getTopic()));
 			}
@@ -129,21 +115,8 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 						cha->addUser(user);
 					}
 					std::vector<User *> listUser = cha->getUsers();
-					//std::string			all_names;
 					for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)//put in channel
-					{
-						
-						//all_names += " ";
-						//if (cha->isOperator((*it)) == true)
-						//	all_names += "@";
-						//else
-						//	all_names += " ";
-						//all_names += (*it)->getNick();
-						//all_names += " ";
-						//user->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), cha->getName(), all_names));//put in func addUser at channel
-						//user->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), cha->getName()));//put in func addUser at channel
 						(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
-					}
 					if (!cha->getTopic().empty())
 						user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), cha->getTopic()));
 				}

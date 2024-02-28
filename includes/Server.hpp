@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 13:58:26 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 10:43:18 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ public:
 	Channel*				findChannel(std::string str);
 	void					deleteUserFromChannels(User* user);
 	int						callCmds(User* user);
-	void					addChannel(std::string name);
+	Channel*				addChannel(std::string name);
 	void					checkTimeout();
 
 	class BadServInit: public std::exception

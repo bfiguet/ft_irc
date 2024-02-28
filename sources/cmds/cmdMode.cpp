@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:16 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 15:59:43 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 10:41:00 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,22 +43,18 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 			user->addMsgToSend(ERR_NOPRIVILEGES);
 			return 1;
 		}
-		if (str[2].empty() == false && (str[2][0] == '+' || str[2][0] == '-')) //optimization
+		if (str[2].empty() || (str[2][0] != '+' && str[2][0] != '-'))
+			return 1;
+		else
 		{
 			switch (str[2][1])
 			{
 				// +i : invite only, a user must be invited before they can join the channel
 				case 'i':
 					if (str[2][0] == '+')
-					{
 						cha->setInvitOnly(true);
-						//comment = "is now invite-only.";
-					}
 					else if (str[2][0] == '-')
-					{
 						cha->setInvitOnly(false);
-						//comment = "is no longer invite-only.";
-					}
 					break;
 				// +k : key protect, set password on channel
 				case 'k':
@@ -82,15 +78,11 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 						else
 						{
 							cha->setPw(str[3]);
-							//comment = "is now locked.";
 							comment = str[3];
 						}
 					}
 					else if (str[2][0] == '-')
-					{
 						cha->setPw("");
-						//comment = "is no longer locked.";
-					}
 					break;
 				// +l : limits max number of users in a channel
 				case 'l':
@@ -107,14 +99,12 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 							return 1;
 						cha->setLimit(nb);
 						cha->setIsLimited(true);
-						//comment = "is now limited to " + str[3] + " users.";
 						comment = str[3];
 					}
 					else if (str[2][0] == '-')
 					{
 						cha->setLimit(100);
 						cha->setIsLimited(false);
-						//comment = "is no longer limited in members.";
 					}
 					break;
 				// +o : gives operator status to a user (ChannelOperator)
@@ -138,28 +128,20 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 					else if (str[2][0] == '+')
 					{
 						cha->setOperators(userOp, true);
-						//comment = "is now channel operator.";
 						comment = userOp->getNick();
 					}
 					else if (str[2][0] == '-')
 					{
 						cha->setOperators(userOp, false);
-						//comment = "is no longer operator.";
 						comment = userOp->getNick();
 					}
 					break;
 				// +t : topic protection, Only ChannelOperator can change topic
 				case 't':
 					if (str[2][0] == '+')
-					{
 						cha->setTopicChange(true);
-						//comment = "topic is now protected.";
-					}
 					else if (str[2][0] == '-')
-					{
 						cha->setTopicChange(false);
-						//comment = "topic is no longer protected.";
-					}
 					break;
 					
 				default:

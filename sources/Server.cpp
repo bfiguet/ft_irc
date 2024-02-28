@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 14:37:32 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 10:43:08 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -376,8 +376,9 @@ const char* Server::BadServInit::what() const throw()
     return ("Failed to initilize server");
 }
 
-void	Server::addChannel(std::string name)
+Channel*	Server::addChannel(std::string name)
 {
 	Channel* cha = new Channel(name);
 	_channels.push_back(cha);
+	return cha;
 }

@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 10:16:56 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 10:37:43 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ void	Channel::addUser(User* user)
 {
 	_users.push_back(user);
 	_userCount++;
+	ListNames(user);
 }
 
 void	Channel::delUser(User* user)
@@ -122,13 +123,15 @@ void	Channel::ListNames(User* user)
 	std::string			all_names;
 	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)//put in channel
 	{
-		//all_names += " ";
 		if (isOperator((*it)) == true)
 			all_names += "@";
 		else
 			all_names += " ";
 		all_names += (*it)->getNick();
 		all_names += " ";
+	}
+	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)//put in channel
+	{
 		(*it)->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), getName(), all_names));
 		(*it)->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), getName()));
 	}
