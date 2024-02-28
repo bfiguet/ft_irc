@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:12:40 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 15:49:25 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	cmdKick(Server *server, std::vector<std::string> args, User *user){
 		reason = args[3].substr(1);
 		reason += joinArgs(4, args, ' ');
 	}
-	cha->broadcast(KICK(user->getNick(), user->getUser(), user->getHost(), cha->getName(), userToDel->getNick(), reason));
+	cha->broadcast(KICK(user->getNick(), user->getUser(), user->getHost(), cha->getName(), userToDel->getNick(), reason), NULL);
 	cha->delUser(userToDel);
 	return 0;
 }

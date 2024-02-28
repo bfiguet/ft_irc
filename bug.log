@@ -77,4 +77,7 @@ USER algeorge algeorge@localhost: name => CRASH
 USER algeorge algeorge@localhost: real name => WORKS
 ->fixed by Ali
 
-18. Trying topic as a normal user doesn't trigger the "You're not an IRC Operator" message.
+18. Trying topic as a normal user does nothing when mode -t is entered by the operator (or with the default setting).
+-> fixed by bfiguet (no topic set for # || Topic for #: topic)
+
+19. Users not being deleted from channels after being disconnected.
