@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:16 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:56:19 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 16:03:58 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ int	cmdMode(Server *server, std::vector<std::string> args, User *user){
 					return 0;
 				}
 			}
-			cha->broadcast(MODE(user->getNick(), cha->getName(), args[2], comment));
+			cha->broadcast(MODE(user->getNick(), cha->getName(), args[2], comment), NULL);
 		}
 	}
 	return 0;

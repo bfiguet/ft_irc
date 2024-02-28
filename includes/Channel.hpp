@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:12:34 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:52:13 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 16:04:28 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ public:
 
 	void					addUser(User* user);
 	void					delUser(User* user);
-	void					broadcast(std::string msg);
+	void					broadcast(std::string msg, User* sender);
 };
 
 #endif

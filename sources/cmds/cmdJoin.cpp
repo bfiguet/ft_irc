@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:15:29 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 15:49:13 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	joinChannel(Server* server, std::string chaName, User* user, std::string pas
 	{
 		std::cout << "add " << user->getNick() << " in this channel" << std::endl;
 		cha->addUser(user);
-		cha->broadcast(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
+		cha->broadcast(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()), NULL);
 		user->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), cha->getName(), cha->listNames()));
 		user->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
 		if (!cha->getTopic().empty())
