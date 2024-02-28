@@ -3,27 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   cmdInvite.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:50:06 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 15:46:14 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 13:38:04 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
 // Command: INVITE <nickname> <channel>
-int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
-	if (str.size() < 3)
+int	cmdInvite(Server *server, std::vector<std::string> args, User *user){
+	if (args.size() < 3)
 	{
-		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
 		return 1;
 	}
-	Channel	*cha = server->findChannel(str[2]);
-	User	*userNew = server->findUser(str[1]);
+	Channel	*cha = server->findChannel(args[2]);
+	User	*userNew = server->findUser(args[1]);
 	if (cha == NULL)
 	{
-		user->addMsgToSend(ERR_NOSUCHCHANNEL(str[2]));
+		user->addMsgToSend(ERR_NOSUCHCHANNEL(args[2]));
 		return 1;
 	}
 	if (cha->isInChannel(user) == false)
@@ -38,7 +38,7 @@ int	cmdInvite(Server *server, std::vector<std::string> str, User *user){
 	}
 	if (userNew == NULL)
 	{
-		user->addMsgToSend(ERR_NOSUCHNICK(str[1]));
+		user->addMsgToSend(ERR_NOSUCHNICK(args[1]));
 		return 1;
 	}
 	if (cha->isInChannel(userNew) == true)

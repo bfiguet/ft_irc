@@ -6,32 +6,43 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 13:32:43 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 13:52:35 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
-int	errKick(Channel* cha, User* user, std::vector<std::string> str, User* userToDel)
+std::string joinArgs(size_t i, std::vector<std::string> args, char add)
+{
+	std::string str = "";
+	for (i = 4; i < args.size(); i++)
+	{
+		str += add;
+		str += args[i];
+	}
+	return str;
+}
+
+int	errKick(Channel* cha, User* user, std::vector<std::string> args, User* userToDel)
 {
 	if (userToDel == NULL)
 	{
-		user->addMsgToSend(ERR_NOSUCHNICK(str[2]));
+		user->addMsgToSend(ERR_NOSUCHNICK(args[2]));
 		return 1;
 	}
 	if (cha == NULL)
 	{
-		user->addMsgToSend(ERR_NOSUCHCHANNEL(str[1]));
+		user->addMsgToSend(ERR_NOSUCHCHANNEL(args[1]));
 		return 1;
 	}
 	if (cha->isInChannel(user) == false)
 	{
-		user->addMsgToSend(ERR_NOTONCHANNEL(str[1]));
+		user->addMsgToSend(ERR_NOTONCHANNEL(args[1]));
 		return 1;
 	}
 	if (cha->isInChannel(userToDel) == false)
 	{
-		user->addMsgToSend(ERR_USERNOTINCHANNEL(userToDel->getNick(), str[1]));
+		user->addMsgToSend(ERR_USERNOTINCHANNEL(userToDel->getNick(), args[1]));
 		return 1;
 	}
 	if (cha->isOperator(user) == false)
@@ -42,25 +53,21 @@ int	errKick(Channel* cha, User* user, std::vector<std::string> str, User* userTo
 	return 0;
 }
 //Command: KICK <channel> <user> *( "," <user> ) [<comment>]
-int	cmdKick(Server *server, std::vector<std::string> str, User *user){
+int	cmdKick(Server *server, std::vector<std::string> args, User *user){
 	std::string	reason = "";
-	if (str.size() < 3)
+	if (args.size() < 3)
 	{
-		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
 		return 1;
 	}
-	Channel *cha = server->findChannel(str[1]);
-	User	*userToDel = server->findUser(str[2]);
-	if (errKick(cha, user, str, userToDel) == 1)
+	Channel *cha = server->findChannel(args[1]);
+	User	*userToDel = server->findUser(args[2]);
+	if (errKick(cha, user, args, userToDel) == 1)
 		return 1;
-	if (str.size() > 3)
+	if (args.size() > 3)
 	{
-		reason = str[3].substr(1);
-		for (size_t i = 4; i < str.size(); i++)
-		{
-			reason += " ";
-			reason += str[i];
-		}
+		reason = args[3].substr(1);
+		reason += joinArgs(4, args, ' ');
 	}
 	cha->broadcast(KICK(user->getNick(), user->getUser(), user->getHost(), cha->getName(), userToDel->getNick(), reason));
 	cha->delUser(userToDel);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 11:40:17 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 13:49:39 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,19 +60,20 @@ public:
     };
 };
 
-	typedef int				(*fun)(Server* server, std::vector<std::string> str, User *user);
-	int						cmdPass(Server *server, std::vector<std::string> str, User *user);
-	int						cmdUser(Server *server, std::vector<std::string> str, User *user);
-	int						cmdNick(Server *server, std::vector<std::string> str, User *user);
-	int						cmdPing(Server *server, std::vector<std::string> str, User *user);
-	int						cmdInvite(Server *server, std::vector<std::string> str, User *user);
-	int						cmdPart(Server *server, std::vector<std::string> str, User *user);
-	int						cmdMode(Server *server, std::vector<std::string> str, User *user);
-	int						cmdKick(Server *server, std::vector<std::string> str, User *user);
-	int						cmdTopic(Server *server, std::vector<std::string> str, User *user);
-	int						cmdKill(Server *server, std::vector<std::string> str, User *user);
-	int						cmdQuit(Server *server, std::vector<std::string> str, User *user);
-	int						cmdJoin(Server *server, std::vector<std::string> str, User *user);
-	int						cmdPrivmsg(Server *server, std::vector<std::string> str, User *user);
+	typedef int				(*fun)(Server* server, std::vector<std::string> args, User *user);
+	int						cmdPass(Server *server, std::vector<std::string> args, User *user);
+	int						cmdUser(Server *server, std::vector<std::string> args, User *user);
+	int						cmdNick(Server *server, std::vector<std::string> args, User *user);
+	int						cmdPing(Server *server, std::vector<std::string> args, User *user);
+	int						cmdInvite(Server *server, std::vector<std::string> args, User *user);
+	int						cmdPart(Server *server, std::vector<std::string> args, User *user);
+	int						cmdMode(Server *server, std::vector<std::string> args, User *user);
+	int						cmdKick(Server *server, std::vector<std::string> args, User *user);
+	int						cmdTopic(Server *server, std::vector<std::string> args, User *user);
+	int						cmdKill(Server *server, std::vector<std::string> args, User *user);
+	int						cmdQuit(Server *server, std::vector<std::string> args, User *user);
+	int						cmdJoin(Server *server, std::vector<std::string> args, User *user);
+	int						cmdPrivmsg(Server *server, std::vector<std::string> args, User *user);
 	std::vector<std::string>	ft_split(std::string str, char delimiter);
+	std::string 			joinArgs(size_t i, std::vector<std::string> args, char add);
 #endif
