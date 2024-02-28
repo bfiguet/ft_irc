@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 11:11:52 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 12:04:03 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,14 +76,14 @@ void	Channel::setTopic(std::string topic)
 void	Channel::setPw(std::string passWord)
 {_pw = passWord;}
 
-void	Channel::setLimit(int userLimit)
-{_userLimit = userLimit;}
-
 void	Channel::setInvitOnly(bool onOff)
 {_invitOnly = onOff;}
 
-void	Channel::setIsLimited(bool onOff)
-{_isLimited = onOff;}
+void	Channel::setIsLimited(int nb, bool onOff)
+{
+	_userLimit = nb;
+	_isLimited = onOff;
+}
 
 void	Channel::setTopicChange(bool onOff)
 {_TopicChangeRestriction = onOff;}
@@ -120,7 +120,7 @@ std::string	Channel::listNames()
 {
 	std::vector<User *> listUser = getUsers();
 	std::string			all_names;
-	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)//put in channel
+	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
 	{
 		if (isOperator((*it)) == true)
 			all_names += "@";
@@ -132,7 +132,7 @@ std::string	Channel::listNames()
 	return (all_names);
 }
 
-void	Channel::proadcast(std::string msg)
+void	Channel::broadcast(std::string msg)
 {
 	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
 	{

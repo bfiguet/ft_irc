@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 11:40:45 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 12:21:43 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,7 +273,7 @@ int	Server::callCmds(User* user)
 void	Server::executeCmd(std::string str, User* user){
 	std::vector<std::string>	arguments;
 	std::string					word;
-	char const*                 index;
+	//char const*                 index;
 
 	word = str.substr(0, str.find(' '));
 	int	(*fun[])(Server* server, std::vector<std::string> arguments, User* user) = {

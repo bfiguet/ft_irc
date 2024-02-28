@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdJoin.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 11:37:57 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 12:04:28 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int	joinChannel(Server* server, std::string chaName, User* user, std::string pas
 	{
 		std::cout << "add " << user->getNick() << " in this channel" << std::endl;
 		cha->addUser(user);
-		cha->proadcast(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
+		cha->broadcast(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
 		user->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), cha->getName(), cha->listNames()));
 		user->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
 		if (!cha->getTopic().empty())
