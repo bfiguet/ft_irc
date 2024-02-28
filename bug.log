@@ -63,3 +63,7 @@ the old user will see #chan(+it) and the new user will see #chan(+t).
 
 16. cmdJoin parsing channel names and matching it with passwords has issues
 ->fixed by Ali
+
+17. Single word real names make the server crash:
+USER algeorge algeorge@localhost: name => CRASH
+USER algeorge algeorge@localhost: real name => WORKS
