@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 13:05:32 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 14:41:43 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ std::vector<std::string>	ft_split(std::string str, char delimiter)
 		    str = "";
 		else
     		str = str.substr(temp.size() + 1, str.size() - temp.size());
+		std::cout << "debug: splitting result:" << temp << std::endl;
 	}
 	return (strs);
 }
@@ -126,8 +127,8 @@ int	cmdJoin(Server *server, std::vector<std::string> args, User *user)
 			pass = "";
 		else
 			pass = *ipass;
-		if (joinChannel(server, *iname, user, pass))
-			return (1);
+		std::cout << "Joining cahnnel " << *iname << " " << pass << "!" << std::endl;
+		joinChannel(server, *iname, user, pass);
 		if (ipass != passWords.end())
 			ipass++;
 	}

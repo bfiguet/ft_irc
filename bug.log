@@ -28,6 +28,7 @@ the user cannot join channel2 even after disabling password protection on channe
 Trying to join three channels with only the first right: joining chan1 but not chan2 and 3.
 Then trying the same command but with the first two being right: joining chan1 (already joined) and chan2 but not 3.
 Then trying with all three being right allows access to chan3, but doesn't show the log like on the first two.
+->fixed by Ali
 
 5./mode changes should result in response from server confirming the changed mode.
 ->fixed by bfiguet
@@ -36,6 +37,7 @@ Then trying with all three being right allows access to chan3, but doesn't show 
 ->fixed by ali
 
 7./Implement timeout mechanics.
+->Implemented by Ali
 
 8./When kicked out of a channel, the user should be back in the main channel instead of just staying there.
 8B./[status] doesn't come back immediately after being kicked and it only works properly after some random non-command is entered afterwards.
