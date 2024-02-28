@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 10:37:43 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 11:25:23 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,14 +76,14 @@ void	Channel::setTopic(std::string topic)
 void	Channel::setPw(std::string passWord)
 {_pw = passWord;}
 
-void	Channel::setLimit(int userLimit)
-{_userLimit = userLimit;}
-
 void	Channel::setInvitOnly(bool onOff)
 {_invitOnly = onOff;}
 
-void	Channel::setIsLimited(bool onOff)
-{_isLimited = onOff;}
+void	Channel::setIsLimited(int nb, bool onOff)
+{
+	_userLimit = nb;
+	_isLimited = onOff;
+}
 
 void	Channel::setTopicChange(bool onOff)
 {_TopicChangeRestriction = onOff;}
@@ -121,7 +121,7 @@ void	Channel::ListNames(User* user)
 {
 	std::vector<User *> listUser = getUsers();
 	std::string			all_names;
-	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)//put in channel
+	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
 	{
 		if (isOperator((*it)) == true)
 			all_names += "@";
@@ -130,9 +130,6 @@ void	Channel::ListNames(User* user)
 		all_names += (*it)->getNick();
 		all_names += " ";
 	}
-	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)//put in channel
-	{
-		(*it)->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), getName(), all_names));
-		(*it)->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), getName()));
-	}
+	user->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), getName(), all_names));
+	user->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), getName()));
 }

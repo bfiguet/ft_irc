@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:12:34 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 10:24:25 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 11:25:31 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,12 +51,11 @@ public:
 
 	void					setTopic(std::string str);
 	void					setPw(std::string str);
-	void					setLimit(int val);
 	void					setInvitOnly(bool val);
 	void					setTopicChange(bool val);
 	void					setInviteUser(User* user, bool onoff);
 	void					setOperators(User* user, bool onoff);
-	void					setIsLimited(bool onOff);
+	void					setIsLimited(int nb, bool onOff);
 
 	void					addUser(User* user);
 	void					delUser(User* user);
