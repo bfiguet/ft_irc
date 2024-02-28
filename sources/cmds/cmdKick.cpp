@@ -3,25 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   cmdKick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 14:36:21 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 15:12:40 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
-
-std::string joinArgs(size_t i, std::vector<std::string> args, char add)
-{
-	std::string str = "";
-	for (; i < args.size(); i++)
-	{
-		str += add;
-		str += args[i];
-	}
-	return str;
-}
 
 int	errKick(Channel* cha, User* user, std::vector<std::string> args, User* userToDel)
 {

@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 14:09:58 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 15:14:05 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,4 +75,5 @@ public:
 	int						cmdPrivmsg(Server *server, std::vector<std::string> args, User *user);
 	std::vector<std::string>	ft_split(std::string str, char delimiter);
 	std::string 			joinArgs(size_t i, std::vector<std::string> args, char add);
+	int						errMsg(std::string msg);
 #endif

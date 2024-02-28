@@ -6,17 +6,11 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 14:10:29 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 15:12:27 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
-
-int	errMsg(std::string msg)
-{
-	std::cerr <<  msg << std::endl;
-	return (-1);
-}
 
 Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _port(port), _sock(-1) {
 	_sock = newSock();

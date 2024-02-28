@@ -6,29 +6,11 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 14:41:43 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 15:12:52 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
-
-std::vector<std::string>	ft_split(std::string str, char delimiter)
-{
-	std::string					temp;
-	std::vector<std::string>	strs;
-
-	while (!str.empty())
-	{
-		temp = str.substr(0, str.find(delimiter));
-		strs.push_back(temp);
-		if (temp.size() == str.size())
-		    str = "";
-		else
-    		str = str.substr(temp.size() + 1, str.size() - temp.size());
-		std::cout << "debug: splitting result:" << temp << std::endl;
-	}
-	return (strs);
-}
 
 void	cmdJoinPars(std::vector<std::string>& chanNames, std::vector<std::string>& passWords, std::string names, std::string pass)
 {
