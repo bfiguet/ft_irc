@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 13:53:53 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 14:10:29 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -316,16 +316,6 @@ User*	Server::findUser(int fd){
 			return(*i);
 	}
 	return (NULL);
-}
-
-void	Server::displayUser(User* user){
-	std::cout << "New user received" << std::endl;
-	std::cout << "User " << user->getUser() << " are connected"<< std::endl;
-	std::cout << "nickname: " << user->getNick() << std::endl;
-	std::cout << "realname: " <<user->getRealname() << std::endl;
-	std::cout << "server: " <<user->getHost() << std::endl;
-	std::cout << "pass: " <<user->getPass() << std::endl;
-	std::cout << std::endl;
 }
 
 void	Server::deleteUserFromChannels(User* user)

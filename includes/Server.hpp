@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 15:56:39 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 14:03:18 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 14:09:58 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ public:
 	void					executeCmd(std::string str, User* user);
 	User*					findUser(int fd);
 	User*					findUser(std::string nickname);
-	void					displayUser(User* user);
 	Channel*				findChannel(std::string str);
 	void					deleteUserFromChannels(User* user);
 	int						callCmds(User* user);
