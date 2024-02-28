@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdKick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 15:31:25 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 13:30:26 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,10 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
 		return 1;
 	}
-	if (str[3].size() > 0)
+	if (str.size() > 3)
 	{
-		if (str[3][0] == ':')
+		if (str[3].size() > 0)
 			reason = str[3].substr(1);
-		else
-			reason = str[3]; //optimization
 		for (size_t i = 4; i < str.size(); i++)
 		{
 			reason += " ";
@@ -66,5 +64,3 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 	cha->delUser(userToDel);
 	return 0;
 }
-
-//optimization accept multiple users

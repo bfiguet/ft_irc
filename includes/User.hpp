@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:15:47 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 15:08:12 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 13:51:52 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ public:
 	std::string	getPass()const;
 	std::string	getMsg()const;
 	std::string	getMsgsToSend() const;
+	std::string	extractCmd();
 	timeval		getTimeStamp() const;
 
 	bool		isRegisterd() const;
@@ -64,10 +65,8 @@ public:
 	void		addMsgToSend(std::string str);
 	void		setMsgsToSend(std::string str);
 	void		setTimeStamp();
-	void		sendMsg(std::string msg);
-	std::string	extractCmd();
-
-	
 };
+
+	std::ostream& operator<<(std::ostream& os, User const* user);
 
 #endif

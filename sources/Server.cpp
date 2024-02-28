@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 12:21:43 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 13:53:53 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,16 +55,20 @@ int		Server::newSock(){
 	if (serverSocket < 0)
 		return (errMsg("Error: server socket error " + std::string(strerror(errno))));
 	std::cout << "Server Socket connection created..." << std::endl;
+	bzero((char *) &server_addr, sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = INADDR_ANY;
+	server_addr.sin_port = htons(_port);
 	int optval = 1;
 	if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0){
 		close(serverSocket);
 		return (errMsg("Error: setting socket options " + std::string(strerror(errno))));
 	}
-	bzero((char *) &server_addr, sizeof(server_addr));
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = INADDR_ANY;
-	server_addr.sin_port = htons(_port);
-
+	if (fcntl(serverSocket,F_SETFL,O_NONBLOCK) < 0)
+    {
+        close(serverSocket);
+        return (errMsg("Error: fcntl " + std::string(strerror(errno))));
+    }
 	//binds the socket to the address and port number specified in addr(custom data structure)
 	if (bind(serverSocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 	{
@@ -117,6 +121,7 @@ int	Server::receiveMsg(int fd){
 		user->setDisconnect(true);
 		return(0);
 	}
+	std::cout << "Recieved msg from " << user->getNick() << ": " << buffer << std::endl;
 	user->addMsg(buffer);
 	return (0);
 }
@@ -134,8 +139,10 @@ int Server::polloutHandler(int fd)
 	if (!user->getMsgsToSend().empty())
 	{
 		std::cout << user->getNick() << " messages to send:\n" << user->getMsgsToSend() << std::endl;
-		user->sendMsg(user->getMsgsToSend());
-		user->setMsgsToSend("");
+		if (send(user->getFd(), user->getMsgsToSend().c_str(), user->getMsgsToSend().length(), 0) < 0)
+			errMsg("Error: send to user " + std::string(strerror(errno)));
+		else
+			user->setMsgsToSend("");
 	}
 	return (0);
 }
@@ -259,7 +266,7 @@ int	Server::callCmds(User* user)
 			user->addMsgToSend(RPL_YOURHOST(_host));
 			user->addMsgToSend(RPL_CREATED(_host));
 			user->addMsgToSend(RPL_MYINFO(_host));
-			displayUser(user);
+			std::cout << "A new user:" << user;
 		}
 		else
 		{
@@ -273,7 +280,6 @@ int	Server::callCmds(User* user)
 void	Server::executeCmd(std::string str, User* user){
 	std::vector<std::string>	arguments;
 	std::string					word;
-	//char const*                 index;
 
 	word = str.substr(0, str.find(' '));
 	int	(*fun[])(Server* server, std::vector<std::string> arguments, User* user) = {
@@ -288,40 +294,12 @@ void	Server::executeCmd(std::string str, User* user){
 		if ( word.compare(*i) == 0)
 		{
 			arguments = ft_split(str, ' ');
-			// while (!str.empty())
-			// {
-			// 	index = std::strstr(str.c_str(), " ");
-			// 	if (index == NULL)
-			// 	{
-			// 		word = str;
-			// 		str.clear();
-			// 	}
-			// 	else
-			// 	{
-			// 		word = str.substr(0, index - str.c_str());
-			// 		str = str.substr(index - str.c_str() + 1, str.size() - word.size() + 1);
-			// 	}
-			// 	arguments.push_back(word);
-			// }
 			std::cout << "\nCommand= " << arguments[0] << std::endl;
 			(*fun[ind])(this, arguments, user);
 		}
 		ind++;
 	}
 }
-
-// std::vector<User*>::iterator	Server::delUser(User* user)
-// {
-// 	deleteUserFromChannels(user);
-// 	for(std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
-// 		if ((*i).fd == user->getFd())
-// 		{
-// 			close((*i).fd);
-// 			_pollfds.erase(i);
-// 			break;
-// 		}
-// 	return (_users.erase(std::find(_users.begin(), _users.end(), user)));
-// }
 
 User*	Server::findUser(std::string nickname)
 {

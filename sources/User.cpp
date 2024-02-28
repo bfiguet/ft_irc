@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 15:50:00 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 13:48:55 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,11 +73,6 @@ void		User::setTimeStamp()
 {
 	gettimeofday(&_timestamp, NULL);
 }
-//optimization
-void		User::sendMsg(std::string msg){
-	if (send(_sock, msg.c_str(), msg.length(), 0) < 0)
-		std::cout << "Error: send to user " << strerror(errno) << std::endl;
-}
 
 std::string	User::extractCmd()
 {
@@ -88,4 +83,14 @@ std::string	User::extractCmd()
 	cmd = _msg.substr(0, cmdEnd - _msg.c_str());
 	_msg = _msg.substr(cmd.size() + 2, _msg.size() - cmd.size() + 2);
 	return (cmd);
+}
+
+std::ostream& operator<<(std::ostream& os, User const* user)
+{
+	os << std::endl << "User " << user->getUser() << " are connected on fd " << user->getFd() << std::endl;
+	os << "nickname: " << user->getNick() << std::endl;
+	os << "realname: " <<user->getRealname() << std::endl;
+	os << "server: " <<user->getHost() << std::endl;
+	os << "pass: " <<user->getPass() << std::endl << std::endl;
+    return os;
 }
