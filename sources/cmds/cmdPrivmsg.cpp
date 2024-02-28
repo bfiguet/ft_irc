@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:30 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 14:36:20 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/28 15:47:13 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> args, User *user){
 		if (cha)
 		{
 			if (cha->isInChannel(user))
-				cha->broadcast(MSG(user->getNick(), user->getUser(), user->getHost(), args[0], cha->getName(), msg));
+				cha->broadcast(MSG(user->getNick(), user->getUser(), user->getHost(), args[0], cha->getName(), msg), user);
 			else
 			{
 				user->addMsgToSend(ERR_CANNOTSENDTOCHAN(user->getNick(), args[1]));

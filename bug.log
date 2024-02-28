@@ -88,3 +88,5 @@ USER algeorge algeorge@localhost: real name =>
 Trying on a fresh session with a second user command with a two-word real name doesn't trigger the messages either.
 USER algeorge algeorge@localhost : Real
 USER algeorge algeorge@localhost: Real Name => NOTHING
+
+19. Users not being deleted from channels after being disconnected.
