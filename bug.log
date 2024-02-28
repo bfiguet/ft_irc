@@ -59,6 +59,7 @@ the old user will see #chan(+it) and the new user will see #chan(+t).
 ->fixed by bland ali
 
 15. cmdJoin print nick of all users
+->fixed by bland
 
 16. cmdJoin parsing channel names and matching it with passwords has issues
-
+->fixed by Ali
