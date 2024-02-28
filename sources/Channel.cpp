@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 12:30:22 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 15:15:52 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,5 @@ std::string	Channel::listNames()
 void	Channel::broadcast(std::string msg)
 {
 	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
-	{
-		(*i)->addMsgToSend(msg);	
-	}
+		(*i)->addMsgToSend(msg);
 }
