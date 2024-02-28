@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:52:28 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 15:49:50 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/27 15:47:12 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 	}
 	else
 	{
-		if (cha->isTopicChange() == false && cha->isOperator(user) == false)
+		if (cha->isTopicUnprotected() == false && cha->isOperator(user) == false)
 		{
 			user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
 			return 1;
@@ -54,7 +54,7 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 		}
 		if (topic.size() < 1)
 			cha->setTopic("");
-		else if ((cha->isTopicChange() == true) || (cha->isTopicChange() == false && cha->isOperator(user) == true))
+		else if ((cha->isTopicUnprotected() == true) || (cha->isTopicUnprotected() == false && cha->isOperator(user) == true))
 		{
 			cha->setTopic(topic);
 			std::vector<User*>	listUser = cha->getUsers();

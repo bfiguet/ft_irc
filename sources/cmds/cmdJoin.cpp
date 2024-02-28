@@ -6,11 +6,26 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 11:33:58 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 10:17:27 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
+
+std::string	maskList(Channel *cha, User *user, std::string mask)
+{
+	if (cha->isInvitOnly() == true)
+		mask += "i";
+	if (cha->isTopicUnprotected() == true)
+		mask += "t";
+	if (cha->isLimited() == true)
+		mask += "l";
+	if (cha->getPw() != "")
+		mask += "k";
+	if (cha->isOperator(user) == true)
+		mask += "i";
+	return mask;
+}
 
 //Command: JOIN <channel>,<channels> <key>,<key>
 int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
@@ -35,7 +50,7 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 		{
 			std::string	channel = "";
 			int	nb = 0;
-			while (str[1][end_cha] && str[1][end_cha] != ',')
+			while (str[1][end_cha] && str[1][end_cha] != ',') //optimization
 			{
 				end_cha++;
 				nb++;
@@ -49,7 +64,7 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 					user->addMsgToSend(ERR_BADCHANMASK(channel));
 					return 1;
 				}
-				server->addChannel(channel);
+				server->addChannel(channel); //optimization
 				cha = server->findChannel(channel);
 				std::cout << "--creation of the channel-- " << cha->getName() << std::endl;
 				cha->setOperators(user, true);
@@ -70,30 +85,33 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 				user->addMsgToSend(ERR_INVITEONLYCHAN(user->getNick(), channel));
 				return 1;
 			}
-			else if (cha->getPw() == "")
+			else if (cha->getPw() == "") //optimization A
 			{
 				if (cha->isInChannel(user) == false)
 				{
 					std::cout << "add " << user->getNick() << " in this channel" << std::endl;
 					cha->addUser(user);
 				}
-				std::string			all_names;
+				//std::string			all_names;
 				std::vector<User *> listUser = cha->getUsers();
-				for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
+				for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++) //put in channel
 				{
+					//all_names += " ";
+					//if (cha->isOperator((*it)) == true)
+					//	all_names += "@";
+					//else
+					//	all_names += " ";
+					//all_names += (*it)->getNick();
+					//all_names += " ";
+					
+					//user->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), cha->getName(), all_names)); //put in func addUser at channel
+					//user->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), cha->getName()));//put in func addUser at channel
 					(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
-					all_names += " ";
-					if (cha->isOperator((*it)) ==  true)
-						all_names += "@";
-					else
-						all_names += " ";
-					all_names += (*it)->getNick();
 				}
-				user->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), cha->getName(), all_names));
-				user->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
-				//user->addMsgToSend(RPL_BANLIST(user->getHost(), cha->getName(), ));
+				if (!cha->getTopic().empty())
+					user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), cha->getTopic()));
 			}
-			else if (str.size() > 2)
+			else if (str.size() > 2) //optimization with A
 			{
 				std::string pw = "";
 				nb = 0;
@@ -103,7 +121,7 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 					nb++;
 				}
 				pw = str[2].substr(i_pw, nb);
-				if (cha->getPw().compare(pw) == 0)
+				if (cha->getPw().compare(pw) == 0 || cha->getPw().empty())
 				{
 					if (cha->isInChannel(user) == false)
 					{
@@ -111,20 +129,23 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 						cha->addUser(user);
 					}
 					std::vector<User *> listUser = cha->getUsers();
-					std::string			all_names;
-					for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
+					//std::string			all_names;
+					for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)//put in channel
 					{
+						
+						//all_names += " ";
+						//if (cha->isOperator((*it)) == true)
+						//	all_names += "@";
+						//else
+						//	all_names += " ";
+						//all_names += (*it)->getNick();
+						//all_names += " ";
+						//user->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), cha->getName(), all_names));//put in func addUser at channel
+						//user->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), cha->getName()));//put in func addUser at channel
 						(*it)->addMsgToSend(JOIN(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
-						all_names += " ";
-						if (cha->isOperator((*it)) ==  true)
-							all_names += "@";
-						else
-							all_names += " ";
-						all_names += (*it)->getNick();
 					}
-					user->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), cha->getName(), all_names));
-					user->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
-					//user->addMsgToSend(RPL_BANLIST(user->getHost(), cha->getName(), ));
+					if (!cha->getTopic().empty())
+						user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), cha->getTopic()));
 				}
 				if (str[2][end_pw] == ',')
 					end_pw++;
@@ -134,6 +155,9 @@ int	cmdJoin(Server *server, std::vector<std::string> str, User *user)
 			i = end_cha;
 			if (str[1][end_cha] == ',')
 				end_cha++;
+			std::string mask = "";
+			mask = maskList(cha, user, mask);
+			user->addMsgToSend(RPL_CHANNELMODEIS(user->getNick(), user->getUser(), user->getHost(), cha->getName(), "+", mask));
 		}
 	}
 	return 0;

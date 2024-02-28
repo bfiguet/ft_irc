@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdKick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 11:20:31 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/27 15:31:25 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 		if (str[3][0] == ':')
 			reason = str[3].substr(1);
 		else
-			reason = str[3];
+			reason = str[3]; //optimization
 		for (size_t i = 4; i < str.size(); i++)
 		{
 			reason += " ";
@@ -66,3 +66,5 @@ int	cmdKick(Server *server, std::vector<std::string> str, User *user){
 	cha->delUser(userToDel);
 	return 0;
 }
+
+//optimization accept multiple users

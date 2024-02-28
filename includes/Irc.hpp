@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 11:39:37 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/27 16:23:13 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,13 @@ extern bool g_run;
 
 # define RPL_INVITING(nick, user, host, invitenick, channel)("341 " + nick + "!" + user + "@" + host + " " + invitenick + " " + channel + "\r\n")
 
-# define RPL_NAMREPLY(nick, user, host, channel, all_users)("353 " + nick + "!" + user + "@" + host + " " + channel + " : " + all_users + "\r\n")
+//>> :choopa.nj.us.dal.net 353 bland = #walk :bland @Jacques 
+//>> :choopa.nj.us.dal.net 366 bland #walk :End of /NAMES list.
+# define RPL_NAMREPLY(nick, user, host, channel, all_users)("353 " + nick + "!" + user + "@" + host + " = " + channel + " :" + all_users + "\r\n")
 
-# define RPL_ENDOFNAMES(nick, user, host, channel)("366 " + nick + "!" + user + "@" + host + " " + channel + " \r\n")
+# define RPL_ENDOFNAMES(nick, user, host, channel)("366 " + nick + "!" + user + "@" + host + " " + channel + " :End of /NAMES list.\r\n")
 
-//# define RPL_BANLIST(host, channel, mask)(":" + host + " 367 " + channel + " " + mask + "\r\n")
+# define RPL_CHANNELMODEIS(nick, user, host, channel, mode, param)("324 " + nick + "!" + user + "@" + host + " " + channel + " " + mode + param + " \r\n") 
 
 //ERR_MSG
 

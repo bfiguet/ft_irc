@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:46:13 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:44:55 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/27 15:33:43 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,7 @@ int	cmdNick(Server *server, std::vector<std::string> str, User *user){
 			return 1;
 	}
 	if (user->getNick() == "")
-	{
 		user->addMsgToSend(NICK(str[1]));
-	}
 	else
 		user->addMsgToSend(NICK_CHANGE(user->getNick(), str[1]));
 	user->setNick(str[1]);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 11:17:51 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/27 14:37:32 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ Server::~Server() {
 		close((*i)->getFd());
 		delete(*i);
 	}
-	for (std::vector<Channel*>::iterator i = _channels.begin(); i != _channels.end();)
+	for (std::vector<Channel*>::iterator i = _channels.begin(); i != _channels.end(); i++)
 	{
 		delete(*i);
-		i = _channels.erase(i);
+		//i = _channels.erase(i);
 	}
 	std::cout << "END SERVER" <<std::endl;
 }
@@ -94,7 +94,6 @@ int	Server::newUser(){
 	temppollfd.revents = 0;
 	_pollfds.push_back(temppollfd);
 	User* user = new User(userSocket);
-	user->setIsRegisterd(false);
 	user->setTimeStamp();
 	_users.push_back(user);
 	std::cout << "New user on fd " << user->getFd() << std::endl;
@@ -105,13 +104,11 @@ int	Server::newUser(){
 int	Server::receiveMsg(int fd){
 	char		buffer[1024];
 	User*		user = findUser(fd);
-	bzero(buffer, BUFFERSIZE);
 	int valread = 1;
-
 	user->setTimeStamp();
 	bzero(buffer, BUFFERSIZE);
 	valread = recv(fd, buffer, BUFFERSIZE, 0);
-	if (valread < 0 || valread == 0)
+	if (valread <= 0)
 	{
 		if (valread == 0)
 			std::cout << "User " << user->getNick() << " has disconnected with EOF" << std::endl;
@@ -176,12 +173,8 @@ int	Server::start(){
 			else if ((*i).revents & POLLOUT)
 				polloutHandler(((*i)).fd);
 		}
-		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
-		{
-			if (i != _pollfds.begin())
-				if (callCmds(findUser(((*i)).fd)) == 1)
-					std::cout << "need password to connect" << std::endl;
-		}
+		for (std::vector<pollfd>::iterator i = _pollfds.begin() + 1; i != _pollfds.end(); i++)
+			callCmds(findUser(((*i)).fd));
 		checkTimeout();
 		deleteDisconnected();
 		deleteEmptyChannels();
@@ -284,11 +277,11 @@ void	Server::executeCmd(std::string str, User* user){
 
 	word = str.substr(0, str.find(' '));
 	int	(*fun[])(Server* server, std::vector<std::string> arguments, User* user) = {
-		&cmdPass, &cmdNick, &cmdUser, &cmdInvite, &cmdKill, &cmdTopic, &cmdKick, &cmdPart,
+		&cmdPass, &cmdNick, &cmdUser, &cmdInvite, &cmdTopic, &cmdKick, &cmdPart,
 		&cmdPing, &cmdMode, &cmdQuit, &cmdPrivmsg, &cmdJoin, &cmdPrivmsg
 	};
-	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "KILL", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "PRIVMSG", "JOIN", "MSG"};
-	std::vector<std::string> _cmd(commands, commands + 14);
+	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "PRIVMSG", "JOIN", "MSG"};
+	std::vector<std::string> _cmd(commands, commands + 13);
 	int	ind = 0;
 	for (std::vector<std::string>::iterator i = _cmd.begin(); i != _cmd.end(); i++)
 	{

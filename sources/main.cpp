@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:51:01 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/14 12:42:51 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/27 14:04:10 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	ft_signal(int sig)
 {
 	(void)sig;
 	g_run = false;
-	std::cout << "\b\b";
+	//std::cout << "\b\b";
 }
 
 bool	verifPort(std::string av, int &port)

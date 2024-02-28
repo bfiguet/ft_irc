@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:12:34 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:56:10 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 10:16:09 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ private:
 	int						_userLimit;
 	bool					_invitOnly;
 	bool					_TopicChangeRestriction;
+	bool					_isLimited;
 	std::vector<User *>		_users;
 	std::vector<User *>		_operators;
 	std::vector<User *>		_invited;
@@ -43,9 +44,10 @@ public:
 	bool					isOperator(const User* user) const;
 	bool					isInvited(const User* user) const;
 	bool					isInvitOnly()const;
-	bool					isTopicChange()const;
+	bool					isTopicUnprotected()const;
 	bool					isInChannel(const User* user);
 	bool					isValidName(std::string name);
+	bool					isLimited()const;
 
 	void					setTopic(std::string str);
 	void					setPw(std::string str);
@@ -54,9 +56,11 @@ public:
 	void					setTopicChange(bool val);
 	void					setInviteUser(User* user, bool onoff);
 	void					setOperators(User* user, bool onoff);
+	void					setIsLimited(bool onOff);
 
 	void					addUser(User* user);
 	void					delUser(User* user);
+	void					ListNames(User* user);
 };
 
 #endif

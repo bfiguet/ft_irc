@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 11:46:33 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 15:09:15 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/27 15:50:00 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void		User::setTimeStamp()
 {
 	gettimeofday(&_timestamp, NULL);
 }
-
+//optimization
 void		User::sendMsg(std::string msg){
 	if (send(_sock, msg.c_str(), msg.length(), 0) < 0)
 		std::cout << "Error: send to user " << strerror(errno) << std::endl;

@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:30 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:46:26 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/27 15:41:05 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,3 +65,5 @@ int	cmdPrivmsg(Server *server, std::vector<std::string> str, User *user){
 	}
 	return 0;
 }
+
+//optimization fun

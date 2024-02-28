@@ -6,14 +6,14 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:18:55 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 14:55:53 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 10:16:56 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
 Channel::Channel(std::string name): _name(name), _pw(""), _topic(""), _userCount(0)
-	, _userLimit(100), _invitOnly(false), _TopicChangeRestriction(false){}
+	, _userLimit(100), _invitOnly(false), _TopicChangeRestriction(false), _isLimited(false){}
 
 Channel::~Channel(){}
 
@@ -40,7 +40,10 @@ int	Channel::getLimit() const
 bool	Channel::isInvitOnly()const
 {return (_invitOnly);}
 
-bool	Channel::isTopicChange()const
+bool	Channel::isLimited()const
+{return (_isLimited);}
+
+bool	Channel::isTopicUnprotected()const
 {return _TopicChangeRestriction;}
 
 bool	Channel::isInChannel(const User* user)
@@ -79,6 +82,9 @@ void	Channel::setLimit(int userLimit)
 void	Channel::setInvitOnly(bool onOff)
 {_invitOnly = onOff;}
 
+void	Channel::setIsLimited(bool onOff)
+{_isLimited = onOff;}
+
 void	Channel::setTopicChange(bool onOff)
 {_TopicChangeRestriction = onOff;}
 
@@ -108,4 +114,22 @@ void	Channel::setOperators(User* user, bool onoff)
 		_operators.push_back(user);
 	else if (isOperator(user) == true)
 		_operators.erase(std::find(_operators.begin(), _operators.end(), user));
+}
+
+void	Channel::ListNames(User* user)
+{
+	std::vector<User *> listUser = getUsers();
+	std::string			all_names;
+	for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)//put in channel
+	{
+		//all_names += " ";
+		if (isOperator((*it)) == true)
+			all_names += "@";
+		else
+			all_names += " ";
+		all_names += (*it)->getNick();
+		all_names += " ";
+		(*it)->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), getName(), all_names));
+		(*it)->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), getName()));
+	}
 }

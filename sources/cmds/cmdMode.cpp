@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:16 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/23 15:45:17 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/27 15:59:43 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 //Command: MODE <channel> [<modestring> [<mode arguments>...]]
 int	cmdMode(Server *server, std::vector<std::string> str, User *user){
-	//std::cout << "--cmdMode--" << std::endl;
-	//std::cout << "str[1]" << str[1] << std::endl;
+	std::cout << "--cmdMode--" << std::endl;
+	std::cout << "str[1]" << str[1] << std::endl;
 	//std::cout << "str[2]" << str[2] << std::endl;
 	std::string			comment = "";
 	User				*userOp = NULL;
@@ -43,7 +43,7 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 			user->addMsgToSend(ERR_NOPRIVILEGES);
 			return 1;
 		}
-		if (str[2].empty() == false && (str[2][0] == '+' || str[2][0] == '-'))
+		if (str[2].empty() == false && (str[2][0] == '+' || str[2][0] == '-')) //optimization
 		{
 			switch (str[2][1])
 			{
@@ -106,12 +106,14 @@ int	cmdMode(Server *server, std::vector<std::string> str, User *user){
 						if (nb < 1 || cha->getUserCount() > nb)
 							return 1;
 						cha->setLimit(nb);
+						cha->setIsLimited(true);
 						//comment = "is now limited to " + str[3] + " users.";
 						comment = str[3];
 					}
 					else if (str[2][0] == '-')
 					{
 						cha->setLimit(100);
+						cha->setIsLimited(false);
 						//comment = "is no longer limited in members.";
 					}
 					break;

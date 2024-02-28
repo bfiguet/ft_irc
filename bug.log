@@ -56,3 +56,9 @@ the user cannot join channel2 even after disabling password protection on channe
 14.(Is it an issue?)/When joining a channel, if a topic was previously defined, the new user won't see it.
 Same goes for mode changes: If mode +i was applied previously and a new user joins, then mode +t is applied,
 the old user will see #chan(+it) and the new user will see #chan(+t).
+->fixed by bland ali
+
+15. cmdJoin print nick of all users 
+
+16. cmdJoin parsing channel names and matching it with passwords has issues
+
