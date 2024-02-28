@@ -23,6 +23,10 @@ the user cannot join channel2 even after disabling password protection on channe
 ->fixed by bfiguet
 4B.Trying with three channels triggers a 476 #chan2,#chan3 Bad Channel Mask message, and the channels 2 and 3 are inaccessible even by trying them one by one.
 ->fixed by bfiguet
+4C.
+Trying to join three channels with only the first right: joining chan1 but not chan2 and 3.
+Then trying the same command but with the first two being right: joining chan1 (already joined) and chan2 but not 3.
+Then trying with all three being right allows access to chan3, but doesn't show the log like on the first two.
 
 5./mode changes should result in response from server confirming the changed mode.
 ->fixed by bfiguet
