@@ -77,14 +77,8 @@ USER algeorge algeorge@localhost: name => CRASH
 USER algeorge algeorge@localhost: real name => WORKS
 ->fixed by Ali
 
-18. Single word real names don't trigger the welcome messages:
-USER algeorge algeorge@localhost: name => NOTHING
-USER algeorge algeorge@localhost: real name =>
-  Your nickname is : Guest4
-  001 Guest4 :Welcome to the Internet Relay Network Guest4!algeorge@127.0.0.1
-  :127.0.0.1 002 :Your host is 127.0.0.1, running version 0.8
-  :127.0.0.1 003 :This server was created Mon Feb 31 25:02:33 2023
-  :127.0.0.1 004 :ft_irc 0.8, group La Team 
-Trying on a fresh session with a second user command with a two-word real name doesn't trigger the messages either.
-USER algeorge algeorge@localhost : Real
-USER algeorge algeorge@localhost: Real Name => NOTHING
+18. Trying topic as a normal user doesn't trigger the "You're not an IRC Operator" message.
+
+
+
+
