@@ -6,7 +6,7 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:46:13 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 15:33:43 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 13:41:42 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,27 +32,26 @@ bool	checkNick(std::string str){
 }
 
 //Command: NICK <nickname>
-int	cmdNick(Server *server, std::vector<std::string> str, User *user){
+int	cmdNick(Server *server, std::vector<std::string> args, User *user){
 	std::vector<User*>	listUser = server->getUsers();
-	std::cout << "cmdNick " << str[1] << std::endl;
 
 	for (std::vector<User*>::iterator i = listUser.begin(); i != listUser.end(); i++)
     {
-        if ((*i)->getNick().compare(str[1]) == 0)
+        if ((*i)->getNick().compare(args[1]) == 0)
         {
-			user->addMsgToSend(ERR_NICKNAMEINUSE(str[1]));
+			user->addMsgToSend(ERR_NICKNAMEINUSE(args[1]));
         	return 1;
 		}
 	}
-	if (checkNick(str[1]) == false)
+	if (checkNick(args[1]) == false)
 	{
 		user->addMsgToSend(ERR_ERRONEUSNICKNAME(user->getHost(), user->getNick()));
 			return 1;
 	}
 	if (user->getNick() == "")
-		user->addMsgToSend(NICK(str[1]));
+		user->addMsgToSend(NICK(args[1]));
 	else
-		user->addMsgToSend(NICK_CHANGE(user->getNick(), str[1]));
-	user->setNick(str[1]);
+		user->addMsgToSend(NICK_CHANGE(user->getNick(), args[1]));
+	user->setNick(args[1]);
 	return 0;
 }

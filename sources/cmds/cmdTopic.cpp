@@ -6,25 +6,25 @@
 /*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:52:28 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/27 15:47:12 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/28 13:51:53 by bfiguet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
 //Command: TOPIC <channel> [<topic>]
-int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
+int	cmdTopic(Server *server, std::vector<std::string> args, User *user){
 	std::string	topic;
 
-	if (str.size() < 2)
+	if (args.size() < 2)
 	{
-		user->addMsgToSend(ERR_NEEDMOREPARAMS(str[0]));
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
 		return 1;
 	}
-	Channel	*cha = server->findChannel(str[1]);
+	Channel	*cha = server->findChannel(args[1]);
 	if (cha == NULL)
 	{
-		user->addMsgToSend(ERR_NOSUCHCHANNEL(str[1]));
+		user->addMsgToSend(ERR_NOSUCHCHANNEL(args[1]));
 		return 1;
 	}
 	if (cha->isInChannel(user) == false)
@@ -32,7 +32,7 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 		user->addMsgToSend(ERR_NOTONCHANNEL(cha->getName()));
 		return 1;
 	}
-	if (str.size() == 2)
+	if (args.size() == 2)
 	{
 		if (cha->getTopic() == "")
 			user->addMsgToSend(RPL_NOTOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName()));
@@ -46,12 +46,8 @@ int	cmdTopic(Server *server, std::vector<std::string> str, User *user){
 			user->addMsgToSend(ERR_CHANOPRIVSNEEDED(cha->getName(), user->getNick()));
 			return 1;
 		}
-		topic = str[2].substr(1);
-		for (size_t i = 3; i < str.size(); i++)
-		{
-			topic += " ";
-			topic += str[i];
-		}
+		topic = args[2].substr(1);
+		topic += joinArgs(3, args, ' '); 
 		if (topic.size() < 1)
 			cha->setTopic("");
 		else if ((cha->isTopicUnprotected() == true) || (cha->isTopicUnprotected() == false && cha->isOperator(user) == true))
