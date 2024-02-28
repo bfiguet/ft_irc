@@ -77,8 +77,4 @@ USER algeorge algeorge@localhost: name => CRASH
 USER algeorge algeorge@localhost: real name => WORKS
 ->fixed by Ali
 
-18. Trying topic as a normal user doesn't trigger the "You're not an IRC Operator" message.
-
-
-
-
+18. Trying topic as a normal user does nothing when mode -t is entered by the operator.
