@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:30 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/29 12:33:32 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 14:48:15 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,16 @@
 //Command: PRIVMSG <target> <text to be sent>
 int	cmdPrivmsg(ServerData *serverData, std::vector<std::string> args, User *user){
 	std::string	msg;
-	User* dest = serverData->findUser(args[1]);
-	Channel	*cha = serverData->findChannel(args[1]);
+	User* dest;
+	Channel	*cha;
 
 	if (args.size() < 3)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
 		return 1;
 	}
+	dest = serverData->findUser(args[1]);
+	cha = serverData->findChannel(args[1]);
 	msg = args[2].substr(1);
 	msg += joinArgs(3, args, ' ');
 	if (args[1][0] != '#' && args[1][0] != '&') //tagret == user

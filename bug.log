@@ -85,3 +85,6 @@ USER algeorge algeorge@localhost: real name => WORKS
 
 20. Wrong message on attempting to set user who is not in channel as operator.
 ->fixed by Ali
+
+21. Using nc and sending PRIVMSG without arguments sigfaults.
+->fixed by Ali
