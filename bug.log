@@ -88,3 +88,6 @@ USER algeorge algeorge@localhost: real name => WORKS
 
 21. Using nc and sending PRIVMSG without arguments sigfaults.
 ->fixed by Ali
+
+22. Nickname already in use message not up to norm.
+->fixed by Ali

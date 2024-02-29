@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:46:13 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/29 14:53:01 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 15:10:42 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	cmdNick(ServerData *serverData, std::vector<std::string> args, User *user){
     {
         if ((*i)->getNick().compare(args[1]) == 0)
         {
-			user->addMsgToSend(ERR_NICKNAMEINUSE(args[1]));
+			user->addMsgToSend(ERR_NICKNAMEINUSE(user->getHost(), args[1]));
         	return 1;
 		}
 	}

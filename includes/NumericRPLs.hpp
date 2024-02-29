@@ -46,7 +46,7 @@
 
 # define ERR_ERRONEUSNICKNAME(localhost, nick) (":" + localhost + " 432 " + nick + " :Erroneus nickname\r\n")
 
-# define ERR_NICKNAMEINUSE(nick)(": 433 localhost " + nick + " :Nickname is already in use\r\n")
+# define ERR_NICKNAMEINUSE(localhost, nick)(":" + localhost + "433 " + " " + nick + " :Nickname is already in use\r\n")
 
 # define ERR_USERNOTINCHANNEL(user, nick, chan)("441 " + user + " " + nick + " " + chan + " :They aren't on that channel\r\n")
 
