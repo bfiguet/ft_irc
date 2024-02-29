@@ -6,13 +6,13 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/29 08:22:41 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 12:56:22 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
-Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _port(port), _sock(-1) {
+Server::Server(int port, const std::string &pw): _port(port), _sock(-1) {
 	_sock = newSock();
 	if (_sock < 0)
 		throw(Server::BadServInit());
@@ -20,23 +20,14 @@ Server::Server(int port, const std::string &pw): _host(LOCAL_HOST), _pw(pw), _po
 	fd.fd = _sock;
 	fd.events = POLLIN;
 	fd.revents = 0;
-	_pollfds.push_back(fd);
+	_data = new ServerData(fd, pw);
 }
 
 Server::~Server() {
 	std::cout << "~Server" << std::endl;
 	if (_sock >= 0)
 		close(_sock);
-	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
-	{
-		close((*i)->getFd());
-		delete(*i);
-	}
-	for (std::vector<Channel*>::iterator i = _channels.begin(); i != _channels.end(); i++)
-	{
-		delete(*i);
-		//i = _channels.erase(i);
-	}
+	delete(_data);
 	std::cout << "END SERVER" <<std::endl;
 }
 
@@ -78,30 +69,10 @@ int		Server::newSock(){
 	return serverSocket;
 }
 
-int	Server::newUser(){
-	int			userSocket;
-	struct		sockaddr_in server_addr = {};
-	socklen_t	size = sizeof(server_addr);
-	//accept user
-	userSocket = accept(_sock, (sockaddr*)&server_addr, &size);
-	if (userSocket < 0)
-		return(errMsg("Error: failed to accept new connection" + std::string(strerror(errno))));
-	pollfd temppollfd;
-	temppollfd.fd = userSocket;
-	temppollfd.events = POLLIN | POLLOUT;
-	temppollfd.revents = 0;
-	_pollfds.push_back(temppollfd);
-	User* user = new User(userSocket);
-	user->setTimeStamp();
-	_users.push_back(user);
-	std::cout << "New user on fd " << user->getFd() << std::endl;
-	return (0);
-}
-
 //recv receive a message from a socket
 int	Server::receiveMsg(int fd){
 	char		buffer[1024];
-	User*		user = findUser(fd);
+	User*		user = _data->findUser(fd);
 	int valread = 1;
 	user->setTimeStamp();
 	bzero(buffer, BUFFERSIZE);
@@ -120,16 +91,95 @@ int	Server::receiveMsg(int fd){
 	return (0);
 }
 
+void	Server::checkTimeout()
+{
+	struct timeval time;
+	std::vector<User*> users = _data->getUsers();
+	gettimeofday(&time, NULL);
+	for (std::vector<User*>::iterator i = users.begin(); i != users.end(); i++)
+	{
+		if (time.tv_sec - (*i)->getTimeStamp().tv_sec >= 90)
+		{
+			std::cout << "User " << (*i)->getNick() << " has timed out." << std::endl;
+			(*i)->setDisconnect(true);
+		}
+	}
+}
+
+void	Server::executeCmd(std::string str, User* user){
+	std::vector<std::string>	arguments;
+	std::string					word;
+
+	word = str.substr(0, str.find(' '));
+	int	(*fun[])(ServerData* serverData, std::vector<std::string> arguments, User* user) = {
+		&cmdPass, &cmdNick, &cmdUser, &cmdInvite, &cmdTopic, &cmdKick, &cmdPart,
+		&cmdPing, &cmdMode, &cmdQuit, &cmdPrivmsg, &cmdJoin, &cmdPrivmsg
+	};
+	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "PRIVMSG", "JOIN", "MSG"};
+	std::vector<std::string> cmd(commands, commands + 13);
+	int	ind = 0;
+	for (std::vector<std::string>::iterator i = cmd.begin(); i != cmd.end(); i++)
+	{
+		if ( word.compare(*i) == 0)
+		{
+			arguments = ft_split(str, ' ');
+			std::cout << "\nCommand= " << arguments[0] << std::endl;
+			(*fun[ind])(_data, arguments, user);
+		}
+		ind++;
+	}
+}
+
+int	Server::callCmds(User* user)
+{
+	std::string host = _data->getHost();
+	std::string cmd = user->extractCmd();
+	if (cmd.empty())
+		return 0;
+	executeCmd(cmd, user);
+	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
+		callCmds(user);
+	if (!user->isRegisterd() && !user->getRealname().empty() && !user->getHost().empty())
+	{
+		if (user->getPass() == _data->getPw())
+		{
+			user->setIsRegisterd(true);
+			if (user->getNick().empty())
+			{
+				std::vector<std::string> args;
+				args.push_back("");
+				std::stringstream stream;
+				stream << _data->getUsers().size();
+				std::string str;
+				stream >> str;
+				args.push_back("Guest" + str);
+				cmdNick(_data, args, user);
+			}
+			user->addMsgToSend(RPL_WELCOME(user->getNick(), user->getUser(), host));
+			user->addMsgToSend(RPL_YOURHOST(host));
+			user->addMsgToSend(RPL_CREATED(host));
+			user->addMsgToSend(RPL_MYINFO(host));
+			std::cout << "A new user:" << user;
+		}
+		else
+		{
+			user->setDisconnect(true);
+			return 1;
+		}
+	}
+	return 0;
+}
+
 int	Server::pollinHandler(int fd)
 {
 	if (fd == _sock)
-		return(newUser());
+		return(_data->newUser(_sock));
 	return(receiveMsg(fd));
 }
 
 int Server::polloutHandler(int fd)
 {
-	User* user = findUser(fd);
+	User* user = _data->findUser(fd);
 	if (!user->getMsgsToSend().empty())
 	{
 		std::cout << user->getNick() << " messages to send:\n" << user->getMsgsToSend() << std::endl;
@@ -145,21 +195,22 @@ int Server::pollerrHandler(int fd)
 {
 	if (fd == _sock)
 		return(errMsg("Error: server socket " + std::string(strerror(errno))));
-	findUser(fd)->setDisconnect(true);
+	_data->findUser(fd)->setDisconnect(true);
 	return (0);
 }
 
 int	Server::start(){
 	int	events;
+	std::vector<pollfd>& pollfds = _data->getPollfds();
 	std::cout << "Server IRC Start!" << std::endl;
 	while (g_run == true)
 	{
-		events = poll((_pollfds.begin()).base(), _pollfds.size(), 0);
+		events = poll((pollfds.begin()).base(), pollfds.size(), 0);
 		if ( events < 0)
 			return (errMsg("Error: poll error: " + std::string(strerror(errno))));
 		if (events == 0)
 				continue;
-		for (std::vector<pollfd>::iterator i = _pollfds.begin(); i != _pollfds.end(); i++)
+		for (std::vector<pollfd>::iterator i = pollfds.begin(); i != pollfds.end(); i++)
 		{
 			if ((*i).revents == 0)
 				continue;
@@ -174,174 +225,16 @@ int	Server::start(){
 			else if ((*i).revents & POLLOUT)
 				polloutHandler(((*i)).fd);
 		}
-		for (std::vector<pollfd>::iterator i = _pollfds.begin() + 1; i != _pollfds.end(); i++)
-			callCmds(findUser(((*i)).fd));
+		for (std::vector<pollfd>::iterator i = pollfds.begin() + 1; i != pollfds.end(); i++)
+			callCmds(_data->findUser(((*i)).fd));
 		checkTimeout();
-		deleteDisconnected();
-		deleteEmptyChannels();
+		_data->deleteDisconnected();
+		_data->deleteEmptyChannels();
 	}
 	return 0;
 }
-
-void	Server::checkTimeout()
-{
-	struct timeval time;
-	gettimeofday(&time, NULL);
-	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
-	{
-		if (time.tv_sec - (*i)->getTimeStamp().tv_sec >= 90)
-		{
-			std::cout << "User " << (*i)->getNick() << " has timed out." << std::endl;
-			(*i)->setDisconnect(true);
-		}
-	}
-}
-
-void	Server::deleteEmptyChannels()
-{
-	for (std::vector<Channel*>::iterator i = _channels.begin(); i != _channels.end();)
-		if ((*i)->getUserCount() == 0)
-		{
-			delete(*i);
-			i = _channels.erase(i);
-		}
-		else
-			i++;
-}
-
-void	Server::deleteDisconnected()
-{
-	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end();)
-	{
-		if ((*i)->isDisconnect())
-		{
-			std::cout << "Disconnecting user " << (*i)->getNick() << std::endl;
-			for(std::vector<pollfd>::iterator it = _pollfds.begin(); it != _pollfds.end(); it++)
-				if ((*it).fd == (*i)->getFd())
-				{
-					close((*it).fd);
-					_pollfds.erase(it);
-					break;
-				}
-			deleteUserFromChannels(*i);
-			delete(*i);
-			i = _users.erase(i);
-		}
-		else
-			i++;
-	}
-}
-
-int	Server::callCmds(User* user)
-{
-	std::string cmd = user->extractCmd();
-	if (cmd.empty())
-		return 0;
-	executeCmd(cmd, user);
-	if (std::strstr(user->getMsg().c_str(), "\r\n") != NULL)
-		callCmds(user);
-	if (!user->isRegisterd() && !user->getRealname().empty() && !user->getHost().empty())
-	{
-		if (user->getPass() == _pw)
-		{
-			user->setIsRegisterd(true);
-			if (user->getNick().empty())
-			{
-				std::vector<std::string> args;
-				args.push_back("");
-				std::stringstream stream;
-				stream << _users.size();
-				std::string str;
-				stream >> str;
-				args.push_back("Guest" + str);
-				cmdNick(this, args, user);
-			}
-			user->addMsgToSend(RPL_WELCOME(user->getNick(), user->getUser(), _host));
-			user->addMsgToSend(RPL_YOURHOST(_host));
-			user->addMsgToSend(RPL_CREATED(_host));
-			user->addMsgToSend(RPL_MYINFO(_host));
-			std::cout << "A new user:" << user;
-		}
-		else
-		{
-			user->setDisconnect(true);
-			return 1;
-		}
-	}
-	return 0;
-}
-
-void	Server::executeCmd(std::string str, User* user){
-	std::vector<std::string>	arguments;
-	std::string					word;
-
-	word = str.substr(0, str.find(' '));
-	int	(*fun[])(Server* server, std::vector<std::string> arguments, User* user) = {
-		&cmdPass, &cmdNick, &cmdUser, &cmdInvite, &cmdTopic, &cmdKick, &cmdPart,
-		&cmdPing, &cmdMode, &cmdQuit, &cmdPrivmsg, &cmdJoin, &cmdPrivmsg
-	};
-	const char* commands[] = {"PASS", "NICK", "USER", "INVITE", "TOPIC", "KICK", "PART", "PING", "MODE", "QUIT", "PRIVMSG", "JOIN", "MSG"};
-	std::vector<std::string> _cmd(commands, commands + 13);
-	int	ind = 0;
-	for (std::vector<std::string>::iterator i = _cmd.begin(); i != _cmd.end(); i++)
-	{
-		if ( word.compare(*i) == 0)
-		{
-			arguments = ft_split(str, ' ');
-			std::cout << "\nCommand= " << arguments[0] << std::endl;
-			(*fun[ind])(this, arguments, user);
-		}
-		ind++;
-	}
-}
-
-User*	Server::findUser(std::string nickname)
-{
-	for (std::vector<User*>::iterator i = _users.begin(); i !=_users.end(); i++)
-		if ((*i)->getNick() == nickname)
-			return (*i);
-	return (NULL);
-}
-
-User*	Server::findUser(int fd){
-	for (std::vector<User*>::iterator i = _users.begin(); i != _users.end(); i++)
-	{
-		if ((*i)->getFd() == fd)
-			return(*i);
-	}
-	return (NULL);
-}
-
-void	Server::deleteUserFromChannels(User* user)
-{
-	if (_channels.size() > 0)
-		for (std::vector<Channel*>::iterator it=_channels.begin(); it != _channels.end(); it++)
-			if ((*it)->isInChannel(user))
-				(*it)->delUser(user);
-}
-
-Channel*	Server::findChannel(std::string channelName)
-{
-	for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)
-		if ((*it)->getName() == channelName)
-			return (*it);
-	return (NULL);
-}
-
-std::vector<User *>	Server::getUsers() const {return _users;}
-
-std::string	Server::getPw()const {return _pw;}
-
-std::string	Server::getHost()const { return _host;}
 
 const char* Server::BadServInit::what() const throw()
 {
     return ("Failed to initilize server");
-}
-
-Channel*	Server::addChannel(std::string name)
-{
-	Channel* cha = new Channel(name);
-	_channels.push_back(cha);
-	return cha;
 }

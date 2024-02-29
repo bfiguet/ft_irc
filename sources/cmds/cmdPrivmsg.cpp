@@ -6,17 +6,17 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:30 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:58:26 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 12:33:32 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
 //Command: PRIVMSG <target> <text to be sent>
-int	cmdPrivmsg(Server *server, std::vector<std::string> args, User *user){
+int	cmdPrivmsg(ServerData *serverData, std::vector<std::string> args, User *user){
 	std::string	msg;
-	User* dest = server->findUser(args[1]);
-	Channel	*cha = server->findChannel(args[1]);
+	User* dest = serverData->findUser(args[1]);
+	Channel	*cha = serverData->findChannel(args[1]);
 
 	if (args.size() < 3)
 	{

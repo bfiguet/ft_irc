@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   cmdPing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:49:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 13:42:25 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/29 12:33:24 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
 //Command: PING <token>
-int	cmdPing(Server *server, std::vector<std::string> args, User *user){
-	(void)server;
+int	cmdPing(ServerData *serverData, std::vector<std::string> args, User *user){
+	(void)serverData;
 
 	if (args[1].size() == 0)
 	{

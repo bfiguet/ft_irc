@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/29 08:39:00 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 12:31:49 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,15 @@ int	errKick(Channel* cha, User* user, std::vector<std::string> args, User* userT
 }
 
 //Command: KICK <channel> <user> *( "," <user> ) [<comment>]
-int	cmdKick(Server *server, std::vector<std::string> args, User *user){
+int	cmdKick(ServerData *serverData, std::vector<std::string> args, User *user){
 	std::string	reason = "";
 	if (args.size() < 3)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
 		return 1;
 	}
-	Channel *cha = server->findChannel(args[1]);
-	User	*userToDel = server->findUser(args[2]);
+	Channel *cha = serverData->findChannel(args[1]);
+	User	*userToDel = serverData->findUser(args[2]);
 	if (errKick(cha, user, args, userToDel) == 1)
 		return 1;
 	if (args.size() > 3)

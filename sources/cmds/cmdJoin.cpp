@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:55:03 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:49:13 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 12:31:29 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	cmdJoinPars(std::vector<std::string>& chanNames, std::vector<std::string>& 
 	}
 }
 
-Channel*	createChannel(Server* server, User* user, std::string name)
+Channel*	createChannel(ServerData* serverData, User* user, std::string name)
 {
 	Channel* cha = NULL;
 	if (cha->isValidName(name) == false)
@@ -31,20 +31,20 @@ Channel*	createChannel(Server* server, User* user, std::string name)
 		user->addMsgToSend(ERR_BADCHANMASK(name));
 		return NULL;
 	}
-	server->addChannel(name);
-	cha = server->findChannel(name);
+	serverData->addChannel(name);
+	cha = serverData->findChannel(name);
 	std::cout << "--creation of the channel-- " << cha->getName() << std::endl;
 	cha->setOperators(user, true);
 	std::cout << user->getNick() << " is IRC operator in this channel" << std::endl;
 	return (cha);
 }
 
-int	joinChannel(Server* server, std::string chaName, User* user, std::string passWord)
+int	joinChannel(ServerData* serverData, std::string chaName, User* user, std::string passWord)
 {
-	Channel	*cha = server->findChannel(chaName);
+	Channel	*cha = serverData->findChannel(chaName);
 	if (cha == NULL)
 	{
-		cha = createChannel(server, user, chaName);
+		cha = createChannel(serverData, user, chaName);
 		if (cha == NULL)
 			return (1);
 	}
@@ -70,7 +70,7 @@ int	joinChannel(Server* server, std::string chaName, User* user, std::string pas
 		user->addMsgToSend(RPL_NAMREPLY(user->getNick(), user->getUser(), user->getHost(), cha->getName(), cha->listNames()));
 		user->addMsgToSend(RPL_ENDOFNAMES(user->getNick(), user->getUser(), user->getHost(), cha->getName()));
 		if (!cha->getTopic().empty())
-						user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), cha->getTopic()));
+						user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), serverData->getHost(), cha->getName(), cha->getTopic()));
 		cha->setInviteUser(user, false);
 	}
 	else
@@ -82,7 +82,7 @@ int	joinChannel(Server* server, std::string chaName, User* user, std::string pas
 }
 
 //Command: JOIN <channel>,<channels> <key>,<key>
-int	cmdJoin(Server *server, std::vector<std::string> args, User *user)
+int	cmdJoin(ServerData *serverData, std::vector<std::string> args, User *user)
 {
 	std::vector<std::string> chanNames;
 	std::vector<std::string> passWords;
@@ -109,7 +109,7 @@ int	cmdJoin(Server *server, std::vector<std::string> args, User *user)
 			pass = "";
 		else
 			pass = *ipass;
-		if (joinChannel(server, *iname, user, pass))
+		if (joinChannel(serverData, *iname, user, pass))
 			return (1);
 		if (ipass != passWords.end())
 			ipass++;

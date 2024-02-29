@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   cmdTopic.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:52:28 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:52:00 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/29 12:33:48 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
 //Command: TOPIC <channel> [<topic>]
-int	cmdTopic(Server *server, std::vector<std::string> args, User *user){
+int	cmdTopic(ServerData *serverData, std::vector<std::string> args, User *user){
 	std::string	topic;
 
 	if (args.size() < 2)
@@ -21,7 +21,7 @@ int	cmdTopic(Server *server, std::vector<std::string> args, User *user){
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
 		return 1;
 	}
-	Channel	*cha = server->findChannel(args[1]);
+	Channel	*cha = serverData->findChannel(args[1]);
 	if (cha == NULL)
 	{
 		user->addMsgToSend(ERR_NOSUCHCHANNEL(args[1]));
@@ -35,9 +35,9 @@ int	cmdTopic(Server *server, std::vector<std::string> args, User *user){
 	if (args.size() == 2)
 	{
 		if (cha->getTopic() == "")
-			user->addMsgToSend(RPL_NOTOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName()));
+			user->addMsgToSend(RPL_NOTOPIC(user->getNick(), user->getUser(), serverData->getHost(), cha->getName()));
 		else
-			user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), cha->getTopic()));
+			user->addMsgToSend(RPL_TOPIC(user->getNick(), user->getUser(), serverData->getHost(), cha->getName(), cha->getTopic()));
 	}
 	else
 	{
@@ -55,7 +55,7 @@ int	cmdTopic(Server *server, std::vector<std::string> args, User *user){
 			cha->setTopic(topic);
 			std::vector<User*>	listUser = cha->getUsers();
 			for (std::vector<User*>::iterator it = listUser.begin(); it != listUser.end(); it++)
-				(*it)->addMsgToSend(TOPIC(user->getNick(), user->getUser(), server->getHost(), cha->getName(), topic));
+				(*it)->addMsgToSend(TOPIC(user->getNick(), user->getUser(), serverData->getHost(), cha->getName(), topic));
 		}
 	}
 	return 0;

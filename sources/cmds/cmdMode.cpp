@@ -6,12 +6,12 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:16 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/29 08:37:53 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 12:32:43 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
-#include "Server.hpp"
+#include "ServerData.hpp"
 
 int	keyMode(Channel* cha, User* user, std::vector<std::string> args, bool oper, std::string &comment)
 {
@@ -40,7 +40,7 @@ int	keyMode(Channel* cha, User* user, std::vector<std::string> args, bool oper, 
 	return 0;
 }
 
-int	operatorMode(Server* server, Channel* cha, User* user, std::vector<std::string> args, bool oper, std::string &comment)
+int	operatorMode(ServerData* serverData, Channel* cha, User* user, std::vector<std::string> args, bool oper, std::string &comment)
 {
 	User* userOp = NULL;
 	if (args.size() < 4)
@@ -48,7 +48,7 @@ int	operatorMode(Server* server, Channel* cha, User* user, std::vector<std::stri
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
 		return 1;
 	}
-	userOp = server->findUser(args[3]);
+	userOp = serverData->findUser(args[3]);
 	if (userOp == NULL)
 	{
 		user->addMsgToSend(ERR_NOSUCHNICK(args[3]));
@@ -59,7 +59,7 @@ int	operatorMode(Server* server, Channel* cha, User* user, std::vector<std::stri
 		user->addMsgToSend(ERR_USERNOTINCHANNEL(user->getNick(), userOp->getNick(), cha->getName()));
 		return 1;
 	}
-	userOp = server->findUser(args[3]);
+	userOp = serverData->findUser(args[3]);
 	cha->setOperators(userOp, oper);
 	comment = userOp->getNick();
 	return 0;
@@ -109,7 +109,7 @@ int	limitMode(Channel* cha, User* user, bool oper, std::vector<std::string> args
 }
 
 //Command: MODE <channel> [<modestring> [<mode arguments>...]]
-int	cmdMode(Server *server, std::vector<std::string> args, User *user){
+int	cmdMode(ServerData *serverData, std::vector<std::string> args, User *user){
 	std::string			comment = "";
 
 	if (args.size() < 2)
@@ -119,7 +119,7 @@ int	cmdMode(Server *server, std::vector<std::string> args, User *user){
 	}
 	if (args[1][0] == '#' && args.size() >= 3)
 	{
-		Channel				*cha = server->findChannel(args[1]);		
+		Channel				*cha = serverData->findChannel(args[1]);		
 		if (errChannel(cha, user, args) == 1)
 			return 1;
 		else
@@ -143,7 +143,7 @@ int	cmdMode(Server *server, std::vector<std::string> args, User *user){
 					break;
 				// +o : gives operator status to a user (ChannelOperator)
 				case 'o':
-					if (operatorMode(server, cha, user, args, oper, comment))
+					if (operatorMode(serverData, cha, user, args, oper, comment))
 						return 1;
 					break;
 				// +t : topic protection, Only ChannelOperator can change topic

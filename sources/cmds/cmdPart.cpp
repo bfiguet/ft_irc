@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   cmdPart.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:50:31 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 13:50:25 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/29 12:33:01 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
 //Command: PART <channel> <reason>
-int	cmdPart(Server *server, std::vector<std::string> args, User *user)
+int	cmdPart(ServerData *serverData, std::vector<std::string> args, User *user)
 {
 	std::string	reason = "";
-	Channel* chan = server->findChannel(args[1]);
+	Channel* chan = serverData->findChannel(args[1]);
 	if (args.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));

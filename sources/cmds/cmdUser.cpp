@@ -6,15 +6,15 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:48:25 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 14:18:16 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 12:33:55 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
 //Command: USER <username> 0 * <realname>
-int	cmdUser(Server *server, std::vector<std::string> args, User *user){
-	(void)server;
+int	cmdUser(ServerData *serverData, std::vector<std::string> args, User *user){
+	(void)serverData;
 	std::string	tmp;
 
 	if (user->isRegisterd())

@@ -3,24 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   cmdInvite.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:50:06 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 13:38:04 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/29 12:26:54 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Irc.hpp"
 
 // Command: INVITE <nickname> <channel>
-int	cmdInvite(Server *server, std::vector<std::string> args, User *user){
+int	cmdInvite(ServerData *serverData, std::vector<std::string> args, User *user){
 	if (args.size() < 3)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
 		return 1;
 	}
-	Channel	*cha = server->findChannel(args[2]);
-	User	*userNew = server->findUser(args[1]);
+	Channel	*cha = serverData->findChannel(args[2]);
+	User	*userNew = serverData->findUser(args[1]);
 	if (cha == NULL)
 	{
 		user->addMsgToSend(ERR_NOSUCHCHANNEL(args[2]));
@@ -48,7 +48,7 @@ int	cmdInvite(Server *server, std::vector<std::string> args, User *user){
 	}
 	if (!cha->isInvited(userNew))
 		cha->setInviteUser(userNew, true);
-	user->addMsgToSend(RPL_INVITING(user->getNick(), user->getUser(), server->getHost(), userNew->getNick(), cha->getName()));
-	userNew->addMsgToSend(INVITE(user->getNick(), user->getUser(), server->getHost(), userNew->getNick(), cha->getName()));
+	user->addMsgToSend(RPL_INVITING(user->getNick(), user->getUser(), serverData->getHost(), userNew->getNick(), cha->getName()));
+	userNew->addMsgToSend(INVITE(user->getNick(), user->getUser(), serverData->getHost(), userNew->getNick(), cha->getName()));
 	return 0;
 }

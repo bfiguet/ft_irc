@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdNick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:46:13 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 13:41:42 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/29 12:32:53 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ bool	checkNick(std::string str){
 }
 
 //Command: NICK <nickname>
-int	cmdNick(Server *server, std::vector<std::string> args, User *user){
-	std::vector<User*>	listUser = server->getUsers();
+int	cmdNick(ServerData *serverData, std::vector<std::string> args, User *user){
+	std::vector<User*>	listUser = serverData->getUsers();
 
 	for (std::vector<User*>::iterator i = listUser.begin(); i != listUser.end(); i++)
     {
