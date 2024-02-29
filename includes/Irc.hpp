@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:44:38 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 12:21:07 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/29 08:36:25 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ extern bool g_run;
 
 # define ERR_NICKNAMEINUSE(nick)(": 433 localhost " + nick + " :Nickname is already in use\r\n")
 
-# define ERR_USERNOTINCHANNEL(nick, chan)("441 " + nick + " " + chan + " :They aren't on that channel\r\n")
+# define ERR_USERNOTINCHANNEL(user, nick, chan)("441 " + user + " " + nick + " " + chan + " :They aren't on that channel\r\n")
 
 # define ERR_NOTONCHANNEL(chan)("442 " + chan + " :You're not on that channel\r\n")
 

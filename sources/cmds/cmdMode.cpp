@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmdMode.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bfiguet <bfiguet@student.42.fr>            +#+  +:+       +#+        */
+/*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:16 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 16:03:58 by bfiguet          ###   ########.fr       */
+/*   Updated: 2024/02/29 08:37:53 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int	operatorMode(Server* server, Channel* cha, User* user, std::vector<std::stri
 	}
 	if (cha->isInChannel(userOp) == false)
 	{
-		user->addMsgToSend(ERR_NOTONCHANNEL(cha->getName()));
+		user->addMsgToSend(ERR_USERNOTINCHANNEL(user->getNick(), userOp->getNick(), cha->getName()));
 		return 1;
 	}
 	userOp = server->findUser(args[3]);

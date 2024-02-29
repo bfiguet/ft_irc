@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:51:50 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:49:25 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 08:39:00 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	errKick(Channel* cha, User* user, std::vector<std::string> args, User* userT
 	}
 	if (cha->isInChannel(userToDel) == false)
 	{
-		user->addMsgToSend(ERR_USERNOTINCHANNEL(userToDel->getNick(), args[1]));
+		user->addMsgToSend(ERR_USERNOTINCHANNEL(user->getNick(), userToDel->getNick(), args[1]));
 		return 1;
 	}
 	if (cha->isOperator(user) == false)

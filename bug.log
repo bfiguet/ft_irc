@@ -82,3 +82,6 @@ USER algeorge algeorge@localhost: real name => WORKS
 
 19. Users not being deleted from channels after being disconnected.
 ->fixed by Ali
+
+20. Wrong message on attempting to set user who is not in channel as operator.
+->fixed by Ali
