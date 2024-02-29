@@ -81,3 +81,4 @@ USER algeorge algeorge@localhost: real name => WORKS
 -> fixed by bfiguet (no topic set for # || Topic for #: topic)
 
 19. Users not being deleted from channels after being disconnected.
+->fixed by Ali

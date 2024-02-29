@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:48:05 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/28 15:12:27 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 08:22:41 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,7 +315,7 @@ User*	Server::findUser(int fd){
 void	Server::deleteUserFromChannels(User* user)
 {
 	if (_channels.size() > 0)
-		for (std::vector<Channel*>::iterator it=_channels.begin(); it == _channels.end(); it++)
+		for (std::vector<Channel*>::iterator it=_channels.begin(); it != _channels.end(); it++)
 			if ((*it)->isInChannel(user))
 				(*it)->delUser(user);
 }
