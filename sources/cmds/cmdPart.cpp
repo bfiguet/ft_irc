@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:50:31 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/29 12:33:01 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 14:52:29 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,12 @@
 int	cmdPart(ServerData *serverData, std::vector<std::string> args, User *user)
 {
 	std::string	reason = "";
-	Channel* chan = serverData->findChannel(args[1]);
 	if (args.size() < 2)
 	{
 		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
 		return 1;
 	}
+	Channel* chan = serverData->findChannel(args[1]);
 	if (chan == NULL)
 	{
 		user->addMsgToSend(ERR_NOSUCHCHANNEL(args[1]));

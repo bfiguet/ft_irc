@@ -6,7 +6,7 @@
 /*   By: aalkhiro <aalkhiro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 15:46:13 by bfiguet           #+#    #+#             */
-/*   Updated: 2024/02/29 12:32:53 by aalkhiro         ###   ########.fr       */
+/*   Updated: 2024/02/29 14:53:01 by aalkhiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,11 @@ bool	checkNick(std::string str){
 //Command: NICK <nickname>
 int	cmdNick(ServerData *serverData, std::vector<std::string> args, User *user){
 	std::vector<User*>	listUser = serverData->getUsers();
-
+	if (args.size() < 2)
+	{
+		user->addMsgToSend(ERR_NEEDMOREPARAMS(args[0]));
+		return 1;
+	}
 	for (std::vector<User*>::iterator i = listUser.begin(); i != listUser.end(); i++)
     {
         if ((*i)->getNick().compare(args[1]) == 0)
