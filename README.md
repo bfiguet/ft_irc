@@ -33,7 +33,7 @@ pass [password]
 nick [your_nickname]
 user [your_username]
 
-###Run IRSSI client
+### Run IRSSI client
 If you dont have irssi client on your computer: sudo apt install irssi
 
 then, on your terminal: irssi and do like the video above.
